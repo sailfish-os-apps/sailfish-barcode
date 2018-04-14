@@ -91,7 +91,7 @@ This restriction helps to avoid an interference of the Camera app.")
                     margins: Theme.paddingLarge
                 }
                 label: qsTr("Contributors")
-                text: "Diego Russo, Åke Engelbrektson, Dominik Chrástecký, Miklós Márton, Hauke Schade"
+                text: "Diego Russo, Åke Engelbrektson, Dominik Chrástecký, Miklós Márton, Hauke Schade, Slava Monich"
                 separator: true
             }
 
@@ -111,12 +111,10 @@ This restriction helps to avoid an interference of the Camera app.")
                         margins: Theme.paddingLarge
                     }
                     label: qsTr("Source code")
-                    text: "https://github.com/steffen-foerster/sailfish-barcode"
+                    text: "https://github.com/monich/sailfish-barcode"
                     color: clickableUrl.highlighted ? Theme.highlightColor : Theme.primaryColor
                 }
-                onClicked: {
-                    openInDefaultApp("https://github.com/steffen-foerster/sailfish-barcode");
-                }
+                onClicked: openInDefaultApp(labelUrl.text);
             }
 
             LabelText {
