@@ -31,8 +31,6 @@ OTHER_FILES += \
     translations/*.ts \
     README.md \
     harbour-barcode.desktop \
-    rpm/harbour-barcode.yaml \
-    rpm/harbour-barcode.changes.in \
     qml/harbour-barcode.qml \
     qml/pages/AboutPage.qml \
     qml/components/LabelText.qml \
