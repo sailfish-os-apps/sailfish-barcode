@@ -30,13 +30,11 @@ This project demonstrates a bar code reader for Sailfish OS.
 %setup -q -n %{name}-%{version}
 
 %build
-%qtc_qmake5 
+%qtc_qmake5 VERSION="%{version}"
 %qtc_make %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
-# >> install pre
-# << install pre
 %qmake5_install
 
 desktop-file-install --delete-original \

@@ -2,6 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
+Copyright (c) 2018 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,10 +31,6 @@ import "js/Settings.js" as Settings
 ApplicationWindow
 {
     id: window
-
-    function getVersion() {
-        return "0.7.12"
-    }
 
     function openInDefaultApp(url) {
         console.log("opening URL: " + url)

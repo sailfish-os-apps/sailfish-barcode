@@ -17,6 +17,13 @@ CONFIG += sailfishapp
 QT += multimedia \
     concurrent
 
+isEmpty(VERSION) {
+    VERSION = 0.7.12
+    message("VERSION is unset, assuming $$VERSION")
+}
+
+DEFINES += APP_VERSION=\\\"$$VERSION\\\"
+
 SOURCES += \
     src/harbour-barcode.cpp \
     src/scanner/ImagePostProcessing.cpp \

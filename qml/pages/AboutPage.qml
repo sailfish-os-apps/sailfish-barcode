@@ -71,7 +71,7 @@ This restriction helps to avoid an interference of the Camera app.")
                     margins: Theme.paddingLarge
                 }
                 label: qsTr("Version")
-                text: getVersion()
+                text: AppVersion
                 separator: true
             }
 
