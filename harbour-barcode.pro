@@ -28,6 +28,7 @@ OTHER_FILES += \
     qml/cover/CoverPage.qml \
     rpm/harbour-barcode.spec \
     translations/*.ts \
+    icons/*.svg \
     README.md \
     harbour-barcode.desktop \
     qml/harbour-barcode.qml \
@@ -78,3 +79,12 @@ HEADERS += \
     src/scanner/AutoBarcodeScanner.h \
     src/scanner/CaptureImageProvider.h
 
+# Icons
+ICON_SIZES = 86 108 128 256
+for(s, ICON_SIZES) {
+    icon_target = icon$${s}
+    icon_dir = icons/$${s}x$${s}
+    $${icon_target}.files = $${icon_dir}/$${TARGET}.png
+    $${icon_target}.path = /usr/share/icons/hicolor/$${s}x$${s}/apps
+    INSTALLS += $${icon_target}
+}
