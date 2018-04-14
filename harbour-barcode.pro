@@ -34,7 +34,7 @@ OTHER_FILES += \
     qml/harbour-barcode.qml \
     qml/pages/AboutPage.qml \
     qml/components/LabelText.qml \
-    qml/cover/cover-image.png \
+    qml/cover/cover-image.svg \
     qml/pages/img/upc_240.png \
     qml/pages/img/qr-code_240.png \
     qml/pages/img/interleaved_240.png \

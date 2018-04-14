@@ -2,6 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
+Copyright (c) 2018 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,12 +33,13 @@ CoverBackground {
         anchors.centerIn: parent
 
         Image {
+            readonly property real size: Math.floor(parent.width * 0.9)
             id: image
-            source: Qt.resolvedUrl("cover-image.png")
+            source: Qt.resolvedUrl("cover-image.svg")
             fillMode: Image.PreserveAspectFit
             anchors.horizontalCenter: parent.horizontalCenter
             asynchronous: true
-            width: parent.width * 0.9
+            sourceSize: Qt.size(size, size)
         }
 
         Label {
