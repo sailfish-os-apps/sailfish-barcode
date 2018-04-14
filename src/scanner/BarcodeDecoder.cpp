@@ -2,6 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
+Copyright (c) 2018 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,50 +23,47 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#include <QDebug>
-#include <QImage>
-#include "qzxing/qzxing.h"
 #include "BarcodeDecoder.h"
+#include "DebugLog.h"
 
-BarcodeDecoder::BarcodeDecoder(QObject *parent)
-    : QObject(parent)
-    // ZXing
-    , decoder(new QZXing())
+#include "qzxing/qzxing.h"
+
+#include <QImage>
+
+BarcodeDecoder::BarcodeDecoder(QObject *parent) :
+    QObject(parent),
+    decoder(new QZXing())
 {
 }
 
-BarcodeDecoder::~BarcodeDecoder() {
+BarcodeDecoder::~BarcodeDecoder()
+{
     delete decoder;
 }
 
-void BarcodeDecoder::setDecoderFormat(int format) {
-    qDebug() << "using decoder format: " << format;
+void BarcodeDecoder::setDecoderFormat(int format)
+{
+    DLOG("using decoder format: " << format);
     if (format == CodeFormat_QR_CODE) {
         decoder->setDecoder(QZXing::DecoderFormat_QR_CODE);
-    }
-    else if (format == CodeFormat_EAN) {
+    } else if (format == CodeFormat_EAN) {
         decoder->setDecoder(QZXing::DecoderFormat_EAN_8 | QZXing::DecoderFormat_EAN_13);
-    }
-    else if (format == CodeFormat_UPC) {
+    } else if (format == CodeFormat_UPC) {
         decoder->setDecoder(QZXing::DecoderFormat_UPC_A | QZXing::DecoderFormat_UPC_E);
-    }
-    else if (format == CodeFormat_DATA_MATRIX) {
+    } else if (format == CodeFormat_DATA_MATRIX) {
         decoder->setDecoder(QZXing::DecoderFormat_DATA_MATRIX);
-    }
-    else if (format == CodeFormat_CODE_39_128) {
+    } else if (format == CodeFormat_CODE_39_128) {
         decoder->setDecoder(QZXing::DecoderFormat_CODE_39 | QZXing::DecoderFormat_CODE_128);
-    }
-    else if (format == CodeFormat_ITF) {
+    } else if (format == CodeFormat_ITF) {
         decoder->setDecoder(QZXing::DecoderFormat_ITF);
-    }
-    else if (format == CodeFormat_Aztec) {
+    } else if (format == CodeFormat_Aztec) {
         decoder->setDecoder(QZXing::DecoderFormat_Aztec);
-    }
-    else {
-        qDebug() << "unknown decoder format: " + format;
+    } else {
+        WARN("unknown decoder format:" << format);
     }
 }
 
-QVariantHash BarcodeDecoder::decodeBarcode(QImage img) {
+QVariantHash BarcodeDecoder::decodeBarcode(QImage img)
+{
     return decoder->decodeImageEx(img);
 }

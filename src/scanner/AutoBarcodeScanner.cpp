@@ -2,6 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
+Copyright (c) 2018 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,9 +23,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#include <QDebug>
 #include "AutoBarcodeScanner.h"
 #include "CaptureImageProvider.h"
+#include "DebugLog.h"
+
 #include <QProcess>
 #include <QPainter>
 #include <QBrush>
@@ -33,25 +35,26 @@ THE SOFTWARE.
 
 #include <fstream>
 
-AutoBarcodeScanner::AutoBarcodeScanner(QObject * parent)
-    : QObject(parent)
-    , m_decoder(new BarcodeDecoder(this))
-    , m_viewFinderItem(NULL)
-    , m_flagScanRunning(false)
-    , m_flagScanAbort(false)
-    , m_flashState(false)
-    , m_timeoutTimer(new QTimer(this))
-    , m_markerColor(QColor(0, 255, 0)) // default green
+AutoBarcodeScanner::AutoBarcodeScanner(QObject* parent) :
+    QObject(parent),
+    m_decoder(new BarcodeDecoder(this)),
+    m_viewFinderItem(NULL),
+    m_flagScanRunning(false),
+    m_flagScanAbort(false),
+    m_flashState(false),
+    m_timeoutTimer(new QTimer(this)),
+    m_markerColor(QColor(0, 255, 0)) // default green
 {
-    qDebug() << "start init AutoBarcodeScanner";
+    DLOG("start init AutoBarcodeScanner");
 
     createConnections();
     m_timeoutTimer->setSingleShot(true);
     connect(m_timeoutTimer, SIGNAL(timeout()), this, SLOT(slotScanningTimeout()));
 }
 
-AutoBarcodeScanner::~AutoBarcodeScanner() {
-    qDebug() << "AutoBarcodeScanner::~AutoBarcodeScanner";
+AutoBarcodeScanner::~AutoBarcodeScanner()
+{
+    DLOG("AutoBarcodeScanner::~AutoBarcodeScanner");
 
     // stopping a running scanning process
     stopScanning();
@@ -62,7 +65,8 @@ AutoBarcodeScanner::~AutoBarcodeScanner() {
     }
 }
 
-void AutoBarcodeScanner::createConnections() {
+void AutoBarcodeScanner::createConnections()
+{
     // Handled on the main thread
     connect(this, SIGNAL(decodingDone(QImage,QVariantList,QString)),
             this, SLOT(slotDecodingDone(QImage,QVariantList,QString)),
@@ -76,10 +80,10 @@ void AutoBarcodeScanner::slotGrabImage()
     if (m_viewFinderItem && m_flagScanRunning) {
         QQuickWindow* window = m_viewFinderItem->window();
         if (window) {
-            qDebug() << "grabbing image";
+            DLOG("grabbing image");
             QImage image = window->grabWindow();
             if (!image.isNull() && m_flagScanRunning) {
-                qDebug() << image;
+                DLOG(image);
                 m_scanProcessMutex.lock();
                 m_captureImage = image;
                 m_scanProcessEvent.wakeAll();
@@ -92,7 +96,7 @@ void AutoBarcodeScanner::slotGrabImage()
 void AutoBarcodeScanner::setViewFinderRect(QRect rect)
 {
     if (m_viewFinderRect != rect) {
-        qDebug() << rect;
+        DLOG(rect);
         // m_viewFinderRect is accessed by processDecode() thread
         m_scanProcessMutex.lock();
         m_viewFinderRect = rect;
@@ -100,7 +104,8 @@ void AutoBarcodeScanner::setViewFinderRect(QRect rect)
     }
 }
 
-void AutoBarcodeScanner::setViewFinderItem(QObject* value) {
+void AutoBarcodeScanner::setViewFinderItem(QObject* value)
+{
     QQuickItem* item = qobject_cast<QQuickItem*>(value);
     if (m_viewFinderItem != item) {
         m_viewFinderItem = item;
@@ -108,11 +113,13 @@ void AutoBarcodeScanner::setViewFinderItem(QObject* value) {
     }
 }
 
-void AutoBarcodeScanner::setDecoderFormat(int format) {
+void AutoBarcodeScanner::setDecoderFormat(int format)
+{
     m_decoder->setDecoderFormat(format);
 }
 
-void AutoBarcodeScanner::toggleFlash() {
+void AutoBarcodeScanner::toggleFlash()
+{
     if (isJollaCameraRunning()) {
         return;
     }
@@ -122,14 +129,16 @@ void AutoBarcodeScanner::toggleFlash() {
     emit flashStateChanged(m_flashState);
 }
 
-void AutoBarcodeScanner::writeFlashMode(int flashMode) {
+void AutoBarcodeScanner::writeFlashMode(int flashMode)
+{
     std::ofstream io;
     io.open("/sys/kernel/debug/flash_adp1650/mode");
     io << flashMode;
     io.close();
 }
 
-void AutoBarcodeScanner::startScanning(int timeout) {
+void AutoBarcodeScanner::startScanning(int timeout)
+{
     if (!m_flagScanRunning) {
         m_flagScanRunning = true;
         m_flagScanAbort = false;
@@ -139,7 +148,8 @@ void AutoBarcodeScanner::startScanning(int timeout) {
     }
 }
 
-void AutoBarcodeScanner::stopScanning() {
+void AutoBarcodeScanner::stopScanning()
+{
     // stopping a running scanning process
     m_scanProcessMutex.lock();
     if (m_flagScanRunning) {
@@ -149,7 +159,8 @@ void AutoBarcodeScanner::stopScanning() {
     m_scanProcessMutex.unlock();
 }
 
-bool AutoBarcodeScanner::isJollaCameraRunning() {
+bool AutoBarcodeScanner::isJollaCameraRunning()
+{
     QProcess process;
     QString cmd = "pidof";
     QStringList args("jolla-camera");
@@ -166,8 +177,9 @@ bool AutoBarcodeScanner::isJollaCameraRunning() {
 /**
  * Runs in a pooled thread.
  */
-void AutoBarcodeScanner::processDecode() {
-    qDebug() << "processDecode() is called from " << QThread::currentThread();
+void AutoBarcodeScanner::processDecode()
+{
+    DLOG("processDecode() is called from " << QThread::currentThread());
 
     QString code;
     QVariantHash result;
@@ -191,7 +203,7 @@ void AutoBarcodeScanner::processDecode() {
             // crop the image - we need only the viewfinder
             image = image.copy(viewFinderRect);
             saveDebugImage(image, "debug_screenshot.jpg");
-            qDebug() << "decoding screenshot ...";
+            DLOG("decoding screenshot ...");
             result = m_decoder->decodeBarcode(image);
             code = result["content"].toString();
 
@@ -201,7 +213,7 @@ void AutoBarcodeScanner::processDecode() {
                 transform.rotate(90);
                 image = image.transformed(transform);
                 saveDebugImage(image, "debug_transformed.jpg");
-                qDebug() << "decoding rotated screenshot ...";
+                DLOG("decoding rotated screenshot ...");
                 result = m_decoder->decodeBarcode(image);
                 code = result["content"].toString();
             }
@@ -210,15 +222,16 @@ void AutoBarcodeScanner::processDecode() {
     }
     m_scanProcessMutex.unlock();
 
-    qDebug() << "decoding has been finished, result: " + code;
+    DLOG("decoding has been finished, result:" << code);
     emit decodingDone(code.isEmpty() ? QImage() : image, result["points"].toList(), code);
 }
 
-void AutoBarcodeScanner::slotDecodingDone(QImage image, QVariantList points, const QString code) {
-    qDebug() << "decoding has been finished:" << code;
+void AutoBarcodeScanner::slotDecodingDone(QImage image, QVariantList points, const QString code)
+{
+    DLOG("decoding has been finished:" << code);
     if (!image.isNull()) {
-        qDebug() << "image:" << image;
-        qDebug() << "points:" << points;
+        DLOG("image:" << image);
+        DLOG("points:" << points);
         markLastCaptureImage(image, points);
     }
     m_captureImage = QImage();
@@ -227,18 +240,22 @@ void AutoBarcodeScanner::slotDecodingDone(QImage image, QVariantList points, con
     emit decodingFinished(code);
 }
 
-void AutoBarcodeScanner::saveDebugImage(QImage &image, const QString &fileName) {
+void AutoBarcodeScanner::saveDebugImage(QImage &image, const QString &fileName)
+{
+#ifdef DEBUG
     QString imageLocation = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation) + "/codereader/" + fileName;
     if (image.save(imageLocation)) {
-        qDebug() << "image saved: " << imageLocation;
+        DLOG("image saved: " << imageLocation);
     }
+#endif
 }
 
-void AutoBarcodeScanner::markLastCaptureImage(QImage image, QVariantList points) {
+void AutoBarcodeScanner::markLastCaptureImage(QImage image, QVariantList points)
+{
     QPainter painter(&image);
     painter.setPen(m_markerColor);
 
-    qDebug() << "recognized points: " << points.size();
+    DLOG("recognized points: " << points.size());
     for (int i = 0; i < points.size(); i++) {
         QPoint p = points[i].toPoint();
         painter.fillRect(QRect(p.x()-3, p.y()-15, 6, 30), QBrush(m_markerColor));
@@ -248,20 +265,21 @@ void AutoBarcodeScanner::markLastCaptureImage(QImage image, QVariantList points)
 
     // rotate to screen orientation
     if (image.width() > image.height()) {
-        qDebug() << "rotating image ...";
+        DLOG("rotating image ...");
         QTransform transform;
         transform.rotate(270);
         image = image.transformed(transform);
-        qDebug() << "rotation finished";
+        DLOG("rotation finished");
     }
 
     CaptureImageProvider::setMarkedImage(image);
 }
 
-void AutoBarcodeScanner::slotScanningTimeout() {
+void AutoBarcodeScanner::slotScanningTimeout()
+{
     m_scanProcessMutex.lock();
     m_flagScanAbort = true;
-    qDebug() << "decoding aborted by timeout";
+    DLOG("decoding aborted by timeout");
     m_scanProcessEvent.wakeAll();
     m_scanProcessMutex.unlock();
 }

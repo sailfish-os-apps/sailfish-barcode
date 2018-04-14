@@ -24,6 +24,10 @@ isEmpty(VERSION) {
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
+CONFIG(debug, debug|release) {
+    DEFINES += DEBUG LOG_DEBUG
+}
+
 SOURCES += \
     src/harbour-barcode.cpp \
     src/scanner/ImagePostProcessing.cpp \
@@ -81,6 +85,7 @@ TRANSLATIONS += \
 include(src/scanner/qzxing/QZXing.pri)
 
 HEADERS += \
+    src/scanner/DebugLog.h \
     src/scanner/ImagePostProcessing.h \
     src/scanner/BarcodeDecoder.h \
     src/scanner/AutoBarcodeScanner.h \
