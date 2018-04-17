@@ -27,6 +27,8 @@
 
 using namespace std;
 
+#undef DEBUG
+
 namespace zxing {
 
 ReedSolomonDecoder::ReedSolomonDecoder(Ref<GenericGF> fld) :
