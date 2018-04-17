@@ -24,6 +24,8 @@ isEmpty(VERSION) {
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
+INCLUDEPATH += src
+
 CONFIG(debug, debug|release) {
     DEFINES += DEBUG LOG_DEBUG
 }
@@ -85,7 +87,7 @@ TRANSLATIONS += \
 include(src/scanner/qzxing/QZXing.pri)
 
 HEADERS += \
-    src/scanner/DebugLog.h \
+    src/DebugLog.h \
     src/scanner/ImagePostProcessing.h \
     src/scanner/BarcodeDecoder.h \
     src/scanner/AutoBarcodeScanner.h \
