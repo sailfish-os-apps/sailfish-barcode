@@ -2,6 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
+Copyright (c) 2018 Slava Monich
 
 Some ideas are borrowed from qdeclarativecamera.cpp and qdeclarativecamera.h
 (https://git.gitorious.org/qt/qtmultimedia.git)
@@ -42,11 +43,9 @@ public:
     virtual ~AutoBarcodeScanner();
 
     Q_PROPERTY(QObject* viewFinderItem READ viewFinderItem WRITE setViewFinderItem NOTIFY viewFinderItemChanged)
-    Q_PROPERTY(bool flashState READ flashState NOTIFY flashStateChanged)
 
     Q_INVOKABLE void startScanning(int timeout);
     Q_INVOKABLE void stopScanning();
-    Q_INVOKABLE void toggleFlash();
     Q_INVOKABLE void setDecoderFormat(int format);
 
     Q_INVOKABLE void setMarkerColor(int red, int green, int blue) {
@@ -61,7 +60,6 @@ public:
     // must be public, to start in new thread
     void processDecode();
 
-    bool flashState() const { return m_flashState; }
     QObject* viewFinderItem() const { return m_viewFinderItem; }
 
     void setViewFinderItem(QObject* item);
@@ -69,7 +67,6 @@ public:
 signals:
     void decodingDone(QImage image, QVariantList points, QString code);
     void decodingFinished(QString code);
-    void flashStateChanged(bool currentState);
     void viewFinderItemChanged();
     void needImage();
 
@@ -81,7 +78,6 @@ public slots:
 private:
     void createConnections();
     void markLastCaptureImage(QImage image, QVariantList points);
-    void writeFlashMode(int flashMode);
     static void saveDebugImage(QImage &image, const QString &fileName);
 
     BarcodeDecoder* m_decoder;
@@ -89,7 +85,6 @@ private:
     QQuickItem* m_viewFinderItem;
     bool m_flagScanRunning;
     bool m_flagScanAbort;
-    bool m_flashState;
     QTimer* m_timeoutTimer;
 
     QMutex m_scanProcessMutex;

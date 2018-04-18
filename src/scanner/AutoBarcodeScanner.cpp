@@ -41,7 +41,6 @@ AutoBarcodeScanner::AutoBarcodeScanner(QObject* parent) :
     m_viewFinderItem(NULL),
     m_flagScanRunning(false),
     m_flagScanAbort(false),
-    m_flashState(false),
     m_timeoutTimer(new QTimer(this)),
     m_markerColor(QColor(0, 255, 0)) // default green
 {
@@ -59,10 +58,6 @@ AutoBarcodeScanner::~AutoBarcodeScanner()
     // stopping a running scanning process
     stopScanning();
     m_scanFuture.waitForFinished();
-
-    if (m_flashState) {
-        toggleFlash();
-    }
 }
 
 void AutoBarcodeScanner::createConnections()
@@ -116,25 +111,6 @@ void AutoBarcodeScanner::setViewFinderItem(QObject* value)
 void AutoBarcodeScanner::setDecoderFormat(int format)
 {
     m_decoder->setDecoderFormat(format);
-}
-
-void AutoBarcodeScanner::toggleFlash()
-{
-    if (isJollaCameraRunning()) {
-        return;
-    }
-
-    m_flashState = !m_flashState;
-    writeFlashMode(m_flashState);
-    emit flashStateChanged(m_flashState);
-}
-
-void AutoBarcodeScanner::writeFlashMode(int flashMode)
-{
-    std::ofstream io;
-    io.open("/sys/kernel/debug/flash_adp1650/mode");
-    io << flashMode;
-    io.close();
 }
 
 void AutoBarcodeScanner::startScanning(int timeout)

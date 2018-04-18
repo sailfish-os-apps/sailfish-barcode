@@ -2,6 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
+Copyright (c) 2018 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -121,7 +122,7 @@ Page {
         state = "INACTIVE"
         statusText.text = ""
         actionButton.enabled = false
-        updateFlashIcon(false)
+        if (viewFinder) viewFinder.turnFlashOff()
     }
 
     function stateReady() {
@@ -151,13 +152,6 @@ Page {
     function stateAbort() {
         state = "ABORT"
         actionButton.enabled = false
-    }
-
-    function updateFlashIcon(flashState) {
-        console.log("updateFlashIcon, flashState: ", flashState)
-        flash.icon.source = flashState
-                ? "image://theme/icon-camera-flash-on"
-                : "image://theme/icon-camera-flash-off"
     }
 
     state: "INACTIVE"
@@ -252,10 +246,6 @@ Page {
             }
             stateReady()
         }
-
-        onFlashStateChanged: {
-            updateFlashIcon(currentState)
-        }
     }
 
     Component {
@@ -265,8 +255,28 @@ Page {
             anchors.fill: parent
             fillMode: VideoOutput.PreserveAspectCrop
 
+            readonly property bool flashOn: camera.flash.mode !== Camera.FlashOff
+
+            function turnFlashOn() {
+                camera.flash.mode = Camera.FlashTorch
+            }
+
+            function turnFlashOff() {
+                camera.flash.mode = Camera.FlashOff
+            }
+
+            function toggleFlash() {
+                if (flashOn) {
+                    turnFlashOff()
+                } else {
+                    turnFlashOn()
+                }
+            }
+
             source: Camera {
+                id: camera
                 flash.mode: Camera.FlashOff
+                captureMode: Camera.CaptureVideo
                 exposure {
                     exposureCompensation: 1.0
                     exposureMode: Camera.ExposureAuto
@@ -352,21 +362,30 @@ Page {
                 }
             }
 
-            Row {
-                width: parent.width - Theme.paddingLarge * 2
-                anchors.horizontalCenter: parent.horizontalCenter
+            Item {
+                width: parent.width
+                height: Math.max(flashButton.height, zoomSlider.height)
 
-                IconButton {
-                    id: flash
-                    icon.source: "image://theme/icon-camera-flash-off"
-                    onClicked: {
-                        scanner.toggleFlash()
+                Item {
+                    height: parent.height
+                    width: parentViewFinder.x
+                    visible: TorchSupported
+                    IconButton {
+                        id: flashButton
+                        anchors.centerIn: parent
+                        icon.source: viewFinder && viewFinder.flashOn ?
+                                "image://theme/icon-camera-flash-on" :
+                                "image://theme/icon-camera-flash-off"
+                        onClicked: if (viewFinder) viewFinder.toggleFlash()
                     }
                 }
 
                 Slider {
                     id: zoomSlider
-                    width: parent.width - flash.width
+                    x: parentViewFinder.x
+                    width: parentViewFinder.width
+                    leftMargin: 0
+                    rightMargin: 0
                     minimumValue: 1.0
                     maximumValue: 70.0
                     value: 1
