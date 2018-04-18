@@ -6,7 +6,7 @@ Name:       harbour-barcode
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 
 Summary:    Code Reader
-Version:    1.0.0
+Version:    1.0.1
 Release:    1
 Group:      Applications/Productivity
 License:    LICENSE
@@ -24,7 +24,7 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  qt5-qttools-linguist
 
 %description
-This project demonstrates a bar code reader for Sailfish OS.
+Bar code reader for Sailfish OS.
 
 %prep
 %setup -q -n %{name}-%{version}
