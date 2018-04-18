@@ -58,6 +58,7 @@ Page {
             stateJollaCamera()
         } else if (viewFinder.source.availability === Camera.Available) {
             viewFinder.source.start()
+            autoStart()
         } else {
             stateAbort();
         }
@@ -77,6 +78,18 @@ Page {
         beep.destroy()
 
         stateInactive()
+    }
+
+    function autoStart() {
+        if (viewFinder) {
+            if (flagScanByCover || (flagAutoScan && Settings.getBoolean(Settings.keys.SCAN_ON_START))) {
+                console.log("auto-starting scan ...")
+                startScan();
+            }
+
+            flagAutoScan = false
+            flagScanByCover = false
+        }
     }
 
     function applyResult(result) {
@@ -211,13 +224,7 @@ Page {
         }
 
         stateReady()
-
-        if (flagScanByCover || flagAutoScan && Settings.getBoolean(Settings.keys.SCAN_ON_START)) {
-            startScan();
-        }
-
-        flagAutoScan = false
-        flagScanByCover = false
+        autoStart();
     }
 
     AutoBarcodeScanner {
