@@ -27,7 +27,6 @@ THE SOFTWARE.
 #include "CaptureImageProvider.h"
 #include "DebugLog.h"
 
-#include <QProcess>
 #include <QPainter>
 #include <QBrush>
 #include <QStandardPaths>
@@ -133,21 +132,6 @@ void AutoBarcodeScanner::stopScanning()
         m_scanProcessEvent.wakeAll();
     }
     m_scanProcessMutex.unlock();
-}
-
-bool AutoBarcodeScanner::isJollaCameraRunning()
-{
-    QProcess process;
-    QString cmd = "pidof";
-    QStringList args("jolla-camera");
-    process.start(cmd, args);
-
-    bool result = false;
-    if (process.waitForFinished()) {
-        result = (process.exitStatus() == QProcess::NormalExit &&
-                  process.exitCode() == 0);
-    }
-    return result;
 }
 
 /**

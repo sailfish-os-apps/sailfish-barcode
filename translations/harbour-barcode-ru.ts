@@ -63,14 +63,6 @@
         <translation>Код не найден! Попробуйте снова.</translation>
     </message>
     <message>
-        <source>Please close the Jolla Camera app.</source>
-        <translation>Пожалуйста, закройте приложение Камера.</translation>
-    </message>
-    <message>
-        <source>Scanning failed (code: %1)! Try again.</source>
-        <translation>Сканирование не удалось (код: %1)! Попробуйте снова.</translation>
-    </message>
-    <message>
         <source>About CodeReader</source>
         <translation>О программе</translation>
     </message>

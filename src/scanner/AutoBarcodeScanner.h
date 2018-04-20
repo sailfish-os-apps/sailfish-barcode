@@ -52,7 +52,6 @@ public:
         m_markerColor = QColor(red, green, blue);
     }
 
-    Q_INVOKABLE bool isJollaCameraRunning();
     Q_INVOKABLE void setViewFinderRect(QRect rect);
 
     Q_ENUMS(AutoBarcodeScanner::CodeFormat)

@@ -59,14 +59,6 @@
         <translation>Aucun code-barre détecté ! Veuillez réessayer.</translation>
     </message>
     <message>
-        <source>Please close the Jolla Camera app.</source>
-        <translation>Veuillez d'abord fermer l&apos;application Jolla Caméra.</translation>
-    </message>
-    <message>
-        <source>Scanning failed (code: %1)! Try again.</source>
-        <translation>Échec (code : %1) ! Veuillez réessayer.</translation>
-    </message>
-    <message>
         <source>About CodeReader</source>
         <translation>À propos de CodeReader</translation>
     </message>
@@ -126,7 +118,7 @@
     </message>
     <message>
         <source>Scan on start</source>
-        <translation>Scanner au démarrage de l'appli</translation>
+        <translation>Scanner au démarrage de l&apos;appli</translation>
     </message>
     <message>
         <source>deactivated</source>
@@ -146,7 +138,7 @@
     </message>
     <message>
         <source>Max history size (saved values: %1)</source>
-        <translation>Taille maximale de l'historique (%1 éléments sauvegardés)</translation>
+        <translation>Taille maximale de l&apos;historique (%1 éléments sauvegardés)</translation>
     </message>
     <message>
         <source>History</source>

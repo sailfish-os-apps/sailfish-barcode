@@ -63,14 +63,6 @@
         <translation>Kód detektálása sikertelen! Próbáld újra.</translation>
     </message>
     <message>
-        <source>Please close the Jolla Camera app.</source>
-        <translation>Kérlek lépj ki a kamera alkalmazásból.</translation>
-    </message>
-    <message>
-        <source>Scanning failed (code: %1)! Try again.</source>
-        <translation>Beolvasás sikertelen (kód: %1)! Próbáld újra.</translation>
-    </message>
-    <message>
         <source>About CodeReader</source>
         <translation>A CodeReader-ről</translation>
     </message>

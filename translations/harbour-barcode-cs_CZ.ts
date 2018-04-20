@@ -67,16 +67,8 @@
         <translation>Přerušit</translation>
     </message>
     <message>
-        <source>Please close the Jolla Camera app.</source>
-        <translation>Prosím, zavřete aplikaci Fotoaparát.</translation>
-    </message>
-    <message>
         <source>No code detected! Try again.</source>
         <translation>Žádný kód nebyl nalezen! Zkuste to znovu.</translation>
-    </message>
-    <message>
-        <source>Scanning failed (code: %1)! Try again.</source>
-        <translation>Skenování selhalo (kód: %1)! Zkuste to znovu.</translation>
     </message>
     <message>
         <source>About CodeReader</source>

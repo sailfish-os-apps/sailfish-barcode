@@ -63,14 +63,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Please close the Jolla Camera app.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Scanning failed (code: %1)! Try again.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>About CodeReader</source>
         <translation type="unfinished"></translation>
     </message>

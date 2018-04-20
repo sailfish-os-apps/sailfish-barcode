@@ -63,14 +63,6 @@
         <translation>Ingen stregkode registeret! Prøv igen.</translation>
     </message>
     <message>
-        <source>Please close the Jolla Camera app.</source>
-        <translation>Luk venligst Jolla kamera app´en.</translation>
-    </message>
-    <message>
-        <source>Scanning failed (code: %1)! Try again.</source>
-        <translation>Scanningen fejlede (kode: %1)! Prøv igen.</translation>
-    </message>
-    <message>
         <source>About CodeReader</source>
         <translation>Om CodeReader</translation>
     </message>

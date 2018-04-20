@@ -63,14 +63,6 @@
         <translation>未發現條碼,請再次嘗試。</translation>
     </message>
     <message>
-        <source>Please close the Jolla Camera app.</source>
-        <translation>請關閉Jolla相機應用程式</translation>
-    </message>
-    <message>
-        <source>Scanning failed (code: %1)! Try again.</source>
-        <translation>掃描失敗(錯誤碼： %1)! 請再試一次。</translation>
-    </message>
-    <message>
         <source>About CodeReader</source>
         <translation>關於CodeReader</translation>
     </message>

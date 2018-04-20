@@ -54,9 +54,7 @@ Page {
         beep = beepComponent.createObject(scanPage)
         beep.muted = !Settings.getBoolean(Settings.keys.SOUND)
 
-        if (scanner.isJollaCameraRunning()) {
-            stateJollaCamera()
-        } else if (viewFinder.source.availability === Camera.Available) {
+        if (viewFinder.source.availability === Camera.Available) {
             viewFinder.source.start()
             autoStart()
         } else {
@@ -151,15 +149,6 @@ Page {
         statusText.text = qsTr("Scan in progress ...")
         clickableResult.clear()
         actionButton.text = qsTr("Abort")
-    }
-
-    function stateJollaCamera() {
-        state = "JOLLA_CAMERA"
-        clickableResult.clear()
-        statusText.text = qsTr("Please close the Jolla Camera app.")
-        actionButton.visible = false
-        actionButton.enabled = false
-        zoomSlider.enabled = false
     }
 
     function stateAbort() {
