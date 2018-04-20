@@ -45,6 +45,7 @@ public:
     virtual ~AutoBarcodeScanner();
 
     Q_PROPERTY(QObject* viewFinderItem READ viewFinderItem WRITE setViewFinderItem NOTIFY viewFinderItemChanged)
+    Q_PROPERTY(bool grabbing READ grabbing NOTIFY grabbingChanged)
 
     Q_INVOKABLE void startScanning(int timeout);
     Q_INVOKABLE void stopScanning();
@@ -59,6 +60,7 @@ public:
     void processDecode();
 
     QObject* viewFinderItem() const { return m_viewFinderItem; }
+    bool grabbing() const { return m_grabbing; }
 
     void setViewFinderItem(QObject* item);
 
@@ -66,6 +68,7 @@ signals:
     void decodingDone(QImage image, QVariantList points, QString code);
     void decodingFinished(QString code);
     void viewFinderItemChanged();
+    void grabbingChanged();
     void needImage();
 
 public slots:
@@ -76,8 +79,9 @@ public slots:
 private:
     void createConnections();
     void markLastCaptureImage(QImage image, QVariantList points);
-    static void saveDebugImage(QImage &image, const QString &fileName);
 
+private:
+    bool m_grabbing;
     QZXing* m_decoder;
     QImage m_captureImage;
     QQuickItem* m_viewFinderItem;

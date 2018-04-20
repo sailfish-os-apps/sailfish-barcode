@@ -103,8 +103,7 @@ Page {
 
     function startScan() {
         // hide marker image
-        viewFinder.children[0].source = ""
-        viewFinder.children[0].visible = false
+        viewFinder.marker.source = ""
 
         setMarkerColor()
 
@@ -180,8 +179,7 @@ Page {
         repeat: false
         onTriggered: {
             if (viewFinder) {
-                viewFinder.children[0].source = ""
-                viewFinder.children[0].visible = false
+                viewFinder.marker.source = ""
             }
         }
     }
@@ -230,8 +228,7 @@ Page {
 
                     var resultViewDuration = Settings.get(Settings.keys.RESULT_VIEW_DURATION)
                     if (resultViewDuration > 0) {
-                        viewFinder.children[0].source = "image://scanner/marked"
-                        viewFinder.children[0].visible = true
+                        viewFinder.marker.source = "image://scanner/marked"
                         resultViewTimer.interval = resultViewDuration * 1000
                         resultViewTimer.restart()
                     }
@@ -248,10 +245,17 @@ Page {
         id: viewFinderComponent
 
         VideoOutput {
+            id: viewFinderItem
+            layer.enabled: true
+
             anchors.fill: parent
             fillMode: VideoOutput.PreserveAspectCrop
-
+            property alias marker: markerImage
+            readonly property bool tapFocusActive: focusTimer.running
             readonly property bool flashOn: camera.flash.mode !== Camera.FlashOff
+            // Not sure why not just camera.orientation but this makes the camera
+            // behave similar to what it does for Jolla Camera
+            readonly property int cameraOrientation: 360 - camera.orientation
 
             function turnFlashOn() {
                 camera.flash.mode = Camera.FlashTorch
@@ -269,32 +273,125 @@ Page {
                 }
             }
 
+            function viewfinderToFramePoint(vx, vy) {
+                var x = (vx - viewFinderItem.contentRect.x)/viewFinderItem.contentRect.width
+                var y = (vy - viewFinderItem.contentRect.y)/viewFinderItem.contentRect.height
+                switch (cameraOrientation) {
+                case 90:  return Qt.point(y, 1 - x)
+                case 180: return Qt.point(1 - x, 1 - y)
+                case 270: return Qt.point(1 - y, x)
+                default:  return Qt.point(x, y)
+                }
+            }
+
+            function frameToViewfinderRect(rect) {
+                var vx, vy, vw, vh
+                switch (cameraOrientation) {
+                case 90:
+                case 270:
+                    vw = rect.height
+                    vh = rect.width
+                    break
+                default:
+                    vw = rect.width
+                    vh = rect.height
+                    break
+                }
+                switch (cameraOrientation) {
+                case 90:
+                    vx = 1 - rect.y - vw
+                    vy = rect.x
+                    break
+                case 180:
+                    vx = 1 - rect.x - vw
+                    vy = 1 - rect.y - vh
+                    break
+                case 270:
+                    vx = rect.y
+                    vy = 1 - rect.x - vh
+                    break
+                default:
+                    vx = rect.x
+                    vy = rect.y
+                    break
+                }
+                return Qt.rect(viewFinderItem.contentRect.width * vx +  viewFinderItem.contentRect.x,
+                               viewFinderItem.contentRect.height * vy + viewFinderItem.contentRect.y,
+                               viewFinderItem.contentRect.width * vw, viewFinderItem.contentRect.height * vh)
+            }
+
             source: Camera {
                 id: camera
+
                 flash.mode: Camera.FlashOff
                 captureMode: Camera.CaptureVideo
+                imageProcessing.whiteBalanceMode: flashOn ?
+                    CameraImageProcessing.WhiteBalanceFlash :
+                    CameraImageProcessing.WhiteBalanceTungsten
                 exposure {
                     exposureCompensation: 1.0
                     exposureMode: Camera.ExposureAuto
                 }
                 focus {
-                    focusMode: Camera.FocusContinuous
-                    focusPointMode: CameraFocus.FocusPointAuto
+                    focusMode: tapFocusActive ? Camera.FocusAuto : Camera.FocusContinuous
+                    focusPointMode: tapFocusActive ? Camera.FocusPointCustom : Camera.FocusPointAuto
                 }
                 onCameraStateChanged: {
-                    console.log(cameraState)
                     if (cameraState == Camera.ActiveState) {
                         cameraStarted()
                     }
                 }
             }
 
+            // Display focus areas
+            Repeater {
+                model: camera.focus.focusZones
+                delegate: Rectangle {
+                    visible: !scanner.grabbing && status !== Camera.FocusAreaUnused && camera.focus.focusPointMode === Camera.FocusPointCustom
+                    border {
+                        width: Math.round(Theme.pixelRatio * 2)
+                        color: status === Camera.FocusAreaFocused ? Theme.highlightColor : "white"
+                    }
+                    color: "transparent"
+
+                    readonly property rect mappedRect: frameToViewfinderRect(area);
+                    readonly property real diameter: Math.round(Math.min(mappedRect.width, mappedRect.height))
+
+                    x: Math.round(mappedRect.x + (mappedRect.width - diameter)/2)
+                    y: Math.round(mappedRect.y + (mappedRect.height - diameter)/2)
+                    width: diameter
+                    height: diameter
+                    radius: diameter / 2
+                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onPressed: {
+                    focusTimer.restart()
+                    camera.unlock()
+                    camera.focus.customFocusPoint = viewfinderToFramePoint(mouse.x, mouse.y)
+                    camera.searchAndLock()
+                }
+            }
+
+            Timer {
+                id: focusTimer
+
+                interval: 5000
+                onTriggered: {
+                    console.log("unlocking")
+                    camera.unlock()
+                }
+            }
+
             Image {
                 id: markerImage
+
                 anchors.fill: parent
                 z: 2
                 source: ""
-                visible: false
+                visible: status === Image.Ready
                 cache: false
             }
         }

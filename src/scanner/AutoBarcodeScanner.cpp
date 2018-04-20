@@ -36,8 +36,21 @@ THE SOFTWARE.
 
 #include <fstream>
 
+#ifdef DEBUG
+static void saveDebugImage(QImage &image, const QString &fileName)
+{
+    QString path = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation) + "/codereader/" + fileName;
+    if (image.save(path)) {
+        DLOG("image saved:" << qPrintable(path));
+    }
+}
+#else
+#  define saveDebugImage(image,fileName) ((void)0)
+#endif
+
 AutoBarcodeScanner::AutoBarcodeScanner(QObject* parent) :
     QObject(parent),
+    m_grabbing(false),
     m_decoder(new QZXing(this)),
     m_viewFinderItem(NULL),
     m_flagScanRunning(false),
@@ -77,7 +90,11 @@ void AutoBarcodeScanner::slotGrabImage()
         QQuickWindow* window = m_viewFinderItem->window();
         if (window) {
             DLOG("grabbing image");
+            m_grabbing = true;
+            emit grabbingChanged();
             QImage image = window->grabWindow();
+            m_grabbing = false;
+            emit grabbingChanged();
             if (!image.isNull() && m_flagScanRunning) {
                 DLOG(image);
                 m_scanProcessMutex.lock();
@@ -195,16 +212,6 @@ void AutoBarcodeScanner::slotDecodingDone(QImage image, QVariantList points, con
     m_timeoutTimer->stop();
     m_flagScanRunning = false;
     emit decodingFinished(code);
-}
-
-void AutoBarcodeScanner::saveDebugImage(QImage &image, const QString &fileName)
-{
-#ifdef DEBUG
-    QString imageLocation = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation) + "/codereader/" + fileName;
-    if (image.save(imageLocation)) {
-        DLOG("image saved: " << imageLocation);
-    }
-#endif
 }
 
 void AutoBarcodeScanner::markLastCaptureImage(QImage image, QVariantList points)
