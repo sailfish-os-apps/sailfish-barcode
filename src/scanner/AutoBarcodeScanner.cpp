@@ -32,11 +32,13 @@ THE SOFTWARE.
 #include <QStandardPaths>
 #include <QtQuick/QQuickWindow>
 
+#include "qzxing/qzxing.h"
+
 #include <fstream>
 
 AutoBarcodeScanner::AutoBarcodeScanner(QObject* parent) :
     QObject(parent),
-    m_decoder(new BarcodeDecoder(this)),
+    m_decoder(new QZXing(this)),
     m_viewFinderItem(NULL),
     m_flagScanRunning(false),
     m_flagScanAbort(false),
@@ -107,11 +109,6 @@ void AutoBarcodeScanner::setViewFinderItem(QObject* value)
     }
 }
 
-void AutoBarcodeScanner::setDecoderFormat(int format)
-{
-    m_decoder->setDecoderFormat(format);
-}
-
 void AutoBarcodeScanner::startScanning(int timeout)
 {
     if (!m_flagScanRunning) {
@@ -164,7 +161,7 @@ void AutoBarcodeScanner::processDecode()
             image = image.copy(viewFinderRect);
             saveDebugImage(image, "debug_screenshot.jpg");
             DLOG("decoding screenshot ...");
-            result = m_decoder->decodeBarcode(image);
+            result = m_decoder->decodeImageEx(image);
             code = result["content"].toString();
 
             if (code.isEmpty()) {
@@ -174,7 +171,7 @@ void AutoBarcodeScanner::processDecode()
                 image = image.transformed(transform);
                 saveDebugImage(image, "debug_transformed.jpg");
                 DLOG("decoding rotated screenshot ...");
-                result = m_decoder->decodeBarcode(image);
+                result = m_decoder->decodeImageEx(image);
                 code = result["content"].toString();
             }
         }

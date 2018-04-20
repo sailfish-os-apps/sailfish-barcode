@@ -32,7 +32,9 @@ THE SOFTWARE.
 #include <QColor>
 #include <QtConcurrent>
 #include <QtQuick/QQuickItem>
-#include "BarcodeDecoder.h"
+#include <QImage>
+
+class QZXing;
 
 class AutoBarcodeScanner : public QObject
 {
@@ -46,15 +48,12 @@ public:
 
     Q_INVOKABLE void startScanning(int timeout);
     Q_INVOKABLE void stopScanning();
-    Q_INVOKABLE void setDecoderFormat(int format);
 
     Q_INVOKABLE void setMarkerColor(int red, int green, int blue) {
         m_markerColor = QColor(red, green, blue);
     }
 
     Q_INVOKABLE void setViewFinderRect(QRect rect);
-
-    Q_ENUMS(AutoBarcodeScanner::CodeFormat)
 
     // must be public, to start in new thread
     void processDecode();
@@ -79,7 +78,7 @@ private:
     void markLastCaptureImage(QImage image, QVariantList points);
     static void saveDebugImage(QImage &image, const QString &fileName);
 
-    BarcodeDecoder* m_decoder;
+    QZXing* m_decoder;
     QImage m_captureImage;
     QQuickItem* m_viewFinderItem;
     bool m_flagScanRunning;

@@ -33,7 +33,6 @@ CONFIG(debug, debug|release) {
 SOURCES += \
     src/harbour-barcode.cpp \
     src/scanner/ImagePostProcessing.cpp \
-    src/scanner/BarcodeDecoder.cpp \
     src/scanner/AutoBarcodeScanner.cpp \
     src/scanner/CaptureImageProvider.cpp
 
@@ -89,7 +88,6 @@ include(src/scanner/qzxing/QZXing.pri)
 HEADERS += \
     src/DebugLog.h \
     src/scanner/ImagePostProcessing.h \
-    src/scanner/BarcodeDecoder.h \
     src/scanner/AutoBarcodeScanner.h \
     src/scanner/CaptureImageProvider.h
 
