@@ -36,7 +36,6 @@ Page {
     id: scanPage
 
     property Item viewFinder
-    property variant beep
 
     property bool flagAutoScan: true
     property bool flagScanByCover: false
@@ -50,9 +49,6 @@ Page {
 
         console.log("creating viewfinder ...")
         viewFinder = viewFinderComponent.createObject(parentViewFinder)
-
-        beep = beepComponent.createObject(scanPage)
-        beep.muted = !Settings.getBoolean(Settings.keys.SOUND)
 
         if (viewFinder.source.availability === Camera.Available) {
             viewFinder.source.start()
@@ -73,8 +69,6 @@ Page {
         viewFinder.destroy()
         viewFinder = null
 
-        beep.destroy()
-
         stateInactive()
     }
 
@@ -92,21 +86,16 @@ Page {
 
     function applyResult(result) {
         console.log("result from scan page: " + result)
-
         if (result.length > 0) {
             Clipboard.text = result
             clickableResult.setValue(result)
             History.addHistoryValue(result)
-            beep.play()
         }
     }
 
     function startScan() {
-        // hide marker image
-        viewFinder.marker.source = ""
-
+        viewFinder.showMarker = false
         setMarkerColor()
-
         stateScanning()
         scanner.startScanning(scanTimeout * 1000)
     }
@@ -173,17 +162,6 @@ Page {
         }
     }
 
-    Timer {
-        id: resultViewTimer
-        interval: 0;
-        repeat: false
-        onTriggered: {
-            if (viewFinder) {
-                viewFinder.marker.source = ""
-            }
-        }
-    }
-
     Connections {
         target: Qt.application
         onActiveChanged: {
@@ -225,15 +203,8 @@ Page {
             if (scanPage.state !== "ABORT") {
                 if (code.length > 0) {
                     applyResult(code)
-
-                    var resultViewDuration = Settings.get(Settings.keys.RESULT_VIEW_DURATION)
-                    if (resultViewDuration > 0) {
-                        viewFinder.marker.source = "image://scanner/marked"
-                        resultViewTimer.interval = resultViewDuration * 1000
-                        resultViewTimer.restart()
-                    }
-                }
-                else {
+                    viewFinder.decodingFinished()
+                } else {
                     statusText.text = qsTr("No code detected! Try again.")
                 }
             }
@@ -250,7 +221,8 @@ Page {
 
             anchors.fill: parent
             fillMode: VideoOutput.PreserveAspectCrop
-            property alias marker: markerImage
+            property bool showMarker: false
+            property bool playBeep: false
             readonly property bool tapFocusActive: focusTimer.running
             readonly property bool flashOn: camera.flash.mode !== Camera.FlashOff
             // Not sure why not just camera.orientation but this makes the camera
@@ -270,6 +242,27 @@ Page {
                     turnFlashOff()
                 } else {
                     turnFlashOn()
+                }
+            }
+
+            function decodingFinished() {
+                var resultViewDuration = Settings.get(Settings.keys.RESULT_VIEW_DURATION)
+                if (resultViewDuration > 0) {
+                    showMarker = true
+                    resultViewTimer.interval = resultViewDuration * 1000
+                    resultViewTimer.restart()
+                }
+                if (Settings.getBoolean(Settings.keys.SOUND)) {
+                    // Camera locks the output playback resouce, we need
+                    // to stop it before we can play the beep. Luckily,
+                    // the viewfinder is typically covered with the marker
+                    // image so the user won't even notice the pause.
+                    playBeep = true
+                    // The beep starts playing when the camera stops and
+                    // audio becomes available. When playback is stopped,
+                    // (playback state becomes Audio.StoppedState) the
+                    // camera is restarted.
+                    camera.stop()
                 }
             }
 
@@ -337,8 +330,12 @@ Page {
                     focusPointMode: tapFocusActive ? Camera.FocusPointCustom : Camera.FocusPointAuto
                 }
                 onCameraStateChanged: {
-                    if (cameraState == Camera.ActiveState) {
-                        cameraStarted()
+                    if (cameraState === Camera.ActiveState) {
+                        if (viewFinderItem.playBeep) {
+                            viewFinderItem.playBeep = false
+                        } else {
+                            cameraStarted()
+                        }
                     }
                 }
             }
@@ -347,7 +344,10 @@ Page {
             Repeater {
                 model: camera.focus.focusZones
                 delegate: Rectangle {
-                    visible: !scanner.grabbing && status !== Camera.FocusAreaUnused && camera.focus.focusPointMode === Camera.FocusPointCustom
+                    visible: !scanner.grabbing &&
+                             status !== Camera.FocusAreaUnused &&
+                             camera.focus.focusPointMode === Camera.FocusPointCustom &&
+                             camera.cameraStatus === Camera.ActiveStatus
                     border {
                         width: Math.round(Theme.pixelRatio * 2)
                         color: status === Camera.FocusAreaFocused ? Theme.highlightColor : "white"
@@ -376,34 +376,42 @@ Page {
             }
 
             Timer {
+                id: resultViewTimer
+
+                onTriggered: viewFinderItem.showMarker = false
+            }
+
+            Timer {
                 id: focusTimer
 
                 interval: 5000
-                onTriggered: {
-                    console.log("unlocking")
-                    camera.unlock()
-                }
+                onTriggered: camera.unlock()
             }
 
             Image {
                 id: markerImage
+                readonly property bool markerShown: showMarker
 
                 anchors.fill: parent
                 z: 2
-                source: ""
+                source: markerShown ? "image://scanner/marked" : ""
                 visible: status === Image.Ready
                 cache: false
             }
-        }
-    }
 
-    Component {
-        id: beepComponent
+            Audio {
+                source: "sound/beep.wav"
+                volume: 1.0
+                readonly property bool canPlay: availability == Audio.Available && playBeep
 
-        SoundEffect {
-            source: "sound/beep.wav"
-            volume: 1.0
-            muted: false
+                onCanPlayChanged: if (canPlay) play()
+
+                onPlaybackStateChanged: {
+                    if (playbackState === Audio.StoppedState) {
+                        camera.start()
+                    }
+                }
+            }
         }
     }
 
