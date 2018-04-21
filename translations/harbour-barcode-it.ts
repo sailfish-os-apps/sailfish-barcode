@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="it">
 <context>
     <name>AboutPage</name>
     <message>
@@ -116,7 +116,15 @@
     </message>
 </context>
 <context>
-    <name>Settings1View</name>
+    <name>SettingsPage</name>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished">Impostazioni</translation>
+    </message>
+    <message>
+        <source>Scan</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Detection sound</source>
         <translation type="unfinished">Suono al rilevamento</translation>
@@ -149,11 +157,8 @@
         <source>History</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>Settings2View</name>
     <message>
-        <source>Select marker color</source>
+        <source>Marker</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -167,21 +172,6 @@
     <message>
         <source>%1 seconds</source>
         <translation type="unfinished">%1 secondi</translation>
-    </message>
-</context>
-<context>
-    <name>SettingsPage</name>
-    <message>
-        <source>Settings %1/2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Marker</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Scan and history</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

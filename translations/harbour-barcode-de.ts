@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="de">
 <context>
     <name>AboutPage</name>
     <message>
@@ -115,7 +115,15 @@
     </message>
 </context>
 <context>
-    <name>Settings1View</name>
+    <name>SettingsPage</name>
+    <message>
+        <source>Settings</source>
+        <translation>Einstellungen</translation>
+    </message>
+    <message>
+        <source>Scan</source>
+        <translation>Scannen</translation>
+    </message>
     <message>
         <source>Detection sound</source>
         <translation>Signalton bei Code-Erkennung</translation>
@@ -148,12 +156,9 @@
         <source>History</source>
         <translation>Verlauf</translation>
     </message>
-</context>
-<context>
-    <name>Settings2View</name>
     <message>
-        <source>Select marker color</source>
-        <translation>Farbe der Markierung auswählen</translation>
+        <source>Marker</source>
+        <translation>Markierung</translation>
     </message>
     <message>
         <source>Mark detected code</source>
@@ -166,21 +171,6 @@
     <message>
         <source>%1 seconds</source>
         <translation>%1 Sekunden</translation>
-    </message>
-</context>
-<context>
-    <name>SettingsPage</name>
-    <message>
-        <source>Settings %1/2</source>
-        <translation>Einstellungen %1/2</translation>
-    </message>
-    <message>
-        <source>Marker</source>
-        <translation>Markierung</translation>
-    </message>
-    <message>
-        <source>Scan and history</source>
-        <translation>Scannen und Verlauf</translation>
     </message>
 </context>
 <context>

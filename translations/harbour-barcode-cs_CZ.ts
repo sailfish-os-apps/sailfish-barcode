@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="cs_CZ">
 <context>
     <name>AboutPage</name>
     <message>
@@ -111,7 +111,15 @@
     </message>
 </context>
 <context>
-    <name>Settings1View</name>
+    <name>SettingsPage</name>
+    <message>
+        <source>Settings</source>
+        <translation>Nastavení</translation>
+    </message>
+    <message>
+        <source>Scan</source>
+        <translation>Skenování</translation>
+    </message>
     <message>
         <source>Detection sound</source>
         <translation>Zvuk detekce</translation>
@@ -144,12 +152,9 @@
         <source>Cancel</source>
         <translation>Zrušit</translation>
     </message>
-</context>
-<context>
-    <name>Settings2View</name>
     <message>
-        <source>Select marker color</source>
-        <translation>Zvolit barvu označení</translation>
+        <source>Marker</source>
+        <translation>Označení</translation>
     </message>
     <message>
         <source>Mark detected code</source>
@@ -162,21 +167,6 @@
     <message>
         <source>%1 seconds</source>
         <translation>%1 sekund</translation>
-    </message>
-</context>
-<context>
-    <name>SettingsPage</name>
-    <message>
-        <source>Settings %1/2</source>
-        <translation>Nastavení %1 / 2</translation>
-    </message>
-    <message>
-        <source>Scan and history</source>
-        <translation>Skenování a historie</translation>
-    </message>
-    <message>
-        <source>Marker</source>
-        <translation>Označení</translation>
     </message>
 </context>
 <context>

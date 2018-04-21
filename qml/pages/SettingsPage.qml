@@ -2,6 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
+Copyright (c) 2018 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,117 +29,170 @@ import Sailfish.Silica 1.0
 import "../js/Settings.js" as Settings
 import "../js/History.js" as History
 
-import "../components"
-
 Page {
     id: settingsPage
 
-    PageHeader {
-        id: pageTitle
-        title: qsTr("Settings %1/2").arg(mainView.currentIndex + 1)
-    }
+    property var colors: [ "#FF0080", "#FF0000", "#FF8000", "#FFFF00", "#00FF00",
+                           "#8000FF", "#00FFFF", "#0000FF" ]
 
-    Rectangle {
-        id: settingsContent
-        color: Theme.rgba(Theme.highlightColor, 0.1)
+    property int currentColor: getColorFromSettings()
 
-        anchors {
-            topMargin: Screen.width * 1/3
-            top: pageTitle.bottom
-            bottom: parent.bottom
-            left: parent.left
-            right: parent.right
-        }
-    }
-
-    Rectangle {
-        anchors {
-            topMargin: Screen.width * 1/3
-            top: pageTitle.bottom
-        }
-        color: Theme.highlightColor
-        height: 2
-        width: parent.width
-        x: 0
-    }
-
-    SlideshowView {
-        id: mainView
-
-        itemWidth: width
-        itemHeight: height
-        height: Screen.height - (pageTitle.height + (Screen.width * 1/3 + Theme.paddingLarge)
-                                 + viewIndicator.height + tabHeader.childrenRect.height)
-        clip:true
-
-        anchors {
-            topMargin: (Screen.width * 1/3 + Theme.paddingLarge)
-            top: pageTitle.bottom
-            left: parent.left
-            right: parent.right
-        }
-        model: VisualItemModel {
-            Settings1View { id: settings1View }
-            Settings2View { id: settings2View }
-        }
-    }
-
-    Rectangle {
-        id: viewIndicator
-        anchors.top: mainView.bottom
-        color: Theme.highlightColor
-        height: Theme.paddingSmall
-        width: mainView.width / mainView.count
-        x: mainView.currentIndex * width
-        z: 2
-
-        Behavior on x {
-            NumberAnimation {
-                duration: 200
+    function getColorFromSettings() {
+        var savedColor = Settings.get(Settings.keys.MARKER_COLOR)
+        for	(var i = 0; i < colors.length; i++) {
+            if (savedColor === colors[i]) {
+                return i
             }
         }
+        return 0
     }
 
-    Rectangle {
-        anchors.top: mainView.bottom
-        color: "black"
-        opacity: 0.5
-        height: Theme.paddingMedium
-        width: mainView.width
-        z: 1
-    }
+    SilicaFlickable {
+        anchors.fill: parent
+        contentHeight: content.height
 
-    Row {
-        id: tabHeader
-        anchors.top: viewIndicator.bottom
+        Column {
+            id: content
+            width: parent.width
 
-        Repeater {
-            model: [qsTr("Scan and history"), qsTr("Marker")]
-            Rectangle {
-                color: "black"
-                height: Theme.paddingLarge * 2
-                width: mainView.width / mainView.count
+            PageHeader { title: qsTr("Settings") }
 
-                Label {
-                    anchors.centerIn: parent
-                    text: modelData
-                    color: Theme.highlightColor
-                    font {
-                        bold: true
-                        pixelSize: Theme.fontSizeExtraSmall
+            SectionHeader { text: qsTr("Scan") }
+
+            IconTextSwitch {
+                checked: Settings.getBoolean(Settings.keys.SOUND)
+                text: qsTr("Detection sound")
+                icon.source: "image://theme/icon-m-speaker"
+                onCheckedChanged: {
+                    Settings.setBoolean(Settings.keys.SOUND, checked)
+                }
+            }
+
+            IconTextSwitch {
+                checked: Settings.getBoolean(Settings.keys.SCAN_ON_START)
+                text: qsTr("Scan on start")
+                icon.source: "image://theme/icon-m-play"
+                onCheckedChanged: {
+                    Settings.setBoolean(Settings.keys.SCAN_ON_START, checked)
+                }
+            }
+
+            SectionHeader { text: qsTr("History") }
+
+            Slider {
+                id: historySizeSlider
+
+                property int count: History.getHistorySize()
+
+                width: parent.width
+                minimumValue: 0
+                maximumValue: 100
+                value: Settings.get(Settings.keys.HISTORY_SIZE)
+                stepSize: 10
+                label: qsTr("Max history size (saved values: %1)").arg(count)
+                valueText: value === 0 ? qsTr("deactivated") : qsTr("%1 items").arg(value)
+                onSliderValueChanged: {
+                    var currentSize = History.getHistorySize()
+                    if (value < currentSize) {
+                        historyConfirmButtons.visible = true
+                    }
+                    else {
+                        historyConfirmButtons.visible = false
+                        Settings.set(Settings.keys.HISTORY_SIZE, value)
+                    }
+                }
+            }
+
+            Row {
+                id: historyConfirmButtons
+
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: Theme.horizontalPageMargin
+                    rightMargin: Theme.horizontalPageMargin
+                }
+                spacing: Theme.paddingMedium
+                visible: false
+
+                Button {
+                    width: Math.round((historyConfirmButtons.width - historyConfirmButtons.spacing) / 2)
+                    text: qsTr("Confirm resize")
+                    onClicked: {
+                        History.applyNewHistorySize(historySizeSlider.value)
+                        Settings.set(Settings.keys.HISTORY_SIZE, historySizeSlider.value)
+                        historyConfirmButtons.visible = false
+                        historySizeSlider.count = History.getHistorySize()
                     }
                 }
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        var selectedIndex = parent.x === 0 ? 0 : 1
-                        console.log("selected index: ", selectedIndex)
-                        console.log("mainView.currentIndex: ", mainView.currentIndex)
-                        if (selectedIndex !== mainView.currentIndex) {
-                            mainView.incrementCurrentIndex()
+                Button {
+                    width: Math.round((historyConfirmButtons.width - historyConfirmButtons.spacing) / 2)
+                    text: qsTr("Cancel")
+                    onClicked: historyConfirmButtons.visible = false
+                }
+
+                Behavior on visible { FadeAnimation {} }
+            }
+
+            SectionHeader { text: qsTr("Marker") }
+
+            Grid {
+                id: colorSelector
+
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: Theme.horizontalPageMargin
+                    rightMargin: Theme.horizontalPageMargin
+                }
+                columns: 4
+
+                Repeater {
+                    model: colors
+
+                    Item {
+                        width: parent.width/colorSelector.columns
+                        height: parent.width/colorSelector.columns
+
+                        Rectangle {
+                            property real adjustment: (index == currentColor) ? 0 :
+                                colorSelectorBackground.down ? (2 * Theme.paddingMedium) :
+                                (2 * Theme.paddingLarge)
+
+                            width: parent.width - adjustment
+                            height: parent.height - adjustment
+                            radius: Theme.paddingLarge
+                            color: colors[index]
+                            anchors.centerIn: parent
+
+                            Behavior on adjustment { SmoothedAnimation { duration: 100 } }
+                        }
+
+                        MouseArea {
+                            id: colorSelectorBackground
+
+                            readonly property bool down: pressed && containsMouse
+                            anchors.fill: parent
+                            onClicked: {
+                                currentColor = index
+                                Settings.set(Settings.keys.MARKER_COLOR, colors[index])
+                            }
                         }
                     }
+                }
+            }
+
+            Slider {
+                width: parent.width
+                minimumValue: 0
+                maximumValue: 15
+                value: Settings.get(Settings.keys.RESULT_VIEW_DURATION)
+                stepSize: 1
+                label: qsTr("Mark detected code")
+                valueText: value === 0 ? qsTr("deactivated") : qsTr("%1 seconds").arg(value)
+                onSliderValueChanged: {
+                    Settings.set(Settings.keys.RESULT_VIEW_DURATION, value)
                 }
             }
         }

@@ -16,10 +16,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source></source>
-        <translation></translation>
-    </message>
-    <message>
         <source>Restriction</source>
         <translation type="unfinished"></translation>
     </message>
@@ -76,7 +72,7 @@
     </message>
     <message>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Settings</translation>
     </message>
     <message>
         <source>Scan in progress ...</source>
@@ -115,18 +111,26 @@
     </message>
 </context>
 <context>
-    <name>Settings1View</name>
+    <name>SettingsPage</name>
+    <message>
+        <source>Settings</source>
+        <translation>Settings</translation>
+    </message>
+    <message>
+        <source>Scan and history</source>
+        <translation>Scan and history</translation>
+    </message>
     <message>
         <source>Detection sound</source>
-        <translation type="unfinished"></translation>
+        <translation>Detection sound</translation>
     </message>
     <message>
         <source>Scan on start</source>
-        <translation type="unfinished"></translation>
+        <translation>Scan on start</translation>
     </message>
     <message>
         <source>deactivated</source>
-        <translation type="unfinished"></translation>
+        <translation>deactivated</translation>
     </message>
     <message>
         <source>%1 items</source>
@@ -134,52 +138,38 @@
     </message>
     <message>
         <source>Confirm resize</source>
-        <translation type="unfinished"></translation>
+        <translation>Confirm resize</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <source>Max history size (saved values: %1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Max history size (saved values: %1)</translation>
     </message>
     <message>
         <source>History</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>Settings2View</name>
-    <message>
-        <source>Select marker color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Mark detected code</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>deactivated</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>%1 seconds</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SettingsPage</name>
-    <message>
-        <source>Settings %1/2</source>
-        <translation type="unfinished"></translation>
+        <translation>History</translation>
     </message>
     <message>
         <source>Marker</source>
-        <translation type="unfinished"></translation>
+        <translation>Marker</translation>
     </message>
     <message>
-        <source>Scan and history</source>
+        <source>Select marker color</source>
+        <translation>Select marker color</translation>
+    </message>
+    <message>
+        <source>Mark detected code</source>
+        <translation>Mark detected code</translation>
+    </message>
+    <message>
+        <source>deactivated</source>
+        <translation>deactivated</translation>
+    </message>
+    <message>
+        <source>%1 seconds</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

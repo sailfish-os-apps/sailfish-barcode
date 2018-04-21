@@ -115,7 +115,15 @@
     </message>
 </context>
 <context>
-    <name>Settings1View</name>
+    <name>SettingsPage</name>
+    <message>
+        <source>Settings</source>
+        <translation>Indstillinger</translation>
+    </message>
+    <message>
+        <source>Scan</source>
+        <translation>Scan</translation>
+    </message>
     <message>
         <source>Detection sound</source>
         <translation>Lyd ved registering</translation>
@@ -148,12 +156,9 @@
         <source>History</source>
         <translation>Historik</translation>
     </message>
-</context>
-<context>
-    <name>Settings2View</name>
     <message>
-        <source>Select marker color</source>
-        <translation>Vælg markørfarve</translation>
+        <source>Marker</source>
+        <translation>Markør</translation>
     </message>
     <message>
         <source>Mark detected code</source>
@@ -166,21 +171,6 @@
     <message>
         <source>%1 seconds</source>
         <translation>%1 sekunder</translation>
-    </message>
-</context>
-<context>
-    <name>SettingsPage</name>
-    <message>
-        <source>Settings %1/2</source>
-        <translation>Indstillinger %1/2</translation>
-    </message>
-    <message>
-        <source>Marker</source>
-        <translation>Markør</translation>
-    </message>
-    <message>
-        <source>Scan and history</source>
-        <translation>Scan og historik</translation>
     </message>
 </context>
 <context>

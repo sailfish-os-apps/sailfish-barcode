@@ -115,7 +115,15 @@
     </message>
 </context>
 <context>
-    <name>Settings1View</name>
+    <name>SettingsPage</name>
+    <message>
+        <source>Settings</source>
+        <translation>Bellítások</translation>
+    </message>
+    <message>
+        <source>Scan</source>
+        <translation>Beolvasás</translation>
+    </message>
     <message>
         <source>Detection sound</source>
         <translation>Detektálási hang</translation>
@@ -148,12 +156,9 @@
         <source>History</source>
         <translation>Előzmények</translation>
     </message>
-</context>
-<context>
-    <name>Settings2View</name>
     <message>
-        <source>Select marker color</source>
-        <translation>Jelölő színe</translation>
+        <source>Marker</source>
+        <translation>Jelölő</translation>
     </message>
     <message>
         <source>Mark detected code</source>
@@ -166,21 +171,6 @@
     <message>
         <source>%1 seconds</source>
         <translation>%1 másodperc</translation>
-    </message>
-</context>
-<context>
-    <name>SettingsPage</name>
-    <message>
-        <source>Settings %1/2</source>
-        <translation>Bellítások %1/2</translation>
-    </message>
-    <message>
-        <source>Marker</source>
-        <translation>Jelölő</translation>
-    </message>
-    <message>
-        <source>Scan and history</source>
-        <translation>Beolvasás és előzmények</translation>
     </message>
 </context>
 <context>

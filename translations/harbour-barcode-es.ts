@@ -115,7 +115,14 @@
     </message>
 </context>
 <context>
-    <name>Settings1View</name>
+    <name>SettingsPage</name>
+    <message>
+        <source>Settings</source>
+        <translation>Ajustes</translation>
+    </message>
+    <message>
+        <source>Scan</source>
+    </message>
     <message>
         <source>Detection sound</source>
         <translation>Pitido al detectar código</translation>
@@ -148,12 +155,9 @@
         <source>History</source>
         <translation>Historial</translation>
     </message>
-</context>
-<context>
-    <name>Settings2View</name>
     <message>
-        <source>Select marker color</source>
-        <translation>Seleccionar color del marcador</translation>
+        <source>Marker</source>
+        <translation>Marcador</translation>
     </message>
     <message>
         <source>Mark detected code</source>
@@ -166,21 +170,6 @@
     <message>
         <source>%1 seconds</source>
         <translation>%1 segundos</translation>
-    </message>
-</context>
-<context>
-    <name>SettingsPage</name>
-    <message>
-        <source>Settings %1/2</source>
-        <translation>Ajustes %1/2</translation>
-    </message>
-    <message>
-        <source>Marker</source>
-        <translation>Marcador</translation>
-    </message>
-    <message>
-        <source>Scan and history</source>
-        <translation>Escaneo e historial</translation>
     </message>
 </context>
 <context>

@@ -115,7 +115,15 @@
     </message>
 </context>
 <context>
-    <name>Settings1View</name>
+    <name>SettingsPage</name>
+    <message>
+        <source>Settings</source>
+        <translation>Настройки</translation>
+    </message>
+    <message>
+        <source>Scan</source>
+        <translation>Сканирование</translation>
+    </message>
     <message>
         <source>Detection sound</source>
         <translation>Звук при распознавании</translation>
@@ -148,12 +156,9 @@
         <source>History</source>
         <translation>История</translation>
     </message>
-</context>
-<context>
-    <name>Settings2View</name>
     <message>
-        <source>Select marker color</source>
-        <translation>Выберите цвет маркера</translation>
+        <source>Marker</source>
+        <translation>Маркер</translation>
     </message>
     <message>
         <source>Mark detected code</source>
@@ -166,21 +171,6 @@
     <message>
         <source>%1 seconds</source>
         <translation>%1 секунд</translation>
-    </message>
-</context>
-<context>
-    <name>SettingsPage</name>
-    <message>
-        <source>Settings %1/2</source>
-        <translation>Настройки %1/2</translation>
-    </message>
-    <message>
-        <source>Marker</source>
-        <translation>Маркер</translation>
-    </message>
-    <message>
-        <source>Scan and history</source>
-        <translation>Сканирование и история</translation>
     </message>
 </context>
 <context>

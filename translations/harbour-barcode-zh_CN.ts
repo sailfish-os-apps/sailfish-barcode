@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="zh_CN">
 <context>
     <name>AboutPage</name>
     <message>
@@ -115,7 +115,15 @@
     </message>
 </context>
 <context>
-    <name>Settings1View</name>
+    <name>SettingsPage</name>
+    <message>
+        <source>Settings</source>
+        <translation>设置</translation>
+    </message>
+    <message>
+        <source>Scan</source>
+        <translation type="unfinished">扫描</translation>
+    </message>
     <message>
         <source>Detection sound</source>
         <translation>扫描声音</translation>
@@ -148,12 +156,9 @@
         <source>History</source>
         <translation>历史记录</translation>
     </message>
-</context>
-<context>
-    <name>Settings2View</name>
     <message>
-        <source>Select marker color</source>
-        <translation>选择标记颜色</translation>
+        <source>Marker</source>
+        <translation>标记</translation>
     </message>
     <message>
         <source>Mark detected code</source>
@@ -166,21 +171,6 @@
     <message>
         <source>%1 seconds</source>
         <translation>%1 秒</translation>
-    </message>
-</context>
-<context>
-    <name>SettingsPage</name>
-    <message>
-        <source>Settings %1/2</source>
-        <translation>设置 %1/2</translation>
-    </message>
-    <message>
-        <source>Marker</source>
-        <translation>标记</translation>
-    </message>
-    <message>
-        <source>Scan and history</source>
-        <translation>扫描和历史记录</translation>
     </message>
 </context>
 <context>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="zh_TW">
 <context>
     <name>AboutPage</name>
     <message>
@@ -115,7 +115,15 @@
     </message>
 </context>
 <context>
-    <name>Settings1View</name>
+    <name>SettingsPage</name>
+    <message>
+        <source>Settings</source>
+        <translation>設定</translation>
+    </message>
+    <message>
+        <source>Scan</source>
+        <translation type="unfinished">掃描</translation>
+    </message>
     <message>
         <source>Detection sound</source>
         <translation>掃描聲</translation>
@@ -148,16 +156,13 @@
         <source>History</source>
         <translation>歷史紀錄</translation>
     </message>
-</context>
-<context>
-    <name>Settings2View</name>
+    <message>
+        <source>Marker</source>
+        <translation>標記</translation>
+    </message>
     <message>
         <source>Select marker color</source>
         <translation>選擇標記顏色</translation>
-    </message>
-    <message>
-        <source>Mark detected code</source>
-        <translation>標記偵測到之條碼</translation>
     </message>
     <message>
         <source>deactivated</source>
@@ -166,21 +171,6 @@
     <message>
         <source>%1 seconds</source>
         <translation>%1 秒</translation>
-    </message>
-</context>
-<context>
-    <name>SettingsPage</name>
-    <message>
-        <source>Settings %1/2</source>
-        <translation>設定 %1/2</translation>
-    </message>
-    <message>
-        <source>Marker</source>
-        <translation>標記</translation>
-    </message>
-    <message>
-        <source>Scan and history</source>
-        <translation>掃描及歷史紀錄</translation>
     </message>
 </context>
 <context>
