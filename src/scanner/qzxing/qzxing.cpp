@@ -124,7 +124,7 @@ QVariantHash QZXing::decodeImageEx(QImage image)
 
         std::vector<Ref<ResultPoint> > resultPoints = result->getResultPoints();
         for (unsigned int i = 0; i < resultPoints.size(); i++) {
-            points.append(QPoint(resultPoints[i]->getX(), resultPoints[i]->getY()));
+            points.append(QPointF(resultPoints[i]->getX(), resultPoints[i]->getY()));
         }
         resultMap.insert("points", points);
     }
