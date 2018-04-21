@@ -158,6 +158,11 @@ void AutoBarcodeScanner::processDecode()
     QString code;
     QVariantHash result;
     QImage image;
+    qreal scale = 1;
+    bool rotated = false;
+
+    const int maxWidth = 600;
+    const int maxHeight = 800;
 
     m_scanProcessMutex.lock();
     while (!m_flagScanAbort && code.isEmpty()) {
@@ -174,30 +179,77 @@ void AutoBarcodeScanner::processDecode()
         m_scanProcessMutex.unlock();
 
         if (!image.isNull()) {
+#ifdef DEBUG
+            QTime time(QTime::currentTime());
+#endif
             // crop the image - we need only the viewfinder
             image = image.copy(viewFinderRect);
+            DLOG("extracted" << image);
             saveDebugImage(image, "debug_screenshot.jpg");
+
+            QImage scaledImage;
+            if (image.width() > maxWidth || image.height() > maxHeight) {
+                if (maxWidth * image.height() > maxHeight * image.width()) {
+                    scaledImage = image.scaledToHeight(maxHeight);
+                    scale = image.height()/(qreal)maxHeight;
+                    DLOG("scaled to height" << scale << scaledImage);
+                } else {
+                    scaledImage = image.scaledToWidth(maxWidth);
+                    scale = image.width()/(qreal)maxWidth;
+                    DLOG("scaled to width" << scale << scaledImage);
+                }
+                saveDebugImage(scaledImage, "debug_scaled.jpg");
+            } else {
+                scaledImage = image;
+                scale = 1;
+            }
+
             DLOG("decoding screenshot ...");
-            result = m_decoder->decodeImageEx(image);
+            result = m_decoder->decodeImageEx(scaledImage);
             code = result["content"].toString();
 
             if (code.isEmpty()) {
                 // try the other orientation for 1D bar code
                 QTransform transform;
                 transform.rotate(90);
-                image = image.transformed(transform);
-                saveDebugImage(image, "debug_transformed.jpg");
+                scaledImage = scaledImage.transformed(transform);
+                saveDebugImage(scaledImage, "debug_rotated.jpg");
                 DLOG("decoding rotated screenshot ...");
-                result = m_decoder->decodeImageEx(image);
+                result = m_decoder->decodeImageEx(scaledImage);
                 code = result["content"].toString();
+                rotated = true;
+            } else {
+                rotated = false;
             }
+            DLOG("decoding took" << time.elapsed() << "ms");
         }
         m_scanProcessMutex.lock();
     }
     m_scanProcessMutex.unlock();
 
-    DLOG("decoding has been finished, result:" << code);
-    emit decodingDone(code.isEmpty() ? QImage() : image, result["points"].toList(), code);
+    if (code.isEmpty()) {
+        DLOG("decoding failed");
+        emit decodingDone(QImage(), QVariantList(), QString());
+    } else {
+        QVariantList points = result["points"].toList();
+        DLOG("decoding succeeded:" << code << points);
+        const int n = points.size();
+        if (scale > 1 || rotated) {
+            // The image could be a) scaled and b) rotated. Convert
+            // points to the original coordinate system
+            for (int i = 0; i < n; i++) {
+                QPointF p = points[i].toPointF();
+                if (rotated) {
+                    const qreal x = p.rx();
+                    p.setX(p.ry());
+                    p.setY(image.height() - x);
+                }
+                p *= scale;
+                points[i] = QVariant::fromValue(p);
+            }
+        }
+        emit decodingDone(image, points, code);
+    }
 }
 
 void AutoBarcodeScanner::slotDecodingDone(QImage image, QVariantList points, const QString code)
@@ -216,26 +268,18 @@ void AutoBarcodeScanner::slotDecodingDone(QImage image, QVariantList points, con
 
 void AutoBarcodeScanner::markLastCaptureImage(QImage image, QVariantList points)
 {
-    QPainter painter(&image);
-    painter.setPen(m_markerColor);
-
-    DLOG("recognized points: " << points.size());
-    for (int i = 0; i < points.size(); i++) {
-        QPoint p = points[i].toPoint();
-        painter.fillRect(QRect(p.x()-3, p.y()-15, 6, 30), QBrush(m_markerColor));
-        painter.fillRect(QRect(p.x()-15, p.y()-3, 30, 6), QBrush(m_markerColor));
+    if (!points.isEmpty()) {
+        QPainter painter(&image);
+        painter.setPen(m_markerColor);
+        QBrush markerBrush(m_markerColor);
+        for (int i = 0; i < points.size(); i++) {
+            QPoint p = points[i].toPoint();
+            painter.fillRect(QRect(p.x()-3, p.y()-15, 6, 30), markerBrush);
+            painter.fillRect(QRect(p.x()-15, p.y()-3, 30, 6), markerBrush);
+        }
+        painter.end();
+        saveDebugImage(image, "debug_marks.jpg");
     }
-    painter.end();
-
-    // rotate to screen orientation
-    if (image.width() > image.height()) {
-        DLOG("rotating image ...");
-        QTransform transform;
-        transform.rotate(270);
-        image = image.transformed(transform);
-        DLOG("rotation finished");
-    }
-
     CaptureImageProvider::setMarkedImage(image);
 }
 
