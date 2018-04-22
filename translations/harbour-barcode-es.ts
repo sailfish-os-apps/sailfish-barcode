@@ -16,18 +16,6 @@
         <translation>Soporta códigos de barras 1D/2D</translation>
     </message>
     <message>
-        <source></source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Restriction</source>
-        <translation>Restricción</translation>
-    </message>
-    <message>
-        <source>This app prevents a scan if the Jolla Camera app is running. This restriction helps to avoid an interference of the Camera app.</source>
-        <translation>Esta aplicación impide el escaneo cuando la aplicación de la cámara de Jolla está ejecutandose. Esta restricción ayuda a evitar una interferencia de la aplicación de la cámara.</translation>
-    </message>
-    <message>
         <source>Version</source>
         <translation>Versión</translation>
     </message>

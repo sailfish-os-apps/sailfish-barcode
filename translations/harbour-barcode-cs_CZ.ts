@@ -12,14 +12,6 @@
         <translation>Tato aplikace umožňuje číst čárové kódy v Sailfish OS. Snad bude užitečná i pro další projekty. CodeReader je open source a je licencován pod licencí MIT.</translation>
     </message>
     <message>
-        <source>Restriction</source>
-        <translation>Omezení</translation>
-    </message>
-    <message>
-        <source>This app prevents a scan if the Jolla Camera app is running. This restriction helps to avoid an interference of the Camera app.</source>
-        <translation>Aplikace neumožňuje skenování, pokud je spuštěna aplikace Fotoaparát. Toto omezení pomáhá zabránit narušování s aplikací Fotoaparát.</translation>
-    </message>
-    <message>
         <source>Version</source>
         <translation>Verze</translation>
     </message>

@@ -16,18 +16,6 @@
         <translation>Поддерживает одно- и двухмерные баркоды</translation>
     </message>
     <message>
-        <source></source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Restriction</source>
-        <translation>Ограничения</translation>
-    </message>
-    <message>
-        <source>This app prevents a scan if the Jolla Camera app is running. This restriction helps to avoid an interference of the Camera app.</source>
-        <translation>Это приложение не работает, если запущено приложение камеры. Это ограничение помогает избежать вмешательства в работу камеры.</translation>
-    </message>
-    <message>
         <source>Version</source>
         <translation>Версия</translation>
     </message>

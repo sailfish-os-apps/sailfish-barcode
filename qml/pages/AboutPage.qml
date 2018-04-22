@@ -2,6 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
+Copyright (c) 2018 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -51,17 +52,6 @@ Page {
                 label: qsTr("About CodeReader")
                 text: qsTr("This app demonstrates a bar code reader for Sailfish OS. \
 I hope it is useful for other projects. CodeReader is open source and licensed under the MIT License.")
-                separator: true
-            }
-
-            LabelText {
-                anchors {
-                    left: parent.left
-                    margins: Theme.paddingLarge
-                }
-                label: qsTr("Restriction")
-                text: qsTr("This app prevents a scan if the Jolla Camera app is running. \
-This restriction helps to avoid an interference of the Camera app.")
                 separator: true
             }
 

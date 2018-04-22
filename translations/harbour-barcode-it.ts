@@ -16,19 +16,6 @@
         <translation>Codici 1D/2D supportati</translation>
     </message>
     <message>
-        <source></source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Restriction</source>
-        <translatorcomment>sembra più corretto di restrizioni</translatorcomment>
-        <translation>Limitazioni</translation>
-    </message>
-    <message>
-        <source>This app prevents a scan if the Jolla Camera app is running. This restriction helps to avoid an interference of the Camera app.</source>
-        <translation>Questa applicazione impedisce la scansione  se l&apos;applicazione Camera di Jolla è in esecuzione. Questa limitazione consente di evitare interferenze con l&apos;applicazione Camera.</translation>
-    </message>
-    <message>
         <source>Version</source>
         <translation>Versione</translation>
     </message>

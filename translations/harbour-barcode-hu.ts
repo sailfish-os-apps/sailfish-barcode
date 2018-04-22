@@ -16,18 +16,6 @@
         <translation>Támogatott 1D és 2D vonalkódok</translation>
     </message>
     <message>
-        <source></source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Restriction</source>
-        <translation>Korlátozások</translation>
-    </message>
-    <message>
-        <source>This app prevents a scan if the Jolla Camera app is running. This restriction helps to avoid an interference of the Camera app.</source>
-        <translation>Ez az alkalmazás nem tud vonalkódot beolvasni amíg kamera alkalmazás fut. Ez a korlátozás segít elkerülni a kamera alkalmazással történő összeakadást.</translation>
-    </message>
-    <message>
         <source>Version</source>
         <translation>Verzió</translation>
     </message>

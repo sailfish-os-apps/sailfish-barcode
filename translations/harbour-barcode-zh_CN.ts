@@ -16,18 +16,6 @@
         <translation>支持1D/2D条形码</translation>
     </message>
     <message>
-        <source></source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Restriction</source>
-        <translation>限制</translation>
-    </message>
-    <message>
-        <source>This app prevents a scan if the Jolla Camera app is running. This restriction helps to avoid an interference of the Camera app.</source>
-        <translation>这个应用在Jolla的相机应用运行时不会进行扫描, 以免干扰相机应用</translation>
-    </message>
-    <message>
         <source>Version</source>
         <translation>版本</translation>
     </message>

@@ -16,18 +16,6 @@
         <translation>Unterstützte Code Formate</translation>
     </message>
     <message>
-        <source></source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Restriction</source>
-        <translation>Einschränkung</translation>
-    </message>
-    <message>
-        <source>This app prevents a scan if the Jolla Camera app is running. This restriction helps to avoid an interference of the Camera app.</source>
-        <translation>CodeReader verhindert das Scannen, wenn das Kamera Programm im Hintergrund läuft. Mit dieser Massnahme wird eine Störung der Kamera-Funktion verhindert.</translation>
-    </message>
-    <message>
         <source>Version</source>
         <translation>Version</translation>
     </message>

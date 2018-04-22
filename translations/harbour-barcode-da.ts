@@ -16,18 +16,6 @@
         <translation>Understøttet 1D/2D stregkoder</translation>
     </message>
     <message>
-        <source></source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Restriction</source>
-        <translation>Begrænsning</translation>
-    </message>
-    <message>
-        <source>This app prevents a scan if the Jolla Camera app is running. This restriction helps to avoid an interference of the Camera app.</source>
-        <translation>Denne App forhindre en scanning hvis Jolla kamera app´en kører samtidig. Denne begrænsning hjælper med at forhindre problemer med Camera app´en.</translation>
-    </message>
-    <message>
         <source>Version</source>
         <translation>Version</translation>
     </message>

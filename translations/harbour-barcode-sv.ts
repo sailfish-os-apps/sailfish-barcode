@@ -16,18 +16,6 @@
         <translation>1D/2D koder som stöds</translation>
     </message>
     <message>
-        <source></source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Restriction</source>
-        <translation>Begränsning</translation>
-    </message>
-    <message>
-        <source>This app prevents a scan if the Jolla Camera app is running. This restriction helps to avoid an interference of the Camera app.</source>
-        <translation>Appen skannar inga koder om Jollas kamera-app är startad. Denna begränsning är till för att undvika konflikter med kamera-appen.</translation>
-    </message>
-    <message>
         <source>Version</source>
         <translation>Version</translation>
     </message>

@@ -12,14 +12,6 @@
         <translation>Cette application est un lecteur de code-barre, conçue pour Sailfish OS, avec l&apos;espoir qu&apos;elle soit utile à d&apos;autres projets. CodeReader est un logiciel open source soumis aux conditions de la Licence MIT.</translation>
     </message>
     <message>
-        <source>Restriction</source>
-        <translation>Restriction</translation>
-    </message>
-    <message>
-        <source>This app prevents a scan if the Jolla Camera app is running. This restriction helps to avoid an interference of the Camera app.</source>
-        <translation>CodeReader ne scannera rien tant que l&apos;application Jolla Caméra sera active. Cette restriction permet d&apos;éviter des interférences avec la caméra, tout simplement.</translation>
-    </message>
-    <message>
         <source>Version</source>
         <translation>Version</translation>
     </message>
