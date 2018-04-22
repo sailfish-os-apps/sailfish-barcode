@@ -9,7 +9,7 @@
     </message>
     <message>
         <source>This app demonstrates a bar code reader for Sailfish OS. I hope it is useful for other projects. CodeReader is open source and licensed under the MIT License.</source>
-        <translation>Эта программа представляет собой считыватель баркодов для Sailfish OS. Я надеюсь, она будет полезна для других проектов. CodeReader имеет открытый исходный код и распространяется под MIT-лицензией.</translation>
+        <translation>Эта программа представляет собой считыватель баркодов для Sailfish OS. Я надеюсь, она будет полезна для других проектов. Исходный код доступен под MIT-лицензией.</translation>
     </message>
     <message>
         <source>Supported 1D/2D bar codes</source>
@@ -29,11 +29,11 @@
     </message>
     <message>
         <source>References</source>
-        <translation>Рекомендации</translation>
+        <translation>Разное</translation>
     </message>
     <message>
         <source>This project uses code and ideas of other projects, see README.md on Github.</source>
-        <translation>Эта программа использует код и наработки других проектов, подробности можно узнать в README.md на Github.</translation>
+        <translation>Эта программа использует код и наработки других проектов, подробности в README.md на Github.</translation>
     </message>
     <message>
         <source>Image source: http://wikipedia.de</source>
@@ -79,11 +79,11 @@
     </message>
     <message>
         <source>Copy to clipboard</source>
-        <translation>Копировать в буфер обмена</translation>
+        <translation>Скопировать в буфер обмена</translation>
     </message>
     <message>
         <source>History is empty</source>
-        <translation>История пуста</translation>
+        <translation>Тут пока пусто</translation>
     </message>
     <message>
         <source>History</source>
@@ -158,14 +158,14 @@
     </message>
     <message>
         <source>%1 seconds</source>
-        <translation>%1 секунд</translation>
+        <translation>%1 сек</translation>
     </message>
 </context>
 <context>
     <name>TextPage</name>
     <message>
         <source>Decoded text</source>
-        <translation>Преобразованный текст</translation>
+        <translation>Декодированный текст</translation>
     </message>
     <message>
         <source>Set focus</source>
