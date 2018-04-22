@@ -10,7 +10,9 @@
 #   - translation filenames have to be changed
 
 # The name of your application
-TARGET = harbour-barcode
+NAME = barcode
+PREFIX = harbour
+TARGET = $${PREFIX}-$${NAME}
 
 CONFIG += sailfishapp
 
@@ -63,23 +65,6 @@ OTHER_FILES += \
     qml/pages/HistoryPage.qml \
     qml/js/Utils.js
 
-
-# to disable building translations every time, comment out the
-# following CONFIG line
-CONFIG += sailfishapp_i18n
-TRANSLATIONS += \
-    translations/harbour-barcode-it.ts \
-    translations/harbour-barcode-sv.ts \
-    translations/harbour-barcode-fr.ts \
-    translations/harbour-barcode-de.ts \
-    translations/harbour-barcode-hu.ts \
-    translations/harbour-barcode-da.ts \
-    translations/harbour-barcode-es.ts \
-    translations/harbour-barcode-ru.ts \
-    translations/harbour-barcode-zh_CN.ts \
-    translations/harbour-barcode-zh_TW.ts \
-    translations/harbour-barcode-cs_CZ.ts
-
 # include library qzxing
 include(src/scanner/qzxing/QZXing.pri)
 
@@ -98,3 +83,49 @@ for(s, ICON_SIZES) {
     $${icon_target}.path = /usr/share/icons/hicolor/$${s}x$${s}/apps
     INSTALLS += $${icon_target}
 }
+
+# Translations
+TRANSLATIONS_PATH = /usr/share/$${TARGET}/translations
+TRANSLATION_SOURCES = \
+  $${_PRO_FILE_PWD_}/qml
+
+defineTest(addTrFile) {
+    in = $${_PRO_FILE_PWD_}/translations/harbour-$$1
+    out = $${OUT_PWD}/translations/$${PREFIX}-$$1
+
+    s = $$replace(1,-,_)
+    lupdate_target = lupdate_$$s
+    lrelease_target = lrelease_$$s
+
+    $${lupdate_target}.commands = lupdate -noobsolete $${TRANSLATION_SOURCES} -ts \"$${in}.ts\" && \
+        mkdir -p \"$${OUT_PWD}/translations\" &&  [ \"$${in}.ts\" != \"$${out}.ts\" ] && \
+        cp -af \"$${in}.ts\" \"$${out}.ts\" || :
+
+    $${lrelease_target}.target = $${out}.qm
+    $${lrelease_target}.depends = $${lupdate_target}
+    $${lrelease_target}.commands = lrelease -idbased \"$${out}.ts\"
+
+    QMAKE_EXTRA_TARGETS += $${lrelease_target} $${lupdate_target}
+    PRE_TARGETDEPS += $${out}.qm
+    qm.files += $${out}.qm
+
+    export($${lupdate_target}.commands)
+    export($${lrelease_target}.target)
+    export($${lrelease_target}.depends)
+    export($${lrelease_target}.commands)
+    export(QMAKE_EXTRA_TARGETS)
+    export(PRE_TARGETDEPS)
+    export(qm.files)
+}
+
+LANGUAGES = cs da de es fr hu it ru sv zh_CN zh_TW
+
+addTrFile($${NAME})
+for(l, LANGUAGES) {
+    addTrFile($${NAME}-$$l)
+}
+
+qm.path = $$TRANSLATIONS_PATH
+qm.CONFIG += no_check_exist
+INSTALLS += qm
+

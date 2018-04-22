@@ -34,7 +34,9 @@ ApplicationWindow
 
     function openInDefaultApp(url) {
         console.log("opening URL: " + url)
-        infoPanel.showText(qsTr("Opening in default app ..."), 500, 2000)
+        //: Info label
+        //% "Opening in default app ..."
+        infoPanel.showText(qsTrId("info-opening_url"), 500, 2000)
         Qt.openUrlExternally(url)
     }
 

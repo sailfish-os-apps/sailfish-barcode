@@ -34,23 +34,6 @@ Page {
         anchors.fill: parent
         contentHeight: column.height
 
-        PullDownMenu {
-            id: menu
-            MenuItem {
-                text: qsTr("Set focus")
-                onClicked: {
-                    textArea.focus = true
-                }
-                visible: !textArea.focus
-            }
-            MenuItem {
-                text: qsTr("Copy selected text")
-                onClicked: {
-                    textArea.copy()
-                }
-            }
-        }
-
         Column {
             id: column
             anchors {
@@ -60,10 +43,9 @@ Page {
             }
             height: childrenRect.height
 
-            PageHeader {
-                id: header
-                title: qsTr("Decoded text")
-            }
+            //: Page header
+            //% "Decoded text"
+            PageHeader { title: qsTrId("text-header") }
 
             TextArea {
                 id: textArea

@@ -24,6 +24,7 @@ THE SOFTWARE.
 */
 
 #include <sailfishapp.h>
+#include <QTranslator>
 #include <QGuiApplication>
 #include <QQuickView>
 #include <QtQml>
@@ -40,7 +41,6 @@ THE SOFTWARE.
 int main(int argc, char *argv[])
 {
     QScopedPointer<QGuiApplication> app(SailfishApp::application(argc, argv));
-    QScopedPointer<QQuickView> view(SailfishApp::createView());
 
     qmlRegisterType<AutoBarcodeScanner>("harbour.barcode.AutoBarcodeScanner", 1, 0, "AutoBarcodeScanner");
 
@@ -60,6 +60,19 @@ int main(int argc, char *argv[])
         }
     }
 
+    QLocale locale;
+    QTranslator* translator = new QTranslator(app.data());
+    QString transDir = SailfishApp::pathTo("translations").toLocalFile();
+    QString transFile("harbour-barcode");
+    if (translator->load(locale, transFile, "-", transDir) ||
+        translator->load(transFile, transDir)) {
+        app->installTranslator(translator);
+    } else {
+        WARN("Failed to load translator for" << locale);
+        delete translator;
+    }
+
+    QScopedPointer<QQuickView> view(SailfishApp::createView());
     view->engine()->addImageProvider("scanner", new CaptureImageProvider());
     view->rootContext()->setContextProperty("AppVersion", APP_VERSION);
     view->rootContext()->setContextProperty("TorchSupported", torchSupported);

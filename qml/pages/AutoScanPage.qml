@@ -126,7 +126,9 @@ Page {
 
     function stateReady() {
         state = "READY"
-        actionButton.text = qsTr("Scan")
+        //: Scan button label
+        //% "Scan"
+        actionButton.text = qsTrId("scan-action-scan")
         actionButton.visible = true
         actionButton.enabled = true
         zoomSlider.enabled = true
@@ -134,9 +136,13 @@ Page {
 
     function stateScanning() {
         state = "SCANNING"
-        statusText.text = qsTr("Scan in progress ...")
+        //: Scan status label
+        //% "Scan in progress ..."
+        statusText.text = qsTrId("scan-status-busy")
         clickableResult.clear()
-        actionButton.text = qsTr("Abort")
+        //: Scan button label
+        //% "Abort"
+        actionButton.text = qsTrId("scan-action-abort")
     }
 
     function stateAbort() {
@@ -205,7 +211,9 @@ Page {
                     applyResult(code)
                     viewFinder.decodingFinished()
                 } else {
-                    statusText.text = qsTr("No code detected! Try again.")
+                    //: Scan status label
+                    //% "No code detected! Try again."
+                    statusText.text = qsTrId("scan-status-nothing_found")
                 }
             }
             stateReady()
@@ -423,13 +431,17 @@ Page {
         PullDownMenu {
             id: menu
             MenuItem {
-                text: qsTr("About CodeReader")
+                //: About page title, label and menu item
+                //% "About CodeReader"
+                text: qsTrId("about-title")
                 onClicked: {
                     pageStack.push("AboutPage.qml");
                 }
             }
             MenuItem {
-                text: qsTr("Settings")
+                //: Setting page title and menu item
+                //% "Settings"
+                text: qsTrId("settings-title")
                 onClicked: {
                     pageStack.push("SettingsPage.qml");
                 }

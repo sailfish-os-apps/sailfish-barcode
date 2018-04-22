@@ -1,186 +1,193 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="fr_FR">
+<TS version="2.1" language="fr">
 <context>
-    <name>AboutPage</name>
-    <message>
+    <name></name>
+    <message id="info-opening_url">
+        <source>Opening in default app ...</source>
+        <extracomment>Info label</extracomment>
+        <translation>Ouverture dans l&apos;application par défaut...</translation>
+    </message>
+    <message id="about-title">
         <source>About CodeReader</source>
+        <extracomment>About page title, label and menu item</extracomment>
         <translation>À propos de CodeReader</translation>
     </message>
-    <message>
+    <message id="about-description">
         <source>This app demonstrates a bar code reader for Sailfish OS. I hope it is useful for other projects. CodeReader is open source and licensed under the MIT License.</source>
+        <extracomment>About page text</extracomment>
         <translation>Cette application est un lecteur de code-barre, conçue pour Sailfish OS, avec l&apos;espoir qu&apos;elle soit utile à d&apos;autres projets. CodeReader est un logiciel open source soumis aux conditions de la Licence MIT.</translation>
     </message>
-    <message>
+    <message id="about-version-label">
         <source>Version</source>
+        <extracomment>About page label</extracomment>
         <translation>Version</translation>
     </message>
-    <message>
+    <message id="about-author-label">
         <source>Author</source>
+        <extracomment>About page label</extracomment>
         <translation>Auteur</translation>
     </message>
-    <message>
+    <message id="about-contributors-label">
         <source>Contributors</source>
+        <extracomment>About page label</extracomment>
         <translation>Contributeurs</translation>
     </message>
-    <message>
+    <message id="about-source_code-label">
         <source>Source code</source>
+        <extracomment>About page label</extracomment>
         <translation>Code source</translation>
     </message>
-    <message>
+    <message id="about-references-label">
         <source>References</source>
+        <extracomment>About page label</extracomment>
         <translation>Références</translation>
     </message>
-    <message>
+    <message id="about-references-text">
         <source>This project uses code and ideas of other projects, see README.md on Github.</source>
+        <extracomment>About page text</extracomment>
         <translation>Ce projet utilise des idées et du code provenant d&apos;autres projets. Pour plus d&apos;informations, merci de bien vouloir consulter le fichier README.md sur GitHub.</translation>
     </message>
-    <message>
+    <message id="about-supported_codes-label">
         <source>Supported 1D/2D bar codes</source>
+        <extracomment>About page label</extracomment>
         <translation>Code-barres 1D/2D reconnus</translation>
     </message>
-    <message>
-        <source>Image source: http://wikipedia.de</source>
-        <translation>Images provenant de : http://wikipedia.de</translation>
+    <message id="about-supported_codes-text">
+        <source>Image source: %1</source>
+        <extracomment>About page text</extracomment>
+        <translation>Images provenant de: %1</translation>
     </message>
-</context>
-<context>
-    <name>AutoScanPage</name>
-    <message>
-        <source>No code detected! Try again.</source>
-        <translation>Aucun code-barre détecté ! Veuillez réessayer.</translation>
-    </message>
-    <message>
-        <source>About CodeReader</source>
-        <translation>À propos de CodeReader</translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation>Paramètres</translation>
-    </message>
-    <message>
+    <message id="scan-action-scan">
         <source>Scan</source>
+        <extracomment>Scan button label</extracomment>
         <translation>Scanner</translation>
     </message>
-    <message>
+    <message id="scan-action-abort">
         <source>Abort</source>
+        <extracomment>Scan button label</extracomment>
         <translation>Annuler</translation>
     </message>
-    <message>
+    <message id="scan-status-busy">
         <source>Scan in progress ...</source>
-        <translation>Scan en cours...</translation>
+        <extracomment>Scan status label</extracomment>
+        <translation>Scan en cours ...</translation>
     </message>
-</context>
-<context>
-    <name>HistoryPage</name>
-    <message>
-        <source>Delete</source>
-        <translation>Supprimer</translation>
+    <message id="scan-status-nothing_found">
+        <source>No code detected! Try again.</source>
+        <extracomment>Scan status label</extracomment>
+        <translation>Aucun code-barre détecté ! Veuillez réessayer.</translation>
     </message>
-    <message>
-        <source>Copy to clipboard</source>
-        <translation>Copier dans le presse-papier</translation>
-    </message>
-    <message>
-        <source>History is empty</source>
-        <translation>Historique vierge</translation>
-    </message>
-    <message>
-        <source>History</source>
-        <translation>Historique</translation>
-    </message>
-    <message>
-        <source>Delete all</source>
-        <translation>Tout supprimer</translation>
-    </message>
-    <message>
-        <source>Deleting all</source>
-        <translation>Supression intégrale</translation>
-    </message>
-    <message>
-        <source>Deleting</source>
-        <translation>Suppression</translation>
-    </message>
-</context>
-<context>
-    <name>SettingsPage</name>
-    <message>
+    <message id="settings-title">
         <source>Settings</source>
+        <extracomment>Setting page title and menu item</extracomment>
         <translation>Paramètres</translation>
     </message>
-    <message>
+    <message id="settings-scan-section">
         <source>Scan</source>
+        <extracomment>Section header</extracomment>
         <translation>Scan</translation>
     </message>
-    <message>
+    <message id="settings-sound-label">
         <source>Detection sound</source>
+        <extracomment>Switch button text</extracomment>
         <translation>Signal sonore de détection</translation>
     </message>
-    <message>
+    <message id="settings-autoscan-label">
         <source>Scan on start</source>
+        <extracomment>Switch button text</extracomment>
         <translation>Scanner au démarrage de l&apos;appli</translation>
     </message>
-    <message>
-        <source>deactivated</source>
-        <translation>désactivé</translation>
-    </message>
-    <message>
-        <source>%1 items</source>
-        <translation>%1 élément(s)</translation>
-    </message>
-    <message>
-        <source>Confirm resize</source>
-        <translation>Confirmer le redimensionnement</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation>Annuler</translation>
-    </message>
-    <message>
-        <source>Max history size (saved values: %1)</source>
-        <translation>Taille maximale de l&apos;historique (%1 éléments sauvegardés)</translation>
-    </message>
-    <message>
+    <message id="settings-history-section">
         <source>History</source>
+        <extracomment>Section header</extracomment>
         <translation>Historique</translation>
     </message>
-    <message>
-        <source>Marker</source>
-        <translation>Marqueur</translation>
+    <message id="settings-history-slider_label">
+        <source>Max history size (saved values: %1)</source>
+        <extracomment>Slider label</extracomment>
+        <translation>Taille maximale de l&apos;historique (%1 éléments sauvegardés)</translation>
     </message>
-    <message>
-        <source>Mark detected code</source>
-        <translation>Indication du code détecté</translation>
-    </message>
-    <message>
+    <message id="settings-value-deactivated">
         <source>deactivated</source>
+        <extracomment>Generic slider value</extracomment>
         <translation>désactivé</translation>
     </message>
-    <message>
-        <source>%1 seconds</source>
-        <translation>%1 seconde(s)</translation>
+    <message id="settings-history-slider_value" numerus="yes">
+        <source>%1 item(s)</source>
+        <extracomment>History slider value</extracomment>
+        <translation type="unfinished">
+            <numerusform>%1 élément(s)</numerusform>
+            <numerusform></numerusform>
+        </translation>
     </message>
-</context>
-<context>
-    <name>TextPage</name>
-    <message>
+    <message id="settings-history-confirm_resize">
+        <source>Confirm resize</source>
+        <extracomment>Button label</extracomment>
+        <translation>Confirmer le redimensionnement</translation>
+    </message>
+    <message id="settings-history-cancel_resize">
+        <source>Cancel</source>
+        <extracomment>Button label</extracomment>
+        <translation>Annuler</translation>
+    </message>
+    <message id="settings-marker-section">
+        <source>Marker</source>
+        <extracomment>Section header</extracomment>
+        <translation>Marqueur</translation>
+    </message>
+    <message id="settings-marker-slider_label">
+        <source>Mark detected code</source>
+        <extracomment>Slider label</extracomment>
+        <translation>Indication du code détecté</translation>
+    </message>
+    <message id="settings-marker-slider_value" numerus="yes">
+        <source>%1 second(s)</source>
+        <extracomment>Marker slider value</extracomment>
+        <translation type="unfinished">
+            <numerusform>%1 seconde(s)</numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message id="history-title">
+        <source>History</source>
+        <extracomment>History page title</extracomment>
+        <translation>Historique</translation>
+    </message>
+    <message id="history-menu-delete_all">
+        <source>Delete all</source>
+        <extracomment>Pulley menu item</extracomment>
+        <translation>Tout supprimer</translation>
+    </message>
+    <message id="history-menu-delete">
+        <source>Delete</source>
+        <extracomment>Context menu item</extracomment>
+        <translation>Supprimer</translation>
+    </message>
+    <message id="history-menu-copy">
+        <source>Copy to clipboard</source>
+        <extracomment>Context menu item</extracomment>
+        <translation>Copier dans le presse-papier</translation>
+    </message>
+    <message id="history-menu-delete_all_remorse">
+        <source>Deleting all</source>
+        <extracomment>Remorse popup text</extracomment>
+        <translation>Supression intégrale</translation>
+    </message>
+    <message id="history-menu-delete_remorse">
+        <source>Deleting</source>
+        <extracomment>Remorse popup text</extracomment>
+        <translation>Suppression</translation>
+    </message>
+    <message id="history-empty">
+        <source>History is empty</source>
+        <extracomment>Placeholder text</extracomment>
+        <translation>Historique vierge</translation>
+    </message>
+    <message id="text-header">
         <source>Decoded text</source>
+        <extracomment>Page header</extracomment>
         <translation>Texte décodé</translation>
-    </message>
-    <message>
-        <source>Set focus</source>
-        <translation>Mise au point</translation>
-    </message>
-    <message>
-        <source>Copy selected text</source>
-        <translation>Copier le texte</translation>
-    </message>
-</context>
-<context>
-    <name>harbour-barcode</name>
-    <message>
-        <source>Opening in default app ...</source>
-        <translation>Ouverture dans l&apos;application par défaut...</translation>
     </message>
 </context>
 </TS>

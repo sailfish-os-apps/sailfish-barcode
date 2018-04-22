@@ -37,7 +37,9 @@ Page {
 
         Column {
             PageHeader {
-                title: qsTr("About CodeReader")
+                //: About page title, label and menu item
+                //% "About CodeReader"
+                title: qsTrId("about-title")
             }
 
             id: aboutColumn
@@ -49,9 +51,12 @@ Page {
                     left: parent.left
                     margins: Theme.paddingLarge
                 }
-                label: qsTr("About CodeReader")
-                text: qsTr("This app demonstrates a bar code reader for Sailfish OS. \
-I hope it is useful for other projects. CodeReader is open source and licensed under the MIT License.")
+                //: About page title, label and menu item
+                //% "About CodeReader"
+                label: qsTrId("about-title")
+                //: About page text
+                //% "This app demonstrates a bar code reader for Sailfish OS. I hope it is useful for other projects. CodeReader is open source and licensed under the MIT License."
+                text: qsTrId("about-description")
                 separator: true
             }
 
@@ -60,7 +65,9 @@ I hope it is useful for other projects. CodeReader is open source and licensed u
                     left: parent.left
                     margins: Theme.paddingLarge
                 }
-                label: qsTr("Version")
+                //: About page label
+                //% "Version"
+                label: qsTrId("about-version-label")
                 text: AppVersion
                 separator: true
             }
@@ -70,7 +77,9 @@ I hope it is useful for other projects. CodeReader is open source and licensed u
                     left: parent.left
                     margins: Theme.paddingLarge
                 }
-                label: qsTr("Author")
+                //: About page label
+                //% "Author"
+                label: qsTrId("about-author-label")
                 text: "Steffen Förster"
                 separator: true
             }
@@ -80,7 +89,9 @@ I hope it is useful for other projects. CodeReader is open source and licensed u
                     left: parent.left
                     margins: Theme.paddingLarge
                 }
-                label: qsTr("Contributors")
+                //: About page label
+                //% "Contributors"
+                label: qsTrId("about-contributors-label")
                 text: "Diego Russo, Åke Engelbrektson, Dominik Chrástecký, Miklós Márton, Hauke Schade, Slava Monich"
                 separator: true
             }
@@ -100,7 +111,9 @@ I hope it is useful for other projects. CodeReader is open source and licensed u
                         left: parent.left
                         margins: Theme.paddingLarge
                     }
-                    label: qsTr("Source code")
+                    //: About page label
+                    //% "Source code"
+                    label: qsTrId("about-source_code-label")
                     text: "https://github.com/monich/sailfish-barcode"
                     color: clickableUrl.highlighted ? Theme.highlightColor : Theme.primaryColor
                 }
@@ -112,8 +125,12 @@ I hope it is useful for other projects. CodeReader is open source and licensed u
                     left: parent.left
                     margins: Theme.paddingLarge
                 }
-                label: qsTr("References")
-                text: qsTr("This project uses code and ideas of other projects, see README.md on Github.")
+                //: About page label
+                //% "References"
+                label: qsTrId("about-references-label")
+                //: About page text
+                //% "This project uses code and ideas of other projects, see README.md on Github."
+                text: qsTrId("about-references-text")
                 separator: true
             }
 
@@ -122,8 +139,12 @@ I hope it is useful for other projects. CodeReader is open source and licensed u
                     left: parent.left
                     margins: Theme.paddingLarge
                 }
-                label: qsTr("Supported 1D/2D bar codes")
-                text: qsTr("Image source: http://wikipedia.de")
+                //: About page label
+                //% "Supported 1D/2D bar codes"
+                label: qsTrId("about-supported_codes-label")
+                //: About page text
+                //% "Image source: %1"
+                text: qsTrId("about-supported_codes-text").arg("http://wikipedia.de")
                 separator: false
             }
 

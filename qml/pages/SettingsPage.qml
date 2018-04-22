@@ -55,13 +55,19 @@ Page {
             id: content
             width: parent.width
 
-            PageHeader { title: qsTr("Settings") }
+            //: Setting page title and menu item
+            //% "Settings"
+            PageHeader { title: qsTrId("settings-title") }
 
-            SectionHeader { text: qsTr("Scan") }
+            //: Section header
+            //% "Scan"
+            SectionHeader { text: qsTrId("settings-scan-section") }
 
             IconTextSwitch {
                 checked: Settings.getBoolean(Settings.keys.SOUND)
-                text: qsTr("Detection sound")
+                //: Switch button text
+                //% "Detection sound"
+                text: qsTrId("settings-sound-label")
                 icon.source: "image://theme/icon-m-speaker"
                 onCheckedChanged: {
                     Settings.setBoolean(Settings.keys.SOUND, checked)
@@ -70,14 +76,18 @@ Page {
 
             IconTextSwitch {
                 checked: Settings.getBoolean(Settings.keys.SCAN_ON_START)
-                text: qsTr("Scan on start")
+                //: Switch button text
+                //% "Scan on start"
+                text: qsTrId("settings-autoscan-label")
                 icon.source: "image://theme/icon-m-play"
                 onCheckedChanged: {
                     Settings.setBoolean(Settings.keys.SCAN_ON_START, checked)
                 }
             }
 
-            SectionHeader { text: qsTr("History") }
+            //: Section header
+            //% "History"
+            SectionHeader { text: qsTrId("settings-history-section") }
 
             Slider {
                 id: historySizeSlider
@@ -89,8 +99,16 @@ Page {
                 maximumValue: 100
                 value: Settings.get(Settings.keys.HISTORY_SIZE)
                 stepSize: 10
-                label: qsTr("Max history size (saved values: %1)").arg(count)
-                valueText: value === 0 ? qsTr("deactivated") : qsTr("%1 items").arg(value)
+                //: Slider label
+                //% "Max history size (saved values: %1)"
+                label: qsTrId("settings-history-slider_label").arg(count)
+                valueText: value === 0 ?
+                    //: Generic slider value
+                    //% "deactivated"
+                    qsTrId("settings-value-deactivated") :
+                    //: History slider value
+                    //% "%1 item(s)"
+                    qsTrId("settings-history-slider_value",value).arg(value)
                 onSliderValueChanged: {
                     var currentSize = History.getHistorySize()
                     if (value < currentSize) {
@@ -117,7 +135,9 @@ Page {
 
                 Button {
                     width: Math.round((historyConfirmButtons.width - historyConfirmButtons.spacing) / 2)
-                    text: qsTr("Confirm resize")
+                    //: Button label
+                    //% "Confirm resize"
+                    text: qsTrId("settings-history-confirm_resize")
                     onClicked: {
                         History.applyNewHistorySize(historySizeSlider.value)
                         Settings.set(Settings.keys.HISTORY_SIZE, historySizeSlider.value)
@@ -128,14 +148,18 @@ Page {
 
                 Button {
                     width: Math.round((historyConfirmButtons.width - historyConfirmButtons.spacing) / 2)
-                    text: qsTr("Cancel")
+                    //: Button label
+                    //% "Cancel"
+                    text: qsTrId("settings-history-cancel_resize")
                     onClicked: historyConfirmButtons.visible = false
                 }
 
                 Behavior on visible { FadeAnimation {} }
             }
 
-            SectionHeader { text: qsTr("Marker") }
+            //: Section header
+            //% "Marker"
+            SectionHeader { text: qsTrId("settings-marker-section") }
 
             Grid {
                 id: colorSelector
@@ -189,8 +213,16 @@ Page {
                 maximumValue: 15
                 value: Settings.get(Settings.keys.RESULT_VIEW_DURATION)
                 stepSize: 1
-                label: qsTr("Mark detected code")
-                valueText: value === 0 ? qsTr("deactivated") : qsTr("%1 seconds").arg(value)
+                //: Slider label
+                //% "Mark detected code"
+                label: qsTrId("settings-marker-slider_label")
+                valueText: value === 0 ?
+                    //: Generic slider value
+                    //% "deactivated"
+                    qsTrId("settings-value-deactivated") :
+                    //: Marker slider value
+                    //% "%1 second(s)"
+                    qsTrId("settings-marker-slider_value",value).arg(value)
                 onSliderValueChanged: {
                     Settings.set(Settings.keys.RESULT_VIEW_DURATION, value)
                 }

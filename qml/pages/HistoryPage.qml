@@ -156,9 +156,13 @@ Page {
         PullDownMenu {
             visible: historyModel.count > 0
             MenuItem {
-                text: qsTr("Delete all")
+                //: Pulley menu item
+                //% "Delete all"
+                text: qsTrId("history-menu-delete_all")
                 onClicked: {
-                    remorsePopup.execute(qsTr("Deleting all"),
+                    //: Remorse popup text
+                    //% "Deleting all"
+                    remorsePopup.execute(qsTrId("history-menu-delete_all_remorse"),
                         function() {
                             History.removeAllHistoryValues()
                             historyModel.clear()
@@ -174,16 +178,22 @@ Page {
                 property variant index
 
                 MenuItem {
-                    text: qsTr("Delete")
+                    //: Context menu item
+                    //% "Delete"
+                    text: qsTrId("history-menu-delete")
                     onClicked: {
                         remorse.execute(historyList.contextMenu.parent,
-                                        qsTr("Deleting"),
+                                        //: Remorse popup text
+                                        //% "Deleting"
+                                        qsTrId("history-menu-delete_remorse"),
                                         getDeleteFunction(historyModel, index),
                                         2000)
                     }
                 }
                 MenuItem {
-                    text: qsTr("Copy to clipboard")
+                    //: Context menu item
+                    //% "Copy to clipboard"
+                    text: qsTrId("history-menu-copy")
                     onClicked: {
                         Clipboard.text = historyModel.get(index).value
                     }
@@ -217,7 +227,9 @@ Page {
         ViewPlaceholder {
             id: placeHolder
             enabled: historyModel.count === 0
-            text: qsTr("History is empty")
+            //: Placeholder text
+            //% "History is empty"
+            text: qsTrId("history-empty")
         }
     }
 
@@ -228,7 +240,9 @@ Page {
             width: historyPage.width
 
             PageHeader {
-                title: qsTr("History")
+                //: History page title
+                //% "History"
+                title: qsTrId("history-title")
                 height: Theme.itemSizeLarge
             }
         }
