@@ -21,7 +21,7 @@ QT += multimedia \
     concurrent
 
 isEmpty(VERSION) {
-    VERSION = 1.0.2
+    VERSION = 1.0.3
     message("VERSION is unset, assuming $$VERSION")
 }
 
