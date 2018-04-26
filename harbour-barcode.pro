@@ -14,7 +14,8 @@ NAME = barcode
 PREFIX = harbour
 TARGET = $${PREFIX}-$${NAME}
 
-CONFIG += sailfishapp
+CONFIG += sailfishapp link_pkgconfig
+PKGCONFIG += sailfishapp mlite5
 
 QT += multimedia \
     concurrent

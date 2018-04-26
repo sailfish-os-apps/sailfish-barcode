@@ -25,9 +25,12 @@ THE SOFTWARE.
 
 #include <sailfishapp.h>
 #include <QTranslator>
+#include <QCameraExposure>
 #include <QGuiApplication>
 #include <QQuickView>
 #include <QtQml>
+
+#include <MGConfItem>
 
 #include "scanner/AutoBarcodeScanner.h"
 #include "scanner/CaptureImageProvider.h"
@@ -54,8 +57,18 @@ int main(int argc, char *argv[])
         if (s.size() >= 3) {
             int v = QT_VERSION_CHECK(s[0].toInt(), s[1].toInt(), s[2].toInt());
             if (v >= QT_VERSION_CHECK(5,6,0)) {
-                torchSupported = true;
-                DLOG("Torch supported");
+                // If flash is not supported at all, this key contains [2]
+                // at least on the most recent versions of Sailfish OS
+                QString flashValuesKey("/apps/jolla-camera/primary/image/flashValues");
+                MGConfItem flashValuesConf(flashValuesKey);
+                QVariantList flashValues(flashValuesConf.value().toList());
+                if (flashValues.size() == 1 &&
+                    flashValues.at(0).toInt() == QCameraExposure::FlashOff) {
+                    DLOG("Flash disabled by" << qPrintable(flashValuesKey));
+                } else {
+                    torchSupported = true;
+                    DLOG("Torch supported");
+                }
             }
         }
     }
