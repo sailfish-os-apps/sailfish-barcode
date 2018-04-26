@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="en">
 <context>
     <name></name>
     <message id="info-opening_url">
@@ -117,7 +117,8 @@
         <source>%1 item(s)</source>
         <extracomment>History slider value</extracomment>
         <translation type="unfinished">
-            <numerusform>%1 item(s)</numerusform>
+            <numerusform>%1 item</numerusform>
+            <numerusform>%1 items</numerusform>
         </translation>
     </message>
     <message id="settings-history-confirm_resize">
@@ -144,7 +145,8 @@
         <source>%1 second(s)</source>
         <extracomment>Marker slider value</extracomment>
         <translation type="unfinished">
-            <numerusform>%1 second(s)</numerusform>
+            <numerusform>%1 second</numerusform>
+            <numerusform>%1 seconds</numerusform>
         </translation>
     </message>
     <message id="history-title">
