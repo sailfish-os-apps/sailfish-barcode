@@ -462,8 +462,8 @@ Page {
                 id: parentViewFinder
 
                 anchors.horizontalCenter: parent.horizontalCenter
-                width: Math.floor(scanPage.width * 0.56)
-                height: Math.floor(scanPage.height * 0.56)
+                width: Math.round(scanPage.width * 0.56) & (-2)
+                height: Math.round(scanPage.height * 0.56) & (-2)
 
                 onWidthChanged: updateViewFinderPosition()
                 onHeightChanged: updateViewFinderPosition()
