@@ -150,13 +150,8 @@ Page {
     onStatusChanged: {
         if (scanPage.status === PageStatus.Active) {
             console.log("Page is ACTIVE")
-
-            // update changeable values
-            zoomSlider.value = Settings.get(Settings.keys.DIGITAL_ZOOM)
-
             createScanner()
-        }
-        else if (scanPage.status === PageStatus.Inactive) {
+        } else if (scanPage.status === PageStatus.Inactive) {
             console.log("Page is INACTIVE")
             // stop scanning if page is not active
             destroyScanner()
@@ -226,6 +221,7 @@ Page {
             fillMode: VideoOutput.PreserveAspectCrop
             property bool showMarker: false
             property bool playBeep: false
+            property alias digitalZoom: camera.digitalZoom
             readonly property bool tapFocusActive: focusTimer.running
             readonly property bool flashOn: camera.flash.mode !== Camera.FlashOff
             // Not sure why not just camera.orientation but this makes the camera
@@ -331,6 +327,11 @@ Page {
                 focus {
                     focusMode: tapFocusActive ? Camera.FocusAuto : Camera.FocusContinuous
                     focusPointMode: tapFocusActive ? Camera.FocusPointCustom : Camera.FocusPointAuto
+                }
+                onCameraStatusChanged: {
+                    if (cameraStatus === Camera.ActiveStatus) {
+                        digitalZoom = zoomSlider.value
+                    }
                 }
                 onCameraStateChanged: {
                     if (cameraState === Camera.ActiveState) {
@@ -500,18 +501,18 @@ Page {
                     stepSize: 5
                     onValueChanged: {
                         if (viewFinder) {
-                            viewFinder.source.digitalZoom = value
-                            saveZoomDelay.restart()
+                            viewFinder.digitalZoom = value
                         }
+                        saveZoomDelay.restart()
                     }
-
+                    Component.onCompleted: {
+                        value = Settings.get(Settings.keys.DIGITAL_ZOOM)
+                        saveZoomDelay.stop()
+                    }
                     Timer {
                         id: saveZoomDelay
                         interval: 500
-                        onTriggered: {
-                            Settings.set(Settings.keys.DIGITAL_ZOOM, zoomSlider.value)
-                        }
-
+                        onTriggered: Settings.set(Settings.keys.DIGITAL_ZOOM, zoomSlider.value)
                     }
                 }
             }
