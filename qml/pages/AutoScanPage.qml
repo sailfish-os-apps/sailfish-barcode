@@ -120,7 +120,6 @@ Page {
     function stateInactive() {
         state = "INACTIVE"
         statusText.text = ""
-        actionButton.enabled = false
         if (viewFinder) viewFinder.turnFlashOff()
     }
 
@@ -129,9 +128,6 @@ Page {
         //: Scan button label
         //% "Scan"
         actionButton.text = qsTrId("scan-action-scan")
-        actionButton.visible = true
-        actionButton.enabled = true
-        zoomSlider.enabled = true
     }
 
     function stateScanning() {
@@ -147,7 +143,6 @@ Page {
 
     function stateAbort() {
         state = "ABORT"
-        actionButton.enabled = false
     }
 
     state: "INACTIVE"
@@ -612,15 +607,13 @@ Page {
                         font.underline: clickableResult.isLink
                         truncationMode: TruncationMode.Fade
                         width: parent.width - clipboardImg.width - 2 * Theme.paddingLarge
-                        text: ""
                     }
                 }
 
                 onClicked: {
                     if (clickableResult.isLink) {
                         openInDefaultApp(clickableResult.text)
-                    }
-                    else {
+                    } else {
                         pageStack.push("TextPage.qml", {text: clickableResult.text})
                     }
                 }
@@ -628,33 +621,20 @@ Page {
         }
     }
 
-    VerticalScrollDecorator { flickable: scanPageFlickable }
-
-    Rectangle {
-        width: parent.width
-        height: actionButton.height + Theme.paddingLarge * 2
+    Button {
+        id: actionButton
         anchors {
             bottom: parent.bottom
+            bottomMargin: Theme.paddingLarge
+            horizontalCenter: parent.horizontalCenter
         }
-        z: 10
-        color: "black"
-
-        Button {
-            id: actionButton
-            anchors {
-                centerIn: parent
+        onClicked: {
+            if (scanPage.state === "READY") {
+                startScan()
+            } else if (scanPage.state === "SCANNING") {
+                abortScan()
             }
-            z: 11
-            onClicked: {
-                if (scanPage.state === "READY") {
-                    startScan()
-                }
-                else if (scanPage.state === "SCANNING") {
-                    abortScan()
-                }
-            }
-            text: ""
-            enabled: false
         }
+        enabled: (scanPage.state === "READY") || (scanPage.state === "SCANNING")
     }
 }
