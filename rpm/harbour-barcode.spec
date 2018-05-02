@@ -6,7 +6,7 @@ Name:       harbour-barcode
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 
 Summary:    Code Reader
-Version:    1.0.3
+Version:    1.0.4
 Release:    1
 Group:      Applications/Productivity
 License:    LICENSE
