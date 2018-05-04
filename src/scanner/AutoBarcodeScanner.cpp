@@ -171,7 +171,9 @@ void AutoBarcodeScanner::processDecode()
         while (m_captureImage.isNull() && !m_flagScanAbort) {
             m_scanProcessEvent.wait(&m_scanProcessMutex);
         }
-        if (!m_flagScanAbort) {
+        if (m_flagScanAbort) {
+            image = QImage();
+        } else {
             image = m_captureImage;
             m_captureImage = QImage();
         }
