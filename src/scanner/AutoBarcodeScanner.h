@@ -65,8 +65,8 @@ public:
     void setViewFinderItem(QObject* item);
 
 signals:
-    void decodingDone(QImage aImage, Decoder::Result aResult);
-    void decodingFinished(QString code);
+    void decodingDone(QImage image, Decoder::Result result);
+    void decodingFinished(QVariantMap result);
     void viewFinderItemChanged();
     void grabbingChanged();
     void needImage();

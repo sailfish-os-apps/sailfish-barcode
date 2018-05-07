@@ -85,11 +85,12 @@ Page {
     }
 
     function applyResult(result) {
-        console.log("result from scan page: " + result)
-        if (result.length > 0) {
-            Clipboard.text = result
-            clickableResult.setValue(result)
-            History.addHistoryValue(result)
+        var text = result.text
+        console.log(result.format, text)
+        if (text.length > 0) {
+            Clipboard.text = text
+            clickableResult.setValue(text)
+            History.addHistoryValue(text)
         }
     }
 
@@ -194,11 +195,10 @@ Page {
         viewFinderItem: parentViewFinder
 
         onDecodingFinished: {
-            console.log("decoding finished, code: ", code)
             statusText.text = ""
             if (scanPage.state !== "ABORT") {
-                if (code.length > 0) {
-                    applyResult(code)
+                if (result.ok) {
+                    applyResult(result)
                     viewFinder.decodingFinished()
                 } else {
                     //: Scan status label

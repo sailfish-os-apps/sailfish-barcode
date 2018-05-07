@@ -264,7 +264,7 @@ void AutoBarcodeScanner::processDecode()
 
 void AutoBarcodeScanner::onDecodingDone(QImage aImage, Decoder::Result aResult)
 {
-    DLOG("decoding has been finished:" << aResult.getText());
+    DLOG(aResult.getText());
     if (!aImage.isNull()) {
         DLOG("image:" << aImage);
         DLOG("points:" << aResult.getPoints());
@@ -274,7 +274,12 @@ void AutoBarcodeScanner::onDecodingDone(QImage aImage, Decoder::Result aResult)
     m_captureImage = QImage();
     m_timeoutTimer->stop();
     m_flagScanRunning = false;
-    emit decodingFinished(aResult.getText());
+
+    QVariantMap result;
+    result.insert("ok", QVariant::fromValue(aResult.isValid()));
+    result.insert("text", QVariant::fromValue(aResult.getText()));
+    result.insert("format", QVariant::fromValue(aResult.getFormatName()));
+    emit decodingFinished(result);
 }
 
 void AutoBarcodeScanner::markLastCaptureImage(QImage aImage, QList<QPointF> aPoints)
