@@ -39,20 +39,20 @@ THE SOFTWARE.
 // ==========================================================================
 class Decoder::Result::Private {
 public:
-    Private(QString aText, QList<QPointF> aPoints, zxing::BarcodeFormat aFormat);
+    Private(QString aText, QList<QPointF> aPoints, zxing::BarcodeFormat::Value aFormat);
 
 public:
     QAtomicInt iRef;
     QString iText;
     QList<QPointF> iPoints;
-    zxing::BarcodeFormat iFormat;
+    zxing::BarcodeFormat::Value iFormat;
     QString iFormatName;
 };
 
 Decoder::Result::Private::Private(QString aText, QList<QPointF> aPoints,
-    zxing::BarcodeFormat aFormat) :
+    zxing::BarcodeFormat::Value aFormat) :
     iRef(1), iText(aText), iPoints(aPoints), iFormat(aFormat),
-    iFormatName(QLatin1String(zxing::barcodeFormatNames[aFormat]))
+    iFormatName(QLatin1String(zxing::BarcodeFormat::barcodeFormatNames[aFormat]))
 {
 }
 
@@ -115,9 +115,9 @@ QList<QPointF> Decoder::Result::getPoints() const
     return iPrivate ? iPrivate->iPoints : QList<QPointF>();
 }
 
-zxing::BarcodeFormat Decoder::Result::getFormat() const
+zxing::BarcodeFormat::Value Decoder::Result::getFormat() const
 {
-    return iPrivate ? iPrivate->iFormat : zxing::BarcodeFormat_None;
+    return iPrivate ? iPrivate->iFormat : zxing::BarcodeFormat::NONE;
 }
 
 QString Decoder::Result::getFormatName() const
@@ -185,8 +185,8 @@ Decoder::Result Decoder::decode(zxing::Ref<zxing::LuminanceSource> aSource)
         zxing::Ref<zxing::Result> result(iPrivate->decode(aSource));
 
         QList<QPointF> points;
-        std::vector<zxing::Ref<zxing::ResultPoint> > found(result->getResultPoints());
-        for (uint i = 0; i < found.size(); i++) {
+        zxing::ArrayRef<zxing::Ref<zxing::ResultPoint> > found(result->getResultPoints());
+        for (uint i = 0; i < found->size(); i++) {
             const zxing::ResultPoint& point(*(found[i]));
             points.append(QPointF(point.getX(), point.getY()));
         }

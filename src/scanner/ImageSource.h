@@ -27,6 +27,7 @@ THE SOFTWARE.
 
 #include <QImage>
 #include <zxing/LuminanceSource.h>
+#include <zxing/common/Array.h>
 
 class ImageSource : public zxing::LuminanceSource
 {
@@ -38,19 +39,16 @@ public:
     
     QImage grayscaleImage() const;
 
-    int getWidth() const;
-    int getHeight() const;
-    
-    // Callers take ownership of the returned memory and must call delete [] on it themselves.
-    unsigned char* getRow(int aY, unsigned char* aRow);
-    unsigned char* getMatrix();
+    zxing::ArrayRef<zxing::byte> getRow(int aY, zxing::ArrayRef<zxing::byte> aRow) const Q_DECL_OVERRIDE;
+    zxing::ArrayRef<zxing::byte> getMatrix() const Q_DECL_OVERRIDE;
 
 private:
-    const uchar* getGrayRow(int aY) const;
+    const zxing::byte* getGrayRow(int aY) const;
 
 private:
     QImage iImage;
-    mutable uchar** iGrayRows;
+    mutable zxing::byte** iGrayRows;
+    mutable zxing::ArrayRef<zxing::byte> iGrayImage;
 };
 
 #endif // BARCODE_IMAGESOURCE_H

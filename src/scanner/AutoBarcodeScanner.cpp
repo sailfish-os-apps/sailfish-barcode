@@ -32,7 +32,6 @@ THE SOFTWARE.
 #include <QStandardPaths>
 #include <QtQuick/QQuickWindow>
 
-#include "qzxing/CameraImageWrapper.h"
 #include "ImageSource.h"
 
 #include <fstream>

@@ -65,7 +65,7 @@ public:
     bool isValid() const;
     QString getText() const;
     QList<QPointF> getPoints() const;
-    zxing::BarcodeFormat getFormat() const;
+    zxing::BarcodeFormat::Value getFormat() const;
     QString getFormatName() const;
 
 private:
