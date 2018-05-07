@@ -1,7 +1,7 @@
 /*
 The MIT License (MIT)
 
-Copyright (c) 2014 Steffen Förster
+Copyright (c) 2018 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,21 +22,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#ifndef IMAGEPOSTPROCESSING_H
-#define IMAGEPOSTPROCESSING_H
+#ifndef BARCODE_IMAGESOURCE_H
+#define BARCODE_IMAGESOURCE_H
 
-#include <QObject>
 #include <QImage>
+#include <zxing/LuminanceSource.h>
 
-class ImagePostProcessing {
+class ImageSource : public zxing::LuminanceSource
+{
+    Q_DISABLE_COPY(ImageSource)
 
 public:
-    static QImage * improveImage(QImage *origin);
+    ImageSource(QImage aImage);
+    ~ImageSource();
+    
+    QImage grayscaleImage() const;
+
+    int getWidth() const;
+    int getHeight() const;
+    
+    // Callers take ownership of the returned memory and must call delete [] on it themselves.
+    unsigned char* getRow(int aY, unsigned char* aRow);
+    unsigned char* getMatrix();
 
 private:
-    static QImage * greyScale(QImage *origin);
-    static QImage * sharpen(QImage *origin);
+    const uchar* getGrayRow(int aY) const;
 
+private:
+    QImage iImage;
+    mutable uchar** iGrayRows;
 };
 
-#endif // IMAGEPOSTPROCESSING_H
+#endif // BARCODE_IMAGESOURCE_H
+

@@ -35,9 +35,10 @@ CONFIG(debug, debug|release) {
 
 SOURCES += \
     src/harbour-barcode.cpp \
-    src/scanner/ImagePostProcessing.cpp \
     src/scanner/AutoBarcodeScanner.cpp \
-    src/scanner/CaptureImageProvider.cpp
+    src/scanner/CaptureImageProvider.cpp \
+    src/scanner/Decoder.cpp \
+    src/scanner/ImageSource.cpp
 
 OTHER_FILES += \
     qml/cover/CoverPage.qml \
@@ -71,9 +72,10 @@ include(src/scanner/qzxing/QZXing.pri)
 
 HEADERS += \
     src/DebugLog.h \
-    src/scanner/ImagePostProcessing.h \
     src/scanner/AutoBarcodeScanner.h \
-    src/scanner/CaptureImageProvider.h
+    src/scanner/CaptureImageProvider.h \
+    src/scanner/Decoder.h \
+    src/scanner/ImageSource.h
 
 # Icons
 ICON_SIZES = 86 108 128 256

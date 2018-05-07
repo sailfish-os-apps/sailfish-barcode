@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include <QtQuick/QQuickItem>
 #include <QImage>
 
-class QZXing;
+#include "Decoder.h"
 
 class AutoBarcodeScanner : public QObject
 {
@@ -65,24 +65,24 @@ public:
     void setViewFinderItem(QObject* item);
 
 signals:
-    void decodingDone(QImage image, QVariantList points, QString code);
+    void decodingDone(QImage aImage, Decoder::Result aResult);
     void decodingFinished(QString code);
     void viewFinderItemChanged();
     void grabbingChanged();
     void needImage();
 
 public slots:
-    void slotScanningTimeout();
-    void slotDecodingDone(QImage image, QVariantList points, QString code);
-    void slotGrabImage();
+    void onScanningTimeout();
+    void onDecodingDone(QImage aImage, Decoder::Result aResult);
+    void onGrabImage();
 
 private:
     void createConnections();
-    void markLastCaptureImage(QImage image, QVariantList points);
+    void markLastCaptureImage(QImage aImage, QList<QPointF> aPoints);
 
 private:
     bool m_grabbing;
-    QZXing* m_decoder;
+    Decoder* m_decoder;
     QImage m_captureImage;
     QQuickItem* m_viewFinderItem;
     bool m_flagScanRunning;
