@@ -49,6 +49,7 @@ class WhiteRectangleDetector : public Counted {
     std::vector<Ref<ResultPoint> > detect();
 
   private: 
+    void init(Ref<BitMatrix> image, int initSize, int x, int y);
     Ref<ResultPoint> getBlackPointOnSegment(int aX, int aY, int bX, int bY);
     std::vector<Ref<ResultPoint> > centerEdges(Ref<ResultPoint> y, Ref<ResultPoint> z,
                                     Ref<ResultPoint> x, Ref<ResultPoint> t);

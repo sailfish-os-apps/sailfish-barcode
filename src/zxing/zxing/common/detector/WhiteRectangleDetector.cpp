@@ -36,12 +36,16 @@ using zxing::BitMatrix;
 int WhiteRectangleDetector::INIT_SIZE = 10;
 int WhiteRectangleDetector::CORR = 1;
 
-WhiteRectangleDetector::WhiteRectangleDetector(Ref<BitMatrix> image) :
-   WhiteRectangleDetector(image, INIT_SIZE, image->getWidth() >> 1, image->getHeight() >> 1)
-{
+WhiteRectangleDetector::WhiteRectangleDetector(Ref<BitMatrix> image) {
+  init(image, INIT_SIZE, image->getWidth() >> 1, image->getHeight() >> 1);
 }
 
-WhiteRectangleDetector::WhiteRectangleDetector(Ref<BitMatrix> image, int initSize, int x, int y) : image_(image) {
+WhiteRectangleDetector::WhiteRectangleDetector(Ref<BitMatrix> image, int initSize, int x, int y) {
+  init(image, initSize, x, y);
+}
+
+void WhiteRectangleDetector::init(Ref<BitMatrix> image, int initSize, int x, int y) {
+  image_ = image;
   width_ = image->getWidth();
   height_ = image->getHeight();
   
