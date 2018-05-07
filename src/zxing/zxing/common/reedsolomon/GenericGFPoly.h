@@ -46,7 +46,7 @@ public:
   Ref<GenericGFPoly> multiply(Ref<GenericGFPoly> other);
   Ref<GenericGFPoly> multiply(int scalar);
   Ref<GenericGFPoly> multiplyByMonomial(int degree, int coefficient);
-  std::vector<Ref<GenericGFPoly>> divide(Ref<GenericGFPoly> other);
+  std::vector<Ref<GenericGFPoly> > divide(Ref<GenericGFPoly> other);
     
 
 };

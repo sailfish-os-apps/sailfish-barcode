@@ -186,7 +186,7 @@ Ref<GenericGFPoly> GenericGFPoly::multiplyByMonomial(int degree, int coefficient
   return Ref<GenericGFPoly>(new GenericGFPoly(field_, product));
 }
   
-std::vector<Ref<GenericGFPoly>> GenericGFPoly::divide(Ref<GenericGFPoly> other) {
+std::vector<Ref<GenericGFPoly> > GenericGFPoly::divide(Ref<GenericGFPoly> other) {
   if (!(field_ == other->field_)) {
     throw IllegalArgumentException("GenericGFPolys do not have same GenericGF field");
   }
