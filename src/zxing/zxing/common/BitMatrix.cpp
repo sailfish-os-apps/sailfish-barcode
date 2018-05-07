@@ -22,6 +22,8 @@
 #include <sstream>
 #include <string>
 
+#include <string.h>
+
 using std::ostream;
 using std::ostringstream;
 
@@ -37,7 +39,8 @@ void BitMatrix::init(int width, int height) {
     this->width = width;
     this->height = height;
     this->rowSize = (width + 31) >> 5;
-    bits = ArrayRef<int>(rowSize * height);
+    bits = new int [rowSize * height];
+    memset(bits, 0, sizeof(int) * rowSize * height);
 }
 
 BitMatrix::BitMatrix(int dimension) {
@@ -48,7 +51,9 @@ BitMatrix::BitMatrix(int width, int height) {
     init(width, height);
 }
 
-BitMatrix::~BitMatrix() {}
+BitMatrix::~BitMatrix() {
+    delete [] bits;
+}
 
 void BitMatrix::flip(int x, int y) {
     int offset = y * rowSize + (x >> 5);
@@ -104,15 +109,17 @@ Ref<BitArray> BitMatrix::getRow(int y, Ref<BitArray> row) {
 
 void BitMatrix::setRow(int y, Ref<zxing::BitArray> row)
 {
-    if (y < 0 || y >= bits->size() ||
+    if (y < 0 || y >= height ||
             row->getSize() != width)
     {
         throw IllegalArgumentException("setRow arguments invalid");
     }
 
     //change with memcopy
-    for(size_t i=0; i<width; i++)
-        bits[y * rowSize + i] = row->get(i);
+    int* dst = bits + (y * rowSize);
+    for (int i = 0; i < width; i++) {
+        *dst++ = row->get(i);
+    }
 }
 
 int BitMatrix::getWidth() const {
@@ -125,10 +132,11 @@ int BitMatrix::getHeight() const {
 
 ArrayRef<int> BitMatrix::getTopLeftOnBit() const {
     int bitsOffset = 0;
-    while (bitsOffset < bits->size() && bits[bitsOffset] == 0) {
+    int size = rowSize * height;
+    while (bitsOffset < size && bits[bitsOffset] == 0) {
         bitsOffset++;
     }
-    if (bitsOffset == bits->size()) {
+    if (bitsOffset == size) {
         return ArrayRef<int>();
     }
     int y = bitsOffset / rowSize;
@@ -147,7 +155,8 @@ ArrayRef<int> BitMatrix::getTopLeftOnBit() const {
 }
 
 ArrayRef<int> BitMatrix::getBottomRightOnBit() const {
-    int bitsOffset = bits->size() - 1;
+    int size = rowSize * height;
+    int bitsOffset = size - 1;
     while (bitsOffset >= 0 && bits[bitsOffset] == 0) {
         bitsOffset--;
     }

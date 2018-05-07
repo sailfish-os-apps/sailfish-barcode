@@ -64,7 +64,9 @@ Ref<BitArray> GlobalHistogramBinarizer::getBlackRow(int y, Ref<BitArray> row) {
     }
 
     initArrays(width);
-    ArrayRef<byte> localLuminances = source.getRow(y, luminances);
+    ArrayRef<byte> _localLuminances = source.getRow(y, luminances);
+    byte* localLuminances = &_localLuminances[0];
+#if 0
     if (false) {
         std::cerr << "gbr " << y << " r ";
         for(int i=0, e=localLuminances->size(); i < e; ++i) {
@@ -72,12 +74,14 @@ Ref<BitArray> GlobalHistogramBinarizer::getBlackRow(int y, Ref<BitArray> row) {
         }
         std::cerr << std::endl;
     }
-    ArrayRef<int> localBuckets = buckets;
+#endif
+    ArrayRef<int> _localBuckets = buckets;
+    int* localBuckets = &_localBuckets[0];
     for (int x = 0; x < width; x++) {
         int pixel = localLuminances[x] & 0xff;
         localBuckets[pixel >> LUMINANCE_SHIFT]++;
     }
-    int blackPoint = estimateBlackPoint(localBuckets);
+    int blackPoint = estimateBlackPoint(_localBuckets);
     // std::cerr << "gbr bp " << y << " " << blackPoint << std::endl;
 
     int left = localLuminances[0] & 0xff;
@@ -99,44 +103,50 @@ Ref<BitMatrix> GlobalHistogramBinarizer::getBlackMatrix() {
     LuminanceSource& source = *getLuminanceSource();
     int width = source.getWidth();
     int height = source.getHeight();
-    Ref<BitMatrix> matrix(new BitMatrix(width, height));
+    BitMatrix* matrix = new BitMatrix(width, height);
 
     // Quickly calculates the histogram by sampling four rows from the image.
     // This proved to be more robust on the blackbox tests than sampling a
     // diagonal as we used to do.
     initArrays(width);
-    ArrayRef<int> localBuckets = buckets;
+
+    ArrayRef<int> _localBuckets = buckets;
+    ArrayRef<byte> _localLuminances = source.getMatrix();
+
+    int* localBuckets = &_localBuckets[0];
+    const byte* localLuminances = &_localLuminances[0];
+
     for (int y = 1; y < 5; y++) {
         int row = height * y / 5;
-        ArrayRef<byte> localLuminances = source.getRow(row, luminances);
+        const byte* rowLuminances = localLuminances + (width * row);
         int right = (width << 2) / 5;
         for (int x = width / 5; x < right; x++) {
-            int pixel = localLuminances[x] & 0xff;
+            int pixel = rowLuminances[x] & 0xff;
             localBuckets[pixel >> LUMINANCE_SHIFT]++;
         }
     }
 
-    int blackPoint = estimateBlackPoint(localBuckets);
+    int blackPoint = estimateBlackPoint(_localBuckets);
 
-    ArrayRef<byte> localLuminances = source.getMatrix();
     for (int y = 0; y < height; y++) {
         int offset = y * width;
         for (int x = 0; x < width; x++) {
-            int pixel = localLuminances[offset + x] & 0xff;
+            int pixel = localLuminances[offset + x];
             if (pixel < blackPoint) {
                 matrix->set(x, y);
             }
         }
     }
 
-    return matrix;
+    return Ref<BitMatrix>(matrix);
 }
 
 using namespace std;
 
-int GlobalHistogramBinarizer::estimateBlackPoint(ArrayRef<int> const& buckets) {
+int GlobalHistogramBinarizer::estimateBlackPoint(ArrayRef<int> const& _buckets) {
     // Find tallest peak in histogram
-    int numBuckets = buckets->size();
+    const int* buckets = &_buckets[0];
+    int numBuckets = _buckets->size();
     int maxBucketCount = 0;
     int firstPeak = 0;
     int firstPeakSize = 0;

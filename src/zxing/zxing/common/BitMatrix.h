@@ -29,14 +29,11 @@
 namespace zxing {
 
 class BitMatrix : public Counted {
-public:
-  static const int bitsPerWord = std::numeric_limits<unsigned int>::digits;
-
 private:
   int width;
   int height;
   int rowSize;
-  ArrayRef<int> bits;
+  int* bits;
 
 public:
   BitMatrix(int dimension);
