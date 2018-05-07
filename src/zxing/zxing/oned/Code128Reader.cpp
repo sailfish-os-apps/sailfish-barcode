@@ -250,7 +250,7 @@ int Code128Reader::decodeCode(Ref<BitArray> row, vector<int>& counters, int rowO
 }
 
 Ref<Result> Code128Reader::decodeRow(int rowNumber, Ref<BitArray> row, zxing::DecodeHints hints) {
-  bool convertFNC1 = hints.containsFormat(zxing::BarcodeFormat(zxing::BarcodeFormat::Value::ASSUME_GS1));
+  bool convertFNC1 = hints.containsFormat(zxing::BarcodeFormat(zxing::BarcodeFormat::ASSUME_GS1));
 
   vector<int> startPatternInfo (findStartPattern(row));
   int startCode = startPatternInfo[2];
