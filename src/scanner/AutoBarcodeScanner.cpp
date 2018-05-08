@@ -160,6 +160,7 @@ void AutoBarcodeScanner::processDecode()
     QImage image;
     qreal scale = 1;
     bool rotated = false;
+    int scaledWidth = 0;
 
     const int maxWidth = 600;
     const int maxHeight = 800;
@@ -225,6 +226,8 @@ void AutoBarcodeScanner::processDecode()
                 saveDebugImage(scaledImage, "debug_rotated.bmp");
                 DLOG("decoding rotated screenshot ...");
                 result = m_decoder->decode(scaledImage);
+                // We need scaled width for rotating the points back
+                scaledWidth = scaledImage.width();
                 rotated = true;
             } else {
                 rotated = false;
@@ -247,9 +250,10 @@ void AutoBarcodeScanner::processDecode()
                 if (rotated) {
                     const qreal x = p.rx();
                     p.setX(p.ry());
-                    p.setY(image.height() - x);
+                    p.setY(scaledWidth - x);
                 }
                 p *= scale;
+                DLOG(points[i] << "=>" << p);
                 points[i] = p;
             }
             result = Decoder::Result(result.getText(), points, result.getFormat());
