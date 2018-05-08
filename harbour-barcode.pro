@@ -56,8 +56,13 @@ OTHER_FILES += \
     qml/pages/img/interleaved_240.png \
     qml/pages/img/ean-13_240.png \
     qml/pages/img/datamatrix_240.png \
+    qml/pages/img/code-39_240.png \
+    qml/pages/img/code-93_240.png \
     qml/pages/img/code-128_240.png \
     qml/pages/img/aztec_240.png \
+    qml/pages/img/codebar_240.png \
+    qml/pages/img/maxicode_240.png \
+    qml/pages/img/pdf417_240.png \
     qml/pages/AutoScanPage.qml \
     qml/pages/SettingsPage.qml \
     qml/js/Settings.js \

@@ -163,6 +163,14 @@ Page {
                     imgSrc: "img/datamatrix_240.png"
                 }
                 ListElement {
+                    name: "Code 39"
+                    imgSrc: "img/code-39_240.png"
+                }
+                ListElement {
+                    name: "Code 93"
+                    imgSrc: "img/code-93_240.png"
+                }
+                ListElement {
                     name: "Code 128"
                     imgSrc: "img/code-128_240.png"
                 }
@@ -177,6 +185,18 @@ Page {
                 ListElement {
                     name: "UPC-A"
                     imgSrc: "img/upc_240.png"
+                }
+                ListElement {
+                    name: "Codebar"
+                    imgSrc: "img/codebar_240.png"
+                }
+                ListElement {
+                    name: "MaxiCode"
+                    imgSrc: "img/maxicode_240.png"
+                }
+                ListElement {
+                    name: "PDF417"
+                    imgSrc: "img/pdf417_240.png"
                 }
             }
 
