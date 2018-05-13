@@ -186,7 +186,7 @@ Decoder::Result Decoder::decode(zxing::Ref<zxing::LuminanceSource> aSource)
 
         QList<QPointF> points;
         zxing::ArrayRef<zxing::Ref<zxing::ResultPoint> > found(result->getResultPoints());
-        for (uint i = 0; i < found->size(); i++) {
+        for (int i = 0; i < found->size(); i++) {
             const zxing::ResultPoint& point(*(found[i]));
             points.append(QPointF(point.getX(), point.getY()));
         }
