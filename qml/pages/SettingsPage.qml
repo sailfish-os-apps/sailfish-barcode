@@ -26,19 +26,18 @@ THE SOFTWARE.
 import QtQuick 2.1
 import Sailfish.Silica 1.0
 
-import "../js/Settings.js" as Settings
-import "../js/History.js" as History
-
 Page {
     id: settingsPage
 
-    property var colors: [ "#FF0080", "#FF0000", "#FF8000", "#FFFF00", "#00FF00",
-                           "#8000FF", "#00FFFF", "#0000FF" ]
+    property var colors: [
+        "#FF0080", "#FF0000", "#FF8000", "#FFFF00",
+        "#00FF00", "#8000FF", "#00FFFF", "#0000FF"
+    ]
 
     property int currentColor: getColorFromSettings()
 
     function getColorFromSettings() {
-        var savedColor = Settings.get(Settings.keys.MARKER_COLOR)
+        var savedColor = AppSettings.markerColor
         for	(var i = 0; i < colors.length; i++) {
             if (savedColor === colors[i]) {
                 return i
@@ -64,25 +63,21 @@ Page {
             SectionHeader { text: qsTrId("settings-scan-section") }
 
             IconTextSwitch {
-                checked: Settings.getBoolean(Settings.keys.SOUND)
+                checked: AppSettings.sound
                 //: Switch button text
                 //% "Detection sound"
                 text: qsTrId("settings-sound-label")
                 icon.source: "image://theme/icon-m-speaker"
-                onCheckedChanged: {
-                    Settings.setBoolean(Settings.keys.SOUND, checked)
-                }
+                onCheckedChanged: AppSettings.sound = checked
             }
 
             IconTextSwitch {
-                checked: Settings.getBoolean(Settings.keys.SCAN_ON_START)
+                checked: AppSettings.scanOnStart
                 //: Switch button text
                 //% "Scan on start"
                 text: qsTrId("settings-autoscan-label")
                 icon.source: "image://theme/icon-m-play"
-                onCheckedChanged: {
-                    Settings.setBoolean(Settings.keys.SCAN_ON_START, checked)
-                }
+                onCheckedChanged: AppSettings.scanOnStart = checked
             }
 
             //: Section header
@@ -92,16 +87,16 @@ Page {
             Slider {
                 id: historySizeSlider
 
-                property int count: History.getHistorySize()
+                readonly property int currentCount: historyModel.count
 
                 width: parent.width
                 minimumValue: 0
                 maximumValue: 100
-                value: Settings.get(Settings.keys.HISTORY_SIZE)
+                value: AppSettings.historySize
                 stepSize: 10
                 //: Slider label
                 //% "Max history size (saved values: %1)"
-                label: qsTrId("settings-history-slider_label").arg(count)
+                label: qsTrId("settings-history-slider_label").arg(currentCount)
                 valueText: value === 0 ?
                     //: Generic slider value
                     //% "deactivated"
@@ -110,13 +105,11 @@ Page {
                     //% "%1 item(s)"
                     qsTrId("settings-history-slider_value",value).arg(value)
                 onSliderValueChanged: {
-                    var currentSize = History.getHistorySize()
-                    if (value < currentSize) {
+                    if (value < currentCount) {
                         historyConfirmButtons.visible = true
-                    }
-                    else {
+                    } else {
                         historyConfirmButtons.visible = false
-                        Settings.set(Settings.keys.HISTORY_SIZE, value)
+                        AppSettings.historySize = value
                     }
                 }
             }
@@ -139,10 +132,8 @@ Page {
                     //% "Confirm resize"
                     text: qsTrId("settings-history-confirm_resize")
                     onClicked: {
-                        History.applyNewHistorySize(historySizeSlider.value)
-                        Settings.set(Settings.keys.HISTORY_SIZE, historySizeSlider.value)
+                        AppSettings.historySize = historySizeSlider.value
                         historyConfirmButtons.visible = false
-                        historySizeSlider.count = History.getHistorySize()
                     }
                 }
 
@@ -200,7 +191,7 @@ Page {
                             anchors.fill: parent
                             onClicked: {
                                 currentColor = index
-                                Settings.set(Settings.keys.MARKER_COLOR, colors[index])
+                                AppSettings.markerColor = colors[index]
                             }
                         }
                     }
@@ -211,7 +202,7 @@ Page {
                 width: parent.width
                 minimumValue: 0
                 maximumValue: 15
-                value: Settings.get(Settings.keys.RESULT_VIEW_DURATION)
+                value: AppSettings.resultViewDuration
                 stepSize: 1
                 //: Slider label
                 //% "Mark detected code"
@@ -223,9 +214,7 @@ Page {
                     //: Marker slider value
                     //% "%1 second(s)"
                     qsTrId("settings-marker-slider_value",value).arg(value)
-                onSliderValueChanged: {
-                    Settings.set(Settings.keys.RESULT_VIEW_DURATION, value)
-                }
+                onSliderValueChanged: AppSettings.resultViewDuration = value
             }
         }
     }

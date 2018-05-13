@@ -1,7 +1,6 @@
 /*
 The MIT License (MIT)
 
-Copyright (c) 2014 Steffen Förster
 Copyright (c) 2018 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,24 +22,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-.pragma library
+#ifndef BARCODE_DATABASE_H
+#define BARCODE_DATABASE_H
 
-function isLink(text) {
-    var urls = text.match(/^(http[s]*:\/\/.{3,500}|www\..{3,500}|sms:.*)$/);
-    var vcard = text.match(/^(.+VCARD.+)$/);
-    // is a known url scheme and not a vcard
-    return (urls && urls.length > 0 && !(vcard && vcard.length > 0));
-}
+#include <QSqlDatabase>
 
-function isText(text) {
-    return !isLink(text);
-}
+class QQmlEngine;
+class Settings;
 
-function removeLineBreak(text) {
-    return text.replace(/\n/g, " ");
-}
+class Database {
+    class Private;
 
-function shortenText(text, maxLength) {
-    var shortenText = text.replace(/\n/g, " ");
-    return shortenText.length > maxLength ? shortenText.substr(0, maxLength) + "..." : shortenText;
-}
+public:
+    static void initialize(QQmlEngine* aEngine, Settings* aSettings);
+    static QSqlDatabase database();
+};
+
+#endif // BARCODE_DATABASE_H

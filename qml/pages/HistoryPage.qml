@@ -2,6 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
+Copyright (c) 2018 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +25,8 @@ THE SOFTWARE.
 
 import QtQuick 2.1
 import Sailfish.Silica 1.0
+import harbour.barcode 1.0
 
-import "../js/History.js" as History
 import "../js/Utils.js" as Utils
 
 Page {
@@ -34,33 +35,14 @@ Page {
     function getValueText(value) {
         if (Utils.isLink(value)) {
             return value
-        }
-        else {
+        } else {
             return Utils.removeLineBreak(value)
         }
     }
 
-    function isHistoryChanged(dbValues) {
-        var changed = false;
-        if (historyModel.count !== dbValues.length) {
-            changed = true
-        }
-        else if (historyModel.count > 0 && historyModel.get(0).rowid !== dbValues[0].rowid) {
-            changed = true
-        }
-        return changed
-    }
-
     onStatusChanged: {
-        if (status === PageStatus.Activating) {
-            var values = History.getAllHistoryValues()
-
-            if (isHistoryChanged(values)) {
-                historyModel.clear();
-                for (var i = 0; i < values.length; i++) {
-                    historyModel.append(values[i])
-                }
-            }
+        if (status === PageStatus.Inactive) {
+            historyModel.commitChanges()
         }
     }
 
@@ -70,34 +52,31 @@ Page {
         property Item contextMenu
 
         anchors.fill: parent
-
         width: parent.width
         spacing: 0
 
-        header: commonHeader
-
-        model: ListModel {
-            id: historyModel
+        header: PageHeader {
+            //: History page title
+            //% "History"
+            title: qsTrId("history-title")
+            height: Theme.itemSizeLarge
         }
 
-        delegate: ListItem {
-            id: wrapper
-            property bool menuOpen: {
-                historyList.contextMenu != null
-                        && historyList.contextMenu.parent === wrapper
-            }
+        model: historyModel
 
-            contentHeight: {
-                menuOpen ? historyList.contextMenu.height + itemColumn.height
-                         : itemColumn.height
-            }
+        delegate: ListItem {
+            id: delegate
+            readonly property int modelIndex: index
+            readonly property bool menuOpen: historyList.contextMenu != null &&
+                historyList.contextMenu.parent === delegate
+
+            contentHeight: menuOpen ? historyList.contextMenu.height + itemColumn.height : itemColumn.height
 
             onClicked: {
                 var historyItem = historyModel.get(index)
                 if (Utils.isLink(historyItem.value)) {
                     openInDefaultApp(historyItem.value)
-                }
-                else {
+                } else {
                     pageStack.push("TextPage.qml", {text: historyItem.value})
                 }
             }
@@ -107,47 +86,42 @@ Page {
                     historyList.contextMenu = contextMenuComponent.createObject(historyList)
                 }
                 historyList.contextMenu.index = index
-                historyList.contextMenu.show(wrapper)
+                historyList.contextMenu.show(delegate)
             }
 
-            ListView.onRemove: RemoveAnimation {
-                target: wrapper
-            }
+            ListView.onRemove: RemoveAnimation { target: delegate }
 
             Column {
                 id: itemColumn
+                width: parent.width
                 Rectangle {
                     height: Theme.paddingLarge / 2
-                    width: wrapper.ListView.view.width
+                    width: parent.width
                     opacity: 0
                 }
                 Label {
-                    id: lbValue
                     anchors {
                         left: parent.left
                         margins: Theme.paddingLarge
                     }
-                    color: wrapper.highlighted ? Theme.highlightColor : Theme.primaryColor
-                    font {
-                        pixelSize: Theme.fontSizeSmall
-                    }
+                    color: delegate.highlighted ? Theme.highlightColor : Theme.primaryColor
+                    font.pixelSize: Theme.fontSizeSmall
                     truncationMode: TruncationMode.Fade
                     text: getValueText(model.value)
-                    width: wrapper.ListView.view.width - (2 * Theme.paddingLarge)
+                    width: parent.width - (2 * Theme.paddingLarge)
                 }
                 Label {
-                    id: lbCreated
                     anchors {
                         left: parent.left
                         margins: Theme.paddingLarge
                     }
                     color: Theme.secondaryColor
                     font.pixelSize: Theme.fontSizeExtraSmall
-                    text: Utils.formatTimestamp(model.timestamp)
+                    text: historyModel.formatTimestamp(model.timestamp)
                 }
                 Rectangle {
                     height: Theme.paddingLarge / 2
-                    width: wrapper.ListView.view.width
+                    width: parent.width
                     opacity: 0
                 }
             }
@@ -163,18 +137,17 @@ Page {
                     //: Remorse popup text
                     //% "Deleting all"
                     remorsePopup.execute(qsTrId("history-menu-delete_all_remorse"),
-                        function() {
-                            History.removeAllHistoryValues()
-                            historyModel.clear()
-                        },
-                        5000)
+                        function() { historyModel.removeAll() })
                 }
             }
         }
 
         Component {
             id: contextMenuComponent
+
             ContextMenu {
+                id: contextMenu
+
                 property variant index
 
                 MenuItem {
@@ -182,47 +155,34 @@ Page {
                     //% "Delete"
                     text: qsTrId("history-menu-delete")
                     onClicked: {
-                        remorse.execute(historyList.contextMenu.parent,
-                                        //: Remorse popup text
-                                        //% "Deleting"
-                                        qsTrId("history-menu-delete_remorse"),
-                                        getDeleteFunction(historyModel, index),
-                                        2000)
+                        var item = contextMenu.parent
+                        var remorse = remorseComponent.createObject(null)
+                        remorse.z = item.z + 1
+                        //: Remorse popup text
+                        //% "Deleting"
+                        remorse.execute(item, qsTrId("history-menu-delete_remorse"),
+                            function() { historyModel.remove(item.modelIndex) })
                     }
                 }
                 MenuItem {
                     //: Context menu item
                     //% "Copy to clipboard"
                     text: qsTrId("history-menu-copy")
-                    onClicked: {
-                        Clipboard.text = historyModel.get(index).value
-                    }
-                }
-
-                function getDeleteFunction(model, index) {
-                    // Removing from list destroys the ListElement so we need a copy
-                    var valueToDelete = History.copyValue(model.get(index));
-                    var f = function() {
-                        model.remove(index)
-                        History.removeHistoryValue(valueToDelete)
-                    }
-                    return f
+                    onClicked: Clipboard.text = historyModel.getValue(index)
                 }
             }
         }
 
-        RemorseItem {
-            id: remorse
+        Component {
+            id: remorseComponent
+            RemorseItem { }
         }
 
         RemorsePopup {
             id: remorsePopup
         }
 
-        VerticalScrollDecorator {
-            parent: historyList
-            flickable: historyList
-        }
+        VerticalScrollDecorator { }
 
         ViewPlaceholder {
             id: placeHolder
@@ -230,21 +190,6 @@ Page {
             //: Placeholder text
             //% "History is empty"
             text: qsTrId("history-empty")
-        }
-    }
-
-    Component {
-        id: commonHeader
-
-        Column {
-            width: historyPage.width
-
-            PageHeader {
-                //: History page title
-                //% "History"
-                title: qsTrId("history-title")
-                height: Theme.itemSizeLarge
-            }
         }
     }
 }

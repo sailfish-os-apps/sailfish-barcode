@@ -17,8 +17,7 @@ TARGET = $${PREFIX}-$${NAME}
 CONFIG += sailfishapp link_pkgconfig
 PKGCONFIG += sailfishapp mlite5
 
-QT += multimedia \
-    concurrent
+QT += multimedia concurrent sql
 
 isEmpty(VERSION) {
     VERSION = 1.0.5
@@ -34,11 +33,24 @@ CONFIG(debug, debug|release) {
 }
 
 SOURCES += \
+    src/Database.cpp \
     src/harbour-barcode.cpp \
+    src/HistoryModel.cpp \
+    src/Settings.cpp \
     src/scanner/AutoBarcodeScanner.cpp \
     src/scanner/CaptureImageProvider.cpp \
     src/scanner/Decoder.cpp \
     src/scanner/ImageSource.cpp
+
+HEADERS += \
+    src/Database.h \
+    src/DebugLog.h \
+    src/HistoryModel.h \
+    src/Settings.h \
+    src/scanner/AutoBarcodeScanner.h \
+    src/scanner/CaptureImageProvider.h \
+    src/scanner/Decoder.h \
+    src/scanner/ImageSource.h
 
 OTHER_FILES += \
     qml/cover/CoverPage.qml \
@@ -65,19 +77,9 @@ OTHER_FILES += \
     qml/pages/img/pdf417_240.png \
     qml/pages/AutoScanPage.qml \
     qml/pages/SettingsPage.qml \
-    qml/js/Settings.js \
-    qml/js/LocalStore.js \
     qml/pages/TextPage.qml \
-    qml/js/History.js \
     qml/pages/HistoryPage.qml \
     qml/js/Utils.js
-
-HEADERS += \
-    src/DebugLog.h \
-    src/scanner/AutoBarcodeScanner.h \
-    src/scanner/CaptureImageProvider.h \
-    src/scanner/Decoder.h \
-    src/scanner/ImageSource.h
 
 # zxing
 

@@ -26,10 +26,8 @@ THE SOFTWARE.
 import QtQuick 2.1
 import QtMultimedia 5.0
 import Sailfish.Silica 1.0
-import harbour.barcode.AutoBarcodeScanner 1.0
+import harbour.barcode 1.0
 
-import "../js/Settings.js" as Settings
-import "../js/History.js" as History
 import "../js/Utils.js" as Utils
 
 Page {
@@ -74,7 +72,7 @@ Page {
 
     function autoStart() {
         if (viewFinder) {
-            if (flagScanByCover || (flagAutoScan && Settings.getBoolean(Settings.keys.SCAN_ON_START))) {
+            if (flagScanByCover || (flagAutoScan && AppSettings.scanOnStart)) {
                 console.log("auto-starting scan ...")
                 startScan();
             }
@@ -90,7 +88,7 @@ Page {
         if (text.length > 0) {
             Clipboard.text = text
             clickableResult.setValue(text)
-            History.addHistoryValue(text)
+            historyModel.insert(text, result.format)
         }
     }
 
@@ -107,7 +105,7 @@ Page {
     }
 
     function setMarkerColor() {
-        var markerColor = Settings.get(Settings.keys.MARKER_COLOR)
+        var markerColor = AppSettings.markerColor
         console.log("marker color: ", markerColor)
 
         var red =  parseInt(markerColor.substr(1, 2), 16)
@@ -245,13 +243,13 @@ Page {
             }
 
             function decodingFinished() {
-                var resultViewDuration = Settings.get(Settings.keys.RESULT_VIEW_DURATION)
+                var resultViewDuration = AppSettings.resultViewDuration
                 if (resultViewDuration > 0) {
                     showMarker = true
                     resultViewTimer.interval = resultViewDuration * 1000
                     resultViewTimer.restart()
                 }
-                if (Settings.getBoolean(Settings.keys.SOUND)) {
+                if (AppSettings.sound) {
                     // Camera locks the output playback resouce, we need
                     // to stop it before we can play the beep. Luckily,
                     // the viewfinder is typically covered with the marker
@@ -506,13 +504,13 @@ Page {
                         saveZoomDelay.restart()
                     }
                     Component.onCompleted: {
-                        value = Settings.get(Settings.keys.DIGITAL_ZOOM)
+                        value = AppSettings.digitalZoom
                         saveZoomDelay.stop()
                     }
                     Timer {
                         id: saveZoomDelay
                         interval: 500
-                        onTriggered: Settings.set(Settings.keys.DIGITAL_ZOOM, zoomSlider.value)
+                        onTriggered: AppSettings.digitalZoom = zoomSlider.value
                     }
                 }
             }

@@ -35,17 +35,25 @@ THE SOFTWARE.
 #include "scanner/AutoBarcodeScanner.h"
 #include "scanner/CaptureImageProvider.h"
 
+#include "Database.h"
 #include "DebugLog.h"
+#include "HistoryModel.h"
+#include "Settings.h"
 
 #ifndef APP_VERSION
 #  define ""
 #endif
 
+static void register_types(const char* uri, int v1 = 1, int v2 = 0)
+{
+    qmlRegisterType<AutoBarcodeScanner>(uri, v1, v2, "AutoBarcodeScanner");
+    qmlRegisterType<HistoryModel>(uri, v1, v2, "HistoryModel");
+}
+
 int main(int argc, char *argv[])
 {
     QScopedPointer<QGuiApplication> app(SailfishApp::application(argc, argv));
-
-    qmlRegisterType<AutoBarcodeScanner>("harbour.barcode.AutoBarcodeScanner", 1, 0, "AutoBarcodeScanner");
+    register_types("harbour.barcode");
 
     bool torchSupported = false;
 
@@ -86,9 +94,18 @@ int main(int argc, char *argv[])
     }
 
     QScopedPointer<QQuickView> view(SailfishApp::createView());
-    view->engine()->addImageProvider("scanner", new CaptureImageProvider());
-    view->rootContext()->setContextProperty("AppVersion", APP_VERSION);
-    view->rootContext()->setContextProperty("TorchSupported", torchSupported);
+
+    QQmlEngine* engine = view->engine();
+    engine->addImageProvider("scanner", new CaptureImageProvider());
+
+    Settings* settings = new Settings(app.data());
+    Database::initialize(engine, settings);
+
+    QQmlContext* root = view->rootContext();
+    root->setContextProperty("AppVersion", APP_VERSION);
+    root->setContextProperty("AppSettings", settings);
+    root->setContextProperty("TorchSupported", torchSupported);
+
     view->setSource(SailfishApp::pathTo("qml/harbour-barcode.qml"));
     view->setTitle("CodeReader");
     view->showFullScreen();
