@@ -3,11 +3,6 @@
 <TS version="2.1" language="en">
 <context>
     <name></name>
-    <message id="info-opening_url">
-        <source>Opening in default app ...</source>
-        <extracomment>Info label</extracomment>
-        <translation>Opening in default app ...</translation>
-    </message>
     <message id="about-title">
         <source>About CodeReader</source>
         <extracomment>About page title, label and menu item</extracomment>
@@ -188,6 +183,16 @@
         <source>Decoded text</source>
         <extracomment>Page header</extracomment>
         <translation>Decoded text</translation>
+    </message>
+    <message id="text-open_link">
+        <source>Open</source>
+        <extracomment>Button text</extracomment>
+        <translation>Open</translation>
+    </message>
+    <message id="notification-copied_to_clipboard">
+        <source>Copied to clipboard</source>
+        <extracomment>Pop-up notification</extracomment>
+        <translation>Copied to clipboard</translation>
     </message>
 </context>
 </TS>

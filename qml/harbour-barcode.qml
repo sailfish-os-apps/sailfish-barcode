@@ -26,19 +26,11 @@ THE SOFTWARE.
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 import harbour.barcode 1.0
+
 import "pages"
 
-ApplicationWindow
-{
+ApplicationWindow {
     id: window
-
-    function openInDefaultApp(url) {
-        console.log("opening URL: " + url)
-        //: Info label
-        //% "Opening in default app ..."
-        infoPanel.showText(qsTrId("info-opening_url"), 500, 2000)
-        Qt.openUrlExternally(url)
-    }
 
     function getMainPage() {
         return mainPage
@@ -65,78 +57,6 @@ ApplicationWindow
     Component {
         id: historyPage
         HistoryPage {}
-    }
-
-    // infoPanel borrowed from https://github.com/veskuh/Tweetian/blob/sailfish-port/qml/tweetian-harmattan/main.qml - Thanks!
-    Rectangle {
-        id: infoPanel
-
-        width: parent.width
-        height: infoText.height + 2 * Theme.paddingMedium
-
-        color: Theme.highlightBackgroundColor
-        opacity: 0.0
-        z: 10
-
-        function showText(text, delayTime, closeTime) {
-            infoText.text = text
-            console.log("INFO: " + text)
-
-            delayTimer.interval = !delayTime ? 0 : delayTime
-            closeTimer.interval = !closeTime ? 5000 : closeTime
-
-            delayTimer.restart()
-        }
-
-        function showError(error) {
-            var msg = error.errorMessage + "\n" + error.detailMessage
-            showText(msg)
-        }
-
-        function performShow() {
-            infoPanel.opacity = 1
-            infoPanel.visible = true
-            closeTimer.restart()
-        }
-
-        Label {
-            id: infoText
-            anchors.top: parent.top
-            anchors.topMargin: Theme.paddingMedium
-            x: Theme.paddingMedium
-            width: parent.width - 2 * Theme.paddingMedium
-            color: Theme.primaryColor
-            horizontalAlignment: Text.AlignHCenter
-            wrapMode: Text.Wrap
-        }
-
-        Behavior on opacity { FadeAnimation {} }
-        Behavior on visible { FadeAnimation {} }
-
-        Timer {
-            id: closeTimer
-            interval: 6000
-            onTriggered: {
-                infoPanel.opacity = 0.0
-                infoPanel.visible = false
-            }
-        }
-
-        Timer {
-            id: delayTimer
-            onTriggered: {
-                infoPanel.performShow()
-            }
-        }
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                closeTimer.stop()
-                infoPanel.opacity = 0.0
-                infoPanel.visible = false
-            }
-        }
     }
 }
 

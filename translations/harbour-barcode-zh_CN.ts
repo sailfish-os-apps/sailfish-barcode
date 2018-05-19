@@ -3,11 +3,6 @@
 <TS version="2.1" language="zh_CN">
 <context>
     <name></name>
-    <message id="info-opening_url">
-        <source>Opening in default app ...</source>
-        <extracomment>Info label</extracomment>
-        <translation>正在用默认应用打开……</translation>
-    </message>
     <message id="about-title">
         <source>About CodeReader</source>
         <extracomment>About page title, label and menu item</extracomment>
@@ -186,6 +181,16 @@
         <source>Decoded text</source>
         <extracomment>Page header</extracomment>
         <translation>解码文本</translation>
+    </message>
+    <message id="text-open_link">
+        <source>Open</source>
+        <extracomment>Button text</extracomment>
+        <translation type="unfinished">打开</translation>
+    </message>
+    <message id="notification-copied_to_clipboard">
+        <source>Copied to clipboard</source>
+        <extracomment>Pop-up notification</extracomment>
+        <translation>已复制到剪贴板</translation>
     </message>
 </context>
 </TS>

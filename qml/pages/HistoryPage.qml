@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-import QtQuick 2.1
+import QtQuick 2.0
 import Sailfish.Silica 1.0
 import harbour.barcode 1.0
 
@@ -31,14 +31,6 @@ import "../js/Utils.js" as Utils
 
 Page {
     id: historyPage
-
-    function getValueText(value) {
-        if (Utils.isLink(value)) {
-            return value
-        } else {
-            return Utils.removeLineBreak(value)
-        }
-    }
 
     onStatusChanged: {
         if (status === PageStatus.Inactive) {
@@ -74,11 +66,10 @@ Page {
 
             onClicked: {
                 var historyItem = historyModel.get(index)
-                if (Utils.isLink(historyItem.value)) {
-                    openInDefaultApp(historyItem.value)
-                } else {
-                    pageStack.push("TextPage.qml", {text: historyItem.value})
-                }
+                pageStack.push("TextPage.qml", {
+                    text: historyItem.value,
+                    format: Utils.barcodeFormat(historyItem.format)
+                })
             }
 
             onPressAndHold: {
@@ -100,24 +91,37 @@ Page {
                     opacity: 0
                 }
                 Label {
-                    anchors {
-                        left: parent.left
-                        margins: Theme.paddingLarge
-                    }
+                    x: Theme.horizontalPageMargin
+                    width: parent.width - (2 * Theme.horizontalPageMargin)
                     color: delegate.highlighted ? Theme.highlightColor : Theme.primaryColor
                     font.pixelSize: Theme.fontSizeSmall
                     truncationMode: TruncationMode.Fade
-                    text: getValueText(model.value)
-                    width: parent.width - (2 * Theme.paddingLarge)
+                    text: Utils.getValueText(model.value)
                 }
-                Label {
-                    anchors {
-                        left: parent.left
-                        margins: Theme.paddingLarge
+                Item {
+                    width: parent.width
+                    height: Math.max(timestampLabel.height, formatLabel.height)
+                    Label {
+                        id: timestampLabel
+                        anchors {
+                            left: parent.left
+                            margins: Theme.horizontalPageMargin
+                        }
+                        color: Theme.secondaryColor
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        text: historyModel.formatTimestamp(model.timestamp)
                     }
-                    color: Theme.secondaryColor
-                    font.pixelSize: Theme.fontSizeExtraSmall
-                    text: historyModel.formatTimestamp(model.timestamp)
+                    Label {
+                        id: formatLabel
+                        anchors {
+                            right: parent.right
+                            margins: Theme.horizontalPageMargin
+                            verticalCenter: parent.verticalCenter
+                        }
+                        color: Theme.highlightColor
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        text: Utils.barcodeFormat(model.format)
+                    }
                 }
                 Rectangle {
                     height: Theme.paddingLarge / 2

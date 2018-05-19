@@ -3,11 +3,6 @@
 <TS version="2.1" language="zh_TW">
 <context>
     <name></name>
-    <message id="info-opening_url">
-        <source>Opening in default app ...</source>
-        <extracomment>Info label</extracomment>
-        <translation>開啟預設應用程式中...</translation>
-    </message>
     <message id="about-title">
         <source>About CodeReader</source>
         <extracomment>About page title, label and menu item</extracomment>
@@ -172,11 +167,6 @@
         <extracomment>Placeholder text</extracomment>
         <translation>無歷史紀錄</translation>
     </message>
-    <message id="text-header">
-        <source>Decoded text</source>
-        <extracomment>Page header</extracomment>
-        <translation>文字解碼</translation>
-    </message>
     <message id="settings-scan-section">
         <source>Scan</source>
         <extracomment>Section header</extracomment>
@@ -186,6 +176,21 @@
         <source>Mark detected code</source>
         <extracomment>Slider label</extracomment>
         <translation type="unfinished"></translation>
+    </message>
+    <message id="text-header">
+        <source>Decoded text</source>
+        <extracomment>Page header</extracomment>
+        <translation>文字解碼</translation>
+    </message>
+    <message id="text-open_link">
+        <source>Open</source>
+        <extracomment>Button text</extracomment>
+        <translation type="unfinished">開啟</translation>
+    </message>
+    <message id="notification-copied_to_clipboard">
+        <source>Copied to clipboard</source>
+        <extracomment>Pop-up notification</extracomment>
+        <translation>已複製至剪貼簿</translation>
     </message>
 </context>
 </TS>

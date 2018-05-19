@@ -2,6 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
+Copyright (c) 2018 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +23,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-import QtQuick 2.1
+import QtQuick 2.0
 import Sailfish.Silica 1.0
+
+import "../js/Utils.js" as Utils
 
 Page {
     id: textPage
 
     property string text: ""
+    property alias format: textArea.label
+
+    onTextChanged: textArea.text = text
+
+    onStatusChanged: {
+        console.log(status)
+        if (status === PageStatus.Deactivating) {
+            // Hide the keyboard on flick
+            console.log("Hiding keyboard")
+            textArea.focus = false
+        }
+    }
 
     SilicaFlickable {
         anchors.fill: parent
@@ -36,11 +51,8 @@ Page {
 
         Column {
             id: column
-            anchors {
-                left: parent.left;
-                right: parent.right
-                margins: Theme.paddingLarge
-            }
+            x: Theme.horizontalPageMargin
+            width: parent.width - 2 * x
             height: childrenRect.height
 
             //: Page header
@@ -49,18 +61,54 @@ Page {
 
             TextArea {
                 id: textArea
-                text: textPage.text
                 width: parent.width
-
-                anchors {
-                    left: parent.left
-                }
-
                 selectionMode: TextEdit.SelectWords
+                labelVisible: true
                 focus: true
                 readOnly: false
                 wrapMode: TextEdit.Wrap
-                labelVisible: false
+                property int lastCursorPosition
+                property int currentCursorPosition
+                onCursorPositionChanged: {
+                    lastCursorPosition = currentCursorPosition
+                    currentCursorPosition = cursorPosition
+                }
+                onTextChanged: {
+                    if (text !== textPage.text) {
+                        text = textPage.text
+                        // The text doesn't actually get updated until the
+                        // cursor position changes
+                        cursorPosition = lastCursorPosition
+                    }
+                }
+            }
+
+            Item {
+                height: Theme.paddingMedium
+                width: parent.width
+            }
+
+            Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                //: Button text
+                //% "Open"
+                text: qsTrId("text-open_link")
+                visible: Utils.isLink(textPage.text)
+                enabled: !holdOffTimer.running
+                onClicked: {
+                    console.log("opening", textPage.text)
+                    Qt.openUrlExternally(textPage.text)
+                    holdOffTimer.restart()
+                }
+                Timer {
+                    id: holdOffTimer
+                    interval: 2000
+                }
+            }
+
+            Item {
+                height: Theme.paddingMedium
+                width: parent.width
             }
         }
     }

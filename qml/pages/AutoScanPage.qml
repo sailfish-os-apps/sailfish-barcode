@@ -23,9 +23,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-import QtQuick 2.1
+import QtQuick 2.0
 import QtMultimedia 5.0
 import Sailfish.Silica 1.0
+import org.nemomobile.notifications 1.0
 import harbour.barcode 1.0
 
 import "../js/Utils.js" as Utils
@@ -87,7 +88,7 @@ Page {
         console.log(result.format, text)
         if (text.length > 0) {
             Clipboard.text = text
-            clickableResult.setValue(text)
+            clickableResult.setValue(text, result.format)
             historyModel.insert(text, result.format)
         }
     }
@@ -185,6 +186,19 @@ Page {
 
         stateReady()
         autoStart();
+    }
+
+    Notification {
+        id: clipboardNotification
+        //: Pop-up notification
+        //% "Copied to clipboard"
+        previewBody: qsTrId("notification-copied_to_clipboard")
+        expireTimeout: 2000
+        Component.onCompleted: {
+            if ("icon" in clipboardNotification) {
+                clipboardNotification.icon = "icon-s-clipboard"
+            }
+        }
     }
 
     AutoBarcodeScanner {
@@ -424,6 +438,10 @@ Page {
 
         PullDownMenu {
             id: menu
+            enabled: scanPage.state == "INACTIVE" || scanPage.state === "READY"
+            visible: enabled
+            onActiveChanged: if (active) statusText.text = ""
+
             MenuItem {
                 //: About page title, label and menu item
                 //% "About CodeReader"
@@ -444,20 +462,17 @@ Page {
 
         Column {
             id: flickableColumn
+            x: Theme.horizontalPageMargin
             y: Theme.paddingLarge
-            width: parent.width
+            width: parent.width - 2 * x
             spacing: Theme.paddingLarge
-
-            anchors {
-                topMargin: Theme.paddingLarge
-            }
 
             Item {
                 id: parentViewFinder
 
                 anchors.horizontalCenter: parent.horizontalCenter
-                width: Math.round(scanPage.width * 0.56) & (-2)
-                height: Math.round(scanPage.height * 0.56) & (-2)
+                width: Math.round(window.width * 0.56) & (-2)
+                height: Math.round(window.height * 0.56) & (-2)
 
                 onWidthChanged: updateViewFinderPosition()
                 onHeightChanged: updateViewFinderPosition()
@@ -465,7 +480,7 @@ Page {
                 onYChanged: updateViewFinderPosition()
 
                 function updateViewFinderPosition() {
-                    scanner.setViewFinderRect(Qt.rect(x, y + flickableColumn.y, width, height))
+                    scanner.setViewFinderRect(Qt.rect(x + parent.x, y + parent.y, width, height))
                 }
             }
 
@@ -519,101 +534,96 @@ Page {
                 id: statusText
                 text: ""
                 anchors.horizontalCenter: parent.horizontalCenter
-                width: parent.width - Theme.paddingLarge * 2
+                width: parent.width
                 wrapMode: Text.WordWrap
                 horizontalAlignment: Text.Center
                 color: Theme.highlightColor
             }
 
-            BackgroundItem {
+            Item {
                 id: clickableResult
 
                 property bool isLink: false
-
                 property string text: ""
+                property string format: ""
 
-                function setValue(text) {
-                    if (Utils.isLink(text)) {
-                        setLink(text)
-                    }
-                    else {
-                        setText(text)
-                    }
+                function setValue(text, format) {
+                    clickableResult.text = Utils.getValueText(text)
+                    clickableResult.format = Utils.barcodeFormat(format)
+                    clickableResult.isLink = Utils.isLink(text)
                 }
 
                 function clear() {
-                    clickableResult.enabled = false
-                    clickableResult.isLink = false
                     clickableResult.text = ""
-                    resultText.text = ""
-                    resultText.width = rowResult.width - clipboardImg.width - 2 * Theme.paddingLarge
-                }
-
-                function setLink(link) {
-                    clickableResult.enabled = true
-                    clickableResult.isLink = true
-                    clickableResult.text = link
-                    resultText.text = link
-                    resultText.width = rowResult.width - clipboardImg.width - 2 * Theme.paddingLarge
-                }
-
-                function setText(text) {
-                    clickableResult.enabled = true
+                    clickableResult.format = ""
                     clickableResult.isLink = false
-                    clickableResult.text = text
-                    resultText.text = text
-                    resultText.width = rowResult.width - clipboardImg.width - 2 * Theme.paddingLarge
                 }
 
-                contentHeight: rowResult.height
-                height: contentHeight
-                width: scanPageFlickable.width
-                anchors {
-                    left: parent.left
-                }
-                enabled: false
+                height: Math.max(resultItem.height, clipboardButton.height)
+                width: parent.width
+                enabled: text !== "" && !holdOffTimer.running
 
-                Row {
-                    id: rowResult
-                    width: parent.width - 2 * Theme.paddingLarge
-                    height: Math.max(clipboardImg.contentHeight, resultText.contentHeight)
-                    spacing: Theme.paddingLarge
-                    anchors {
-                        left: parent.left
-                        right: parent.right
-                        margins: Theme.paddingLarge
+                Item {
+                    height: parent.height
+                    width: parentViewFinder.x
+                    visible: clickableResult.text !== ""
+                    anchors.verticalCenter: parent.verticalCenter
+                    IconButton {
+                        id: clipboardButton
+                        anchors.centerIn: parent
+                        icon.source: "image://theme/icon-m-clipboard"
+                        onClicked: {
+                            Clipboard.text = clickableResult.text
+                            clipboardNotification.publish()
+                        }
                     }
+                }
 
-                    Image {
-                        id: clipboardImg
-                        source: "image://theme/icon-m-clipboard"
-                        visible: resultText.text.length > 0
-                        anchors {
-                            leftMargin: Theme.paddingLarge
+                BackgroundItem {
+                    id: resultItem
+                    x: parentViewFinder.x
+                    height: Math.max(resultColumn.height, implicitHeight)
+                    width: parent.width - x
+                    enabled: parent.enabled
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    Column {
+                        id: resultColumn
+                        x: Theme.paddingSmall
+                        width: parent.width - x
+                        anchors.verticalCenter: parent.verticalCenter
+                        Label {
+                            text: clickableResult.text
+                            color: resultItem.highlighted ? Theme.highlightColor : Theme.primaryColor
+                            width: parent.width
+                            truncationMode: TruncationMode.Fade
+                            font.underline: clickableResult.isLink
+                        }
+                        Label {
+                            width: parent.width
+                            color: resultItem.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
+                            font.pixelSize: Theme.fontSizeExtraSmall
+                            text: clickableResult.format
+                            truncationMode: TruncationMode.Fade
                         }
                     }
 
-                    Label {
-                        id: resultText
-                        anchors {
-                            leftMargin: Theme.paddingLarge
-                            top: clipboardImg.top
+                    onClicked: {
+                        if (clickableResult.isLink) {
+                            console.log("opening", clickableResult.text)
+                            Qt.openUrlExternally(clickableResult.text)
+                            holdOffTimer.restart()
+                        } else {
+                            pageStack.push("TextPage.qml", {
+                                text: clickableResult.text,
+                                format: clickableResult.format
+                            })
                         }
-                        color: clickableResult.highlighted
-                               ? Theme.highlightColor
-                               : Theme.primaryColor
-                        font.pixelSize: Theme.fontSizeMedium
-                        font.underline: clickableResult.isLink
-                        truncationMode: TruncationMode.Fade
-                        width: parent.width - clipboardImg.width - 2 * Theme.paddingLarge
                     }
-                }
 
-                onClicked: {
-                    if (clickableResult.isLink) {
-                        openInDefaultApp(clickableResult.text)
-                    } else {
-                        pageStack.push("TextPage.qml", {text: clickableResult.text})
+                    Timer {
+                        id: holdOffTimer
+                        interval: 2000
                     }
                 }
             }
@@ -622,11 +632,11 @@ Page {
 
     Button {
         id: actionButton
-        anchors {
-            bottom: parent.bottom
-            bottomMargin: Theme.paddingLarge
-            horizontalCenter: parent.horizontalCenter
-        }
+        // Attach to the window so that the position of the button is
+        // not affected by the on-screen keyboard (which changes the
+        // page height)
+        y: window.height - height - Theme.paddingLarge
+        anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
             if (scanPage.state === "READY") {
                 startScan()
