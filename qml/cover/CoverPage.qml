@@ -23,18 +23,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-import QtQuick 2.1
+import QtQuick 2.0
 import Sailfish.Silica 1.0
 
 CoverBackground {
+    id: cover
+    readonly property real actionAreaHeight: Theme.itemSizeSmall
 
     Column {
+        id: content
+        y: Math.floor((cover.height - content.height - actionAreaHeight)/2)
         spacing: Theme.paddingLarge
-        anchors.centerIn: parent
+        width: parent.width
 
         Image {
-            readonly property real size: Math.floor(parent.width * 0.9)
-            id: image
+            readonly property int size: Math.floor(cover.width * 0.56) & (-2)
             source: Qt.resolvedUrl("cover-image.svg")
             fillMode: Image.PreserveAspectFit
             anchors.horizontalCenter: parent.horizontalCenter
