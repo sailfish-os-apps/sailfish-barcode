@@ -32,16 +32,16 @@ import "../js/Utils.js" as Utils
 Page {
     id: historyPage
 
+    readonly property bool empty: historyList.model.count === 0
+
     onStatusChanged: {
         if (status === PageStatus.Inactive) {
-            historyModel.commitChanges()
+            historyList.model.commitChanges()
         }
     }
 
     SilicaListView {
         id: historyList
-
-        property Item contextMenu
 
         anchors.fill: parent
         width: parent.width
@@ -59,37 +59,20 @@ Page {
         delegate: ListItem {
             id: delegate
             readonly property int modelIndex: index
-            readonly property bool menuOpen: historyList.contextMenu != null &&
-                historyList.contextMenu.parent === delegate
-
-            contentHeight: menuOpen ? historyList.contextMenu.height + itemColumn.height : itemColumn.height
 
             onClicked: {
-                var historyItem = historyModel.get(index)
+                var historyItem = historyList.model.get(index)
                 pageStack.push("TextPage.qml", {
                     text: historyItem.value,
                     format: Utils.barcodeFormat(historyItem.format)
                 })
             }
 
-            onPressAndHold: {
-                if (!historyList.contextMenu) {
-                    historyList.contextMenu = contextMenuComponent.createObject(historyList)
-                }
-                historyList.contextMenu.index = index
-                historyList.contextMenu.show(delegate)
-            }
-
             ListView.onRemove: RemoveAnimation { target: delegate }
 
             Column {
-                id: itemColumn
                 width: parent.width
-                Rectangle {
-                    height: Theme.paddingLarge / 2
-                    width: parent.width
-                    opacity: 0
-                }
+                anchors.verticalCenter: parent.verticalCenter
                 Label {
                     x: Theme.horizontalPageMargin
                     width: parent.width - (2 * Theme.horizontalPageMargin)
@@ -107,9 +90,9 @@ Page {
                             left: parent.left
                             margins: Theme.horizontalPageMargin
                         }
-                        color: Theme.secondaryColor
+                        color: delegate.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
                         font.pixelSize: Theme.fontSizeExtraSmall
-                        text: historyModel.formatTimestamp(model.timestamp)
+                        text: historyList.model.formatTimestamp(model.timestamp)
                     }
                     Label {
                         id: formatLabel
@@ -123,16 +106,40 @@ Page {
                         text: Utils.barcodeFormat(model.format)
                     }
                 }
-                Rectangle {
-                    height: Theme.paddingLarge / 2
-                    width: parent.width
-                    opacity: 0
+            }
+
+            menu: Component {
+                ContextMenu {
+                    id: contextMenu
+
+                    MenuItem {
+                        //: Context menu item
+                        //% "Delete"
+                        text: qsTrId("history-menu-delete")
+                        onClicked: {
+                            var item = delegate
+                            var model = historyList.model
+                            var remorse = remorseComponent.createObject(null)
+                            remorse.z = item.z + 1
+                            //: Remorse popup text
+                            //% "Deleting"
+                            remorse.execute(item, qsTrId("history-menu-delete_remorse"),
+                                function() { model.remove(item.modelIndex) })
+                        }
+                    }
+                    MenuItem {
+                        //: Context menu item
+                        //% "Copy to clipboard"
+                        text: qsTrId("history-menu-copy")
+                        onClicked: Clipboard.text = historyList.model.getValue(delegate.modelIndex)
+                    }
                 }
             }
+
         }
 
         PullDownMenu {
-            visible: historyModel.count > 0
+            visible: !historyPage.empty
             MenuItem {
                 //: Pulley menu item
                 //% "Delete all"
@@ -141,38 +148,7 @@ Page {
                     //: Remorse popup text
                     //% "Deleting all"
                     remorsePopup.execute(qsTrId("history-menu-delete_all_remorse"),
-                        function() { historyModel.removeAll() })
-                }
-            }
-        }
-
-        Component {
-            id: contextMenuComponent
-
-            ContextMenu {
-                id: contextMenu
-
-                property variant index
-
-                MenuItem {
-                    //: Context menu item
-                    //% "Delete"
-                    text: qsTrId("history-menu-delete")
-                    onClicked: {
-                        var item = contextMenu.parent
-                        var remorse = remorseComponent.createObject(null)
-                        remorse.z = item.z + 1
-                        //: Remorse popup text
-                        //% "Deleting"
-                        remorse.execute(item, qsTrId("history-menu-delete_remorse"),
-                            function() { historyModel.remove(item.modelIndex) })
-                    }
-                }
-                MenuItem {
-                    //: Context menu item
-                    //% "Copy to clipboard"
-                    text: qsTrId("history-menu-copy")
-                    onClicked: Clipboard.text = historyModel.getValue(index)
+                        function() { historyList.model.removeAll() })
                 }
             }
         }
@@ -190,7 +166,7 @@ Page {
 
         ViewPlaceholder {
             id: placeHolder
-            enabled: historyModel.count === 0
+            enabled: historyPage.empty
             //: Placeholder text
             //% "History is empty"
             text: qsTrId("history-empty")
