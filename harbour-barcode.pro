@@ -20,7 +20,7 @@ PKGCONFIG += sailfishapp mlite5
 QT += multimedia concurrent sql
 
 isEmpty(VERSION) {
-    VERSION = 1.0.6
+    VERSION = 1.0.7
     message("VERSION is unset, assuming $$VERSION")
 }
 
