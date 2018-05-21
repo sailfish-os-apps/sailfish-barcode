@@ -34,7 +34,7 @@ THE SOFTWARE.
 #define DEFAULT_SCAN_DURATION           20
 #define DEFAULT_RESULT_VIEW_DURATION    2
 #define DEFAULT_MARKER_COLOR            "#00FF00"
-#define DEFAULT_HISTORY_SIZE            20
+#define DEFAULT_HISTORY_SIZE            50
 #define DEFAULT_SCAN_ON_START           false
 
 // ==========================================================================
