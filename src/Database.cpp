@@ -142,7 +142,8 @@ void Database::Private::migrateString(QSqlDatabase aDb, QString aKey,
 
 void Database::initialize(QQmlEngine* aEngine, Settings* aSettings)
 {
-    QDir dir(aEngine->offlineStoragePath());
+    QDir dir(aEngine->offlineStoragePath() + QDir::separator() +
+        QLatin1String("Databases"));
     if (!dir.exists()) {
         dir.mkpath(".");
     }
@@ -151,7 +152,6 @@ void Database::initialize(QQmlEngine* aEngine, Settings* aSettings)
     QCryptographicHash md5(QCryptographicHash::Md5);
     md5.addData(Private::DB_NAME.toUtf8());
     Private::gDatabasePath = dir.path() + QDir::separator() +
-        QLatin1String("Databases") + QDir::separator() +
         QLatin1String(md5.result().toHex()) + QLatin1String(".sqlite");
 
     DLOG("Database path:" << qPrintable(Private::gDatabasePath));
@@ -162,61 +162,64 @@ void Database::initialize(QQmlEngine* aEngine, Settings* aSettings)
         db = QSqlDatabase::addDatabase(Private::DB_TYPE, Private::DB_NAME);
     }
     db.setDatabaseName(Private::gDatabasePath);
-    if (!db.isOpen() && db.open()) {
-        QStringList tables(db.tables());
-        QString history(HISTORY_TABLE);
 
-        // Check if we need to upgrade or initialize the database
+    QStringList tables;
+    if (db.open()) {
+        tables = db.tables();
         DLOG(tables);
-        if (tables.contains(history)) {
-            // The history table is there, check if we need to upgrade it
-            QSqlRecord record(db.record(history));
-            if (record.indexOf(HISTORY_FIELD_FORMAT) < 0) {
-                // There's no format field, need to add one
-                DLOG("Upgrading the database");
-                QSqlQuery query(db);
-                query.prepare("ALTER TABLE " HISTORY_TABLE " ADD COLUMN "
-                    HISTORY_FIELD_FORMAT " TEXT DEFAULT ''");
-                if (!query.exec()) {
-                    WARN(query.lastError());
-                }
-            }
-            if (tables.contains(SETTINGS_TABLE)) {
-                // The settings table is there, copy those to dconf
-                DLOG("Migrating settings");
-                Private::migrateBool(db, KEY_SOUND,
-                    aSettings, &Settings::setSound);
-                Private::migrateInt(db, KEY_DIGITAL_ZOOM,
-                    aSettings, &Settings::setDigitalZoom);
-                Private::migrateInt(db, KEY_SCAN_DURATION,
-                    aSettings, &Settings::setScanDuration);
-                Private::migrateInt(db, KEY_RESULT_VIEW_DURATION,
-                    aSettings, &Settings::setResultViewDuration);
-                Private::migrateString(db, KEY_MARKER_COLOR,
-                    aSettings, &Settings::setMarkerColor);
-                Private::migrateInt(db, KEY_HISTORY_SIZE,
-                    aSettings, &Settings::setHistorySize);
-                Private::migrateBool(db, KEY_SCAN_ON_START,
-                    aSettings, &Settings::setScanOnStart);
+    } else {
+        WARN(db.lastError());
+    }
 
-                // And drop the table when we are done
-                QSqlQuery query(db);
-                query.prepare("DROP TABLE IF EXISTS " SETTINGS_TABLE);
-                if (!query.exec()) {
-                    WARN(query.lastError());
-                }
-            }
-        } else {
-            // The database doesn't seem to exist at all (fresh install)
-            DLOG("Initializing the database");
+    // Check if we need to upgrade or initialize the database
+    QString history(HISTORY_TABLE);
+    if (tables.contains(history)) {
+        // The history table is there, check if we need to upgrade it
+        QSqlRecord record(db.record(history));
+        if (record.indexOf(HISTORY_FIELD_FORMAT) < 0) {
+            // There's no format field, need to add one
+            DLOG("Upgrading the database");
             QSqlQuery query(db);
-            query.prepare("CREATE TABLE " HISTORY_TABLE " ("
-                HISTORY_FIELD_VALUE " TEXT, "
-                HISTORY_FIELD_TIMESTAMP " TEXT, "
-                HISTORY_FIELD_FORMAT " TEXT)");
+            query.prepare("ALTER TABLE " HISTORY_TABLE " ADD COLUMN "
+                HISTORY_FIELD_FORMAT " TEXT DEFAULT ''");
             if (!query.exec()) {
                 WARN(query.lastError());
             }
+        }
+        if (tables.contains(SETTINGS_TABLE)) {
+            // The settings table is there, copy those to dconf
+            DLOG("Migrating settings");
+            Private::migrateBool(db, KEY_SOUND,
+                aSettings, &Settings::setSound);
+            Private::migrateInt(db, KEY_DIGITAL_ZOOM,
+                aSettings, &Settings::setDigitalZoom);
+            Private::migrateInt(db, KEY_SCAN_DURATION,
+                aSettings, &Settings::setScanDuration);
+            Private::migrateInt(db, KEY_RESULT_VIEW_DURATION,
+                aSettings, &Settings::setResultViewDuration);
+            Private::migrateString(db, KEY_MARKER_COLOR,
+                aSettings, &Settings::setMarkerColor);
+            Private::migrateInt(db, KEY_HISTORY_SIZE,
+                aSettings, &Settings::setHistorySize);
+            Private::migrateBool(db, KEY_SCAN_ON_START,
+                aSettings, &Settings::setScanOnStart);
+
+            // And drop the table when we are done
+            QSqlQuery query(db);
+            query.prepare("DROP TABLE IF EXISTS " SETTINGS_TABLE);
+            if (!query.exec()) {
+                WARN(query.lastError());
+            }
+        }
+    } else {
+        // The database doesn't seem to exist at all (fresh install)
+        DLOG("Initializing the database");
+        QSqlQuery query(db);
+        if (!query.exec("CREATE TABLE " HISTORY_TABLE " ("
+            HISTORY_FIELD_VALUE " TEXT, "
+            HISTORY_FIELD_TIMESTAMP " TEXT, "
+            HISTORY_FIELD_FORMAT " TEXT)")) {
+            WARN(query.lastError());
         }
     }
 }
