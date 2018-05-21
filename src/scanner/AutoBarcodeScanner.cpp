@@ -25,7 +25,8 @@ THE SOFTWARE.
 
 #include "AutoBarcodeScanner.h"
 #include "CaptureImageProvider.h"
-#include "DebugLog.h"
+
+#include "HarbourDebug.h"
 
 #include <QPainter>
 #include <QBrush>
@@ -41,7 +42,7 @@ static void saveDebugImage(const QImage& aImage, const QString& aFileName)
 {
     QString path = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation) + "/codereader/" + aFileName;
     if (aImage.save(path)) {
-        DLOG("image saved:" << qPrintable(path));
+        HDEBUG("image saved:" << qPrintable(path));
     }
 }
 #else
@@ -58,7 +59,7 @@ AutoBarcodeScanner::AutoBarcodeScanner(QObject* parent) :
     m_timeoutTimer(new QTimer(this)),
     m_markerColor(QColor(0, 255, 0)) // default green
 {
-    DLOG("start init AutoBarcodeScanner");
+    HDEBUG("start init AutoBarcodeScanner");
 
     createConnections();
     m_timeoutTimer->setSingleShot(true);
@@ -67,7 +68,7 @@ AutoBarcodeScanner::AutoBarcodeScanner(QObject* parent) :
 
 AutoBarcodeScanner::~AutoBarcodeScanner()
 {
-    DLOG("AutoBarcodeScanner::~AutoBarcodeScanner");
+    HDEBUG("AutoBarcodeScanner::~AutoBarcodeScanner");
 
     // stopping a running scanning process
     stopScanning();
@@ -90,14 +91,14 @@ void AutoBarcodeScanner::onGrabImage()
     if (m_viewFinderItem && m_flagScanRunning) {
         QQuickWindow* window = m_viewFinderItem->window();
         if (window) {
-            DLOG("grabbing image");
+            HDEBUG("grabbing image");
             m_grabbing = true;
             emit grabbingChanged();
             QImage image = window->grabWindow();
             m_grabbing = false;
             emit grabbingChanged();
             if (!image.isNull() && m_flagScanRunning) {
-                DLOG(image);
+                HDEBUG(image);
                 m_scanProcessMutex.lock();
                 m_captureImage = image;
                 m_scanProcessEvent.wakeAll();
@@ -110,7 +111,7 @@ void AutoBarcodeScanner::onGrabImage()
 void AutoBarcodeScanner::setViewFinderRect(QRect rect)
 {
     if (m_viewFinderRect != rect) {
-        DLOG(rect);
+        HDEBUG(rect);
         // m_viewFinderRect is accessed by processDecode() thread
         m_scanProcessMutex.lock();
         m_viewFinderRect = rect;
@@ -154,7 +155,7 @@ void AutoBarcodeScanner::stopScanning()
  */
 void AutoBarcodeScanner::processDecode()
 {
-    DLOG("processDecode() is called from " << QThread::currentThread());
+    HDEBUG("processDecode() is called from " << QThread::currentThread());
 
     Decoder::Result result;
     QImage image;
@@ -188,7 +189,7 @@ void AutoBarcodeScanner::processDecode()
             // crop the image - we need only the viewfinder
             saveDebugImage(image, "debug_screenshot.bmp");
             image = image.copy(viewFinderRect);
-            DLOG("extracted" << image);
+            HDEBUG("extracted" << image);
             saveDebugImage(image, "debug_cropped.bmp");
 
             QImage scaledImage;
@@ -197,11 +198,11 @@ void AutoBarcodeScanner::processDecode()
                 if (maxWidth * image.height() > maxHeight * image.width()) {
                     scaledImage = image.scaledToHeight(maxHeight, mode);
                     scale = image.height()/(qreal)maxHeight;
-                    DLOG("scaled to height" << scale << scaledImage);
+                    HDEBUG("scaled to height" << scale << scaledImage);
                 } else {
                     scaledImage = image.scaledToWidth(maxWidth, mode);
                     scale = image.width()/(qreal)maxWidth;
-                    DLOG("scaled to width" << scale << scaledImage);
+                    HDEBUG("scaled to width" << scale << scaledImage);
                 }
                 saveDebugImage(scaledImage, "debug_scaled.bmp");
             } else {
@@ -215,7 +216,7 @@ void AutoBarcodeScanner::processDecode()
             // Ref takes ownership of ImageSource:
             zxing::Ref<zxing::LuminanceSource> sourceRef(source);
 
-            DLOG("decoding screenshot ...");
+            HDEBUG("decoding screenshot ...");
             result = m_decoder->decode(sourceRef);
 
             if (!result.isValid()) {
@@ -224,7 +225,7 @@ void AutoBarcodeScanner::processDecode()
                 transform.rotate(90);
                 scaledImage = scaledImage.transformed(transform);
                 saveDebugImage(scaledImage, "debug_rotated.bmp");
-                DLOG("decoding rotated screenshot ...");
+                HDEBUG("decoding rotated screenshot ...");
                 result = m_decoder->decode(scaledImage);
                 // We need scaled width for rotating the points back
                 scaledWidth = scaledImage.width();
@@ -232,14 +233,14 @@ void AutoBarcodeScanner::processDecode()
             } else {
                 rotated = false;
             }
-            DLOG("decoding took" << time.elapsed() << "ms");
+            HDEBUG("decoding took" << time.elapsed() << "ms");
         }
         m_scanProcessMutex.lock();
     }
     m_scanProcessMutex.unlock();
 
     if (result.isValid()) {
-        DLOG("decoding succeeded:" << result.getText() << result.getPoints());
+        HDEBUG("decoding succeeded:" << result.getText() << result.getPoints());
         if (scale > 1 || rotated) {
             // The image could be a) scaled and b) rotated. Convert
             // points to the original coordinate system
@@ -253,13 +254,13 @@ void AutoBarcodeScanner::processDecode()
                     p.setY(scaledWidth - x);
                 }
                 p *= scale;
-                DLOG(points[i] << "=>" << p);
+                HDEBUG(points[i] << "=>" << p);
                 points[i] = p;
             }
             result = Decoder::Result(result.getText(), points, result.getFormat());
         }
     } else {
-        DLOG("nothing was decoded");
+        HDEBUG("nothing was decoded");
         image = QImage();
     }
     emit decodingDone(image, result);
@@ -267,11 +268,11 @@ void AutoBarcodeScanner::processDecode()
 
 void AutoBarcodeScanner::onDecodingDone(QImage aImage, Decoder::Result aResult)
 {
-    DLOG(aResult.getText());
+    HDEBUG(aResult.getText());
     if (!aImage.isNull()) {
-        DLOG("image:" << aImage);
-        DLOG("points:" << aResult.getPoints());
-        DLOG("format:" << aResult.getFormat() << aResult.getFormatName());
+        HDEBUG("image:" << aImage);
+        HDEBUG("points:" << aResult.getPoints());
+        HDEBUG("format:" << aResult.getFormat() << aResult.getFormatName());
         markLastCaptureImage(aImage, aResult.getPoints());
     }
     m_captureImage = QImage();
@@ -306,7 +307,7 @@ void AutoBarcodeScanner::onScanningTimeout()
 {
     m_scanProcessMutex.lock();
     m_flagScanAbort = true;
-    DLOG("decoding aborted by timeout");
+    HDEBUG("decoding aborted by timeout");
     m_scanProcessEvent.wakeAll();
     m_scanProcessMutex.unlock();
 }

@@ -35,10 +35,10 @@ THE SOFTWARE.
 #include "scanner/AutoBarcodeScanner.h"
 #include "scanner/CaptureImageProvider.h"
 
+#include "HarbourDebug.h"
 #include "HarbourDisplayBlanking.h"
 
 #include "Database.h"
-#include "DebugLog.h"
 #include "HistoryModel.h"
 #include "Settings.h"
 
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 
     // Parse Qt version to find out what's supported and what's not
     const char* qver = qVersion();
-    DLOG("Qt version" << qver);
+    HDEBUG("Qt version" << qver);
     if (qver) {
         const QStringList s(QString(qver).split('.'));
         if (s.size() >= 3) {
@@ -75,10 +75,10 @@ int main(int argc, char *argv[])
                 QVariantList flashValues(flashValuesConf.value().toList());
                 if (flashValues.size() == 1 &&
                     flashValues.at(0).toInt() == QCameraExposure::FlashOff) {
-                    DLOG("Flash disabled by" << qPrintable(flashValuesKey));
+                    HDEBUG("Flash disabled by" << qPrintable(flashValuesKey));
                 } else {
                     torchSupported = true;
-                    DLOG("Torch supported");
+                    HDEBUG("Torch supported");
                 }
             }
         }
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
         translator->load(transFile, transDir)) {
         app->installTranslator(translator);
     } else {
-        WARN("Failed to load translator for" << locale);
+        HWARN("Failed to load translator for" << locale);
         delete translator;
     }
 

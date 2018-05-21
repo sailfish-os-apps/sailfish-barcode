@@ -23,7 +23,6 @@ THE SOFTWARE.
 */
 
 #include "Settings.h"
-#include "DebugLog.h"
 
 #include <MGConfItem>
 

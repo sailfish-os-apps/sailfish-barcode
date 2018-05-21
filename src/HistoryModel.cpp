@@ -24,7 +24,8 @@ THE SOFTWARE.
 
 #include "HistoryModel.h"
 #include "Database.h"
-#include "DebugLog.h"
+
+#include "HarbourDebug.h"
 
 #include <QSqlError>
 #include <QSqlRecord>
@@ -84,20 +85,20 @@ HistoryModel::Private::Private(HistoryModel* aPublicModel) :
     for (int i = 0; i < NUM_FIELDS; i++) iFieldIndex[i] = -1;
     QSqlDatabase db = database();
     if (db.open()) {
-        DLOG("database opened");
+        HDEBUG("database opened");
         setTable(DB_TABLE);
         select();
         for (int i = 0; i < NUM_FIELDS; i++) {
             const QString name(DB_FIELD[i]);
             iFieldIndex[i] = fieldIndex(name);
-            DLOG(iFieldIndex[i] << name);
+            HDEBUG(iFieldIndex[i] << name);
         }
     } else {
-        WARN(db.lastError());
+        HWARN(db.lastError());
     }
     const int sortColumn = iFieldIndex[DB_SORT_COLUMN];
     if (sortColumn >= 0) {
-        DLOG("sort column" << sortColumn);
+        HDEBUG("sort column" << sortColumn);
         setSort(sortColumn, Qt::DescendingOrder);
         sort(sortColumn, Qt::DescendingOrder);
     }
@@ -149,7 +150,7 @@ bool HistoryModel::Private::removeExtraRows(int aReserve)
             for (int i = n; i > max; i--) {
                 const int row = i - 1;
                 QModelIndex index = filter->mapToSource(filter->index(row, 0));
-                DLOG("Removing row" << row << "(" << index.row() << ")");
+                HDEBUG("Removing row" << row << "(" << index.row() << ")");
                 removeRow(index.row());
             }
             return true;
@@ -163,11 +164,11 @@ void HistoryModel::Private::commitChanges()
     if (isDirty()) {
         QSqlDatabase db = database();
         db.transaction();
-        DLOG("Commiting changes");
+        HDEBUG("Commiting changes");
        if (submitAll()) {
             db.commit();
         } else {
-            WARN(db.lastError());
+            HWARN(db.lastError());
             db.rollback();
         }
     }
@@ -202,7 +203,7 @@ void HistoryModel::checkCount()
 {
     const int count = rowCount();
     if (iPrivate->iLastKnownCount != count) {
-        DLOG(iPrivate->iLastKnownCount << "=>" << count);
+        HDEBUG(iPrivate->iLastKnownCount << "=>" << count);
         iPrivate->iLastKnownCount = count;
         Q_EMIT countChanged();
     }
@@ -217,7 +218,7 @@ void HistoryModel::setMaxCount(int aValue)
 {
     if (iPrivate->iMaxCount != aValue) {
         iPrivate->iMaxCount = aValue;
-        DLOG(aValue);
+        HDEBUG(aValue);
         if (iPrivate->removeExtraRows()) {
             invalidateFilter();
             commitChanges();
@@ -236,7 +237,7 @@ QVariantMap HistoryModel::get(int aRow)
             map.insert(Private::DB_FIELD[i], value);
         }
     }
-    DLOG(aRow << map);
+    HDEBUG(aRow << map);
     return map;
 }
 
@@ -248,7 +249,7 @@ QString HistoryModel::getValue(int aRow)
 void HistoryModel::insert(QString aText, QString aFormat)
 {
     QString timestamp(QDateTime::currentDateTime().toString(Qt::ISODate));
-    DLOG(aText << aFormat << timestamp);
+    HDEBUG(aText << aFormat << timestamp);
     QSqlRecord record(iPrivate->database().record(Private::DB_TABLE));
     record.setValue(Private::DB_FIELD_VALUE, aText);
     record.setValue(Private::DB_FIELD_TIMESTAMP, timestamp);
@@ -264,14 +265,14 @@ void HistoryModel::insert(QString aText, QString aFormat)
 
 void HistoryModel::remove(int aRow)
 {
-    DLOG(aRow);
+    HDEBUG(aRow);
     removeRows(aRow, 1);
     invalidateFilter();
 }
 
 void HistoryModel::removeAll()
 {
-    DLOG("");
+    HDEBUG("clearing history");
     const int n = rowCount();
     if (n > 0) {
         removeRows(0, n);

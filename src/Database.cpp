@@ -22,10 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#include "DebugLog.h"
 #include "Database.h"
 #include "HistoryModel.h"
 #include "Settings.h"
+
+#include "HarbourDebug.h"
 
 #include <QQmlEngine>
 #include <QCryptographicHash>
@@ -77,14 +78,14 @@ QVariant Database::Private::settingsValue(QSqlDatabase aDb, QString aKey)
         if (query.next()) {
             QVariant result = query.value(0);
             if (result.isValid()) {
-               DLOG(aKey << result);
+                HDEBUG(aKey << result);
                 return result;
             }
         } else {
-            WARN(aKey << query.lastError());
+            HWARN(aKey << query.lastError());
         }
     } else {
-        WARN(aKey << query.lastError());
+        HWARN(aKey << query.lastError());
     }
     return QVariant();
 }
@@ -95,7 +96,7 @@ void Database::Private::migrateBool(QSqlDatabase aDb, QString aKey,
     QVariant value = settingsValue(aDb, aKey);
     if (value.isValid()) {
         bool bval = value.toBool();
-        DLOG(aKey << "=" << bval);
+        HDEBUG(aKey << "=" << bval);
         (aSettings->*aSetter)(bval);
     }
 }
@@ -108,7 +109,7 @@ void Database::Private::migrateInt(QSqlDatabase aDb, QString aKey,
         bool ok;
         int ival = value.toInt(&ok);
         if (ok) {
-            DLOG(aKey << "=" << ival);
+            HDEBUG(aKey << "=" << ival);
             (aSettings->*aSetter)(ival);
         } else {
             // JavaScript was storing some integers as floating point
@@ -116,10 +117,10 @@ void Database::Private::migrateInt(QSqlDatabase aDb, QString aKey,
             double dval = value.toDouble(&ok);
             if (ok) {
                 ival = round(dval);
-                DLOG(aKey << "=" << ival);
+                HDEBUG(aKey << "=" << ival);
                 (aSettings->*aSetter)(ival);
             } else {
-                WARN("Can't convert" << value.toString() << "to int");
+                HWARN("Can't convert" << value.toString() << "to int");
             }
         }
     }
@@ -131,7 +132,7 @@ void Database::Private::migrateString(QSqlDatabase aDb, QString aKey,
     QVariant value = settingsValue(aDb, aKey);
     if (value.isValid()) {
         QString str(value.toString());
-        DLOG(aKey << "=" << str);
+        HDEBUG(aKey << "=" << str);
         (aSettings->*aSetter)(str);
     }
 }
@@ -154,11 +155,11 @@ void Database::initialize(QQmlEngine* aEngine, Settings* aSettings)
     Private::gDatabasePath = dir.path() + QDir::separator() +
         QLatin1String(md5.result().toHex()) + QLatin1String(".sqlite");
 
-    DLOG("Database path:" << qPrintable(Private::gDatabasePath));
+    HDEBUG("Database path:" << qPrintable(Private::gDatabasePath));
 
     QSqlDatabase db = QSqlDatabase::database(Private::DB_NAME);
     if (!db.isValid()) {
-        DLOG("Adding database" << Private::DB_NAME);
+        HDEBUG("Adding database" << Private::DB_NAME);
         db = QSqlDatabase::addDatabase(Private::DB_TYPE, Private::DB_NAME);
     }
     db.setDatabaseName(Private::gDatabasePath);
@@ -166,9 +167,9 @@ void Database::initialize(QQmlEngine* aEngine, Settings* aSettings)
     QStringList tables;
     if (db.open()) {
         tables = db.tables();
-        DLOG(tables);
+        HDEBUG(tables);
     } else {
-        WARN(db.lastError());
+        HWARN(db.lastError());
     }
 
     // Check if we need to upgrade or initialize the database
@@ -178,17 +179,17 @@ void Database::initialize(QQmlEngine* aEngine, Settings* aSettings)
         QSqlRecord record(db.record(history));
         if (record.indexOf(HISTORY_FIELD_FORMAT) < 0) {
             // There's no format field, need to add one
-            DLOG("Upgrading the database");
+            HDEBUG("Upgrading the database");
             QSqlQuery query(db);
             query.prepare("ALTER TABLE " HISTORY_TABLE " ADD COLUMN "
                 HISTORY_FIELD_FORMAT " TEXT DEFAULT ''");
             if (!query.exec()) {
-                WARN(query.lastError());
+                HWARN(query.lastError());
             }
         }
         if (tables.contains(SETTINGS_TABLE)) {
             // The settings table is there, copy those to dconf
-            DLOG("Migrating settings");
+            HDEBUG("Migrating settings");
             Private::migrateBool(db, KEY_SOUND,
                 aSettings, &Settings::setSound);
             Private::migrateInt(db, KEY_DIGITAL_ZOOM,
@@ -208,18 +209,18 @@ void Database::initialize(QQmlEngine* aEngine, Settings* aSettings)
             QSqlQuery query(db);
             query.prepare("DROP TABLE IF EXISTS " SETTINGS_TABLE);
             if (!query.exec()) {
-                WARN(query.lastError());
+                HWARN(query.lastError());
             }
         }
     } else {
         // The database doesn't seem to exist at all (fresh install)
-        DLOG("Initializing the database");
+        HDEBUG("Initializing the database");
         QSqlQuery query(db);
         if (!query.exec("CREATE TABLE " HISTORY_TABLE " ("
             HISTORY_FIELD_VALUE " TEXT, "
             HISTORY_FIELD_TIMESTAMP " TEXT, "
             HISTORY_FIELD_FORMAT " TEXT)")) {
-            WARN(query.lastError());
+            HWARN(query.lastError());
         }
     }
 }
@@ -227,6 +228,6 @@ void Database::initialize(QQmlEngine* aEngine, Settings* aSettings)
 QSqlDatabase Database::database()
 {
     QSqlDatabase db = QSqlDatabase::database(Private::DB_NAME);
-    ASSERT(db.isValid());
+    HASSERT(db.isValid());
     return db;
 }

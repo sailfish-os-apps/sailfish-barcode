@@ -47,7 +47,6 @@ SOURCES += \
 
 HEADERS += \
     src/Database.h \
-    src/DebugLog.h \
     src/HistoryModel.h \
     src/Settings.h \
     src/scanner/AutoBarcodeScanner.h \
@@ -91,6 +90,7 @@ SOURCES += \
     harbour-lib/src/HarbourMce.cpp
 
 HEADERS += \
+    harbour-lib/include/HarbourDebug.h \
     harbour-lib/include/HarbourDisplayBlanking.h \
     harbour-lib/src/HarbourMce.h
 

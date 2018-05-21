@@ -24,7 +24,8 @@ THE SOFTWARE.
 
 #include "Decoder.h"
 #include "ImageSource.h"
-#include "DebugLog.h"
+
+#include "HarbourDebug.h"
 
 #include <QAtomicInt>
 
@@ -37,6 +38,7 @@ THE SOFTWARE.
 // ==========================================================================
 // Decoder::Result::Private
 // ==========================================================================
+
 class Decoder::Result::Private {
 public:
     Private(QString aText, QList<QPointF> aPoints, zxing::BarcodeFormat::Value aFormat);
@@ -194,7 +196,7 @@ Decoder::Result Decoder::decode(zxing::Ref<zxing::LuminanceSource> aSource)
         return Result(result->getText()->getText().c_str(), points,
             result->getBarcodeFormat());
     } catch (zxing::Exception& e) {
-        DLOG("Exception:" << e.what());
+        HDEBUG("Exception:" << e.what());
         return Result();
     }
 }
