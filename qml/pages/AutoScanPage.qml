@@ -158,14 +158,18 @@ Page {
         }
     }
 
+    // Pause blanking while scanning
+    DisplayBlanking {
+        pauseRequested: state === "SCANNING"
+    }
+
     Connections {
         target: Qt.application
         onActiveChanged: {
             if (Qt.application.active && scanPage.status === PageStatus.Active) {
                 console.log("application state changed to ACTIVE and AutoScanPage is active")
                 createScanner()
-            }
-            else if (!Qt.application.active) {
+            } else if (!Qt.application.active) {
                 console.log("application state changed to INACTIVE")
                 // if the application is deactivated we have to stop the camera and destroy the scanner object
                 // because of power consumption issues and impact to the camera application

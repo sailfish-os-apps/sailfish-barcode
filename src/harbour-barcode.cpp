@@ -35,6 +35,8 @@ THE SOFTWARE.
 #include "scanner/AutoBarcodeScanner.h"
 #include "scanner/CaptureImageProvider.h"
 
+#include "HarbourDisplayBlanking.h"
+
 #include "Database.h"
 #include "DebugLog.h"
 #include "HistoryModel.h"
@@ -46,6 +48,7 @@ THE SOFTWARE.
 
 static void register_types(const char* uri, int v1 = 1, int v2 = 0)
 {
+    qmlRegisterType<HarbourDisplayBlanking>(uri, v1, v2, "DisplayBlanking");
     qmlRegisterType<AutoBarcodeScanner>(uri, v1, v2, "AutoBarcodeScanner");
     qmlRegisterType<HistoryModel>(uri, v1, v2, "HistoryModel");
 }

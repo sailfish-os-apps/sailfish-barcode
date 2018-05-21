@@ -26,7 +26,10 @@ isEmpty(VERSION) {
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
-INCLUDEPATH += src src/zxing
+INCLUDEPATH += \
+    src \
+    src/zxing \
+    harbour-lib/include
 
 CONFIG(debug, debug|release) {
     DEFINES += DEBUG LOG_DEBUG
@@ -80,6 +83,16 @@ OTHER_FILES += \
     qml/pages/TextPage.qml \
     qml/pages/HistoryPage.qml \
     qml/js/Utils.js
+
+# harbour-lib
+
+SOURCES += \
+    harbour-lib/src/HarbourDisplayBlanking.cpp \
+    harbour-lib/src/HarbourMce.cpp
+
+HEADERS += \
+    harbour-lib/include/HarbourDisplayBlanking.h \
+    harbour-lib/src/HarbourMce.h
 
 # zxing
 
