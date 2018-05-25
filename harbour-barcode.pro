@@ -32,7 +32,7 @@ INCLUDEPATH += \
     harbour-lib/include
 
 CONFIG(debug, debug|release) {
-    DEFINES += DEBUG LOG_DEBUG
+    DEFINES += HARBOUR_DEBUG=1
 }
 
 SOURCES += \

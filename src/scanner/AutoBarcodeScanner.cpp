@@ -183,7 +183,7 @@ void AutoBarcodeScanner::processDecode()
         m_scanProcessMutex.unlock();
 
         if (!image.isNull()) {
-#ifdef DEBUG
+#if HARBOUR_DEBUG
             QTime time(QTime::currentTime());
 #endif
             // crop the image - we need only the viewfinder
