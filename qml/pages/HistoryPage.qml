@@ -31,12 +31,19 @@ import "../js/Utils.js" as Utils
 
 Page {
     id: historyPage
+    property int myStackDepth
 
     readonly property bool empty: historyList.model.count === 0
 
     onStatusChanged: {
-        if (status === PageStatus.Inactive) {
-            historyList.model.commitChanges()
+        if (status === PageStatus.Active) {
+            myStackDepth = pageStack.depth
+        } else if (status === PageStatus.Inactive) {
+            // We also end up here after TextPage gets pushed
+            if (pageStack.depth < myStackDepth) {
+                // It's us getting popped
+                historyList.model.commitChanges()
+            }
         }
     }
 
@@ -60,13 +67,30 @@ Page {
             id: delegate
             readonly property int modelIndex: index
 
+            function deleteItem() {
+                var model = historyList.model
+                var item = delegate
+                var remorse = remorseComponent.createObject(null)
+                remorse.z = delegate.z + 1
+                //: Remorse popup text
+                //% "Deleting"
+                remorse.execute(delegate, qsTrId("history-menu-delete_remorse"),
+                    function() { model.remove(item.modelIndex) })
+            }
+
             onClicked: {
                 var historyItem = historyList.model.get(index)
-                pageStack.push("TextPage.qml", {
+                var item = delegate
+                var stack = pageStack
+                stack.push("TextPage.qml", {
                     hasImage: historyItem.hasImage,
                     recordId: historyItem.id,
                     text: historyItem.value,
-                    format: Utils.barcodeFormat(historyItem.format)
+                    format: Utils.barcodeFormat(historyItem.format),
+                    canDelete: true
+                }).deleteEntry.connect(function() {
+                    stack.pop()
+                    item.deleteItem()
                 })
             }
 
@@ -118,16 +142,7 @@ Page {
                         //: Context menu item
                         //% "Delete"
                         text: qsTrId("history-menu-delete")
-                        onClicked: {
-                            var item = delegate
-                            var model = historyList.model
-                            var remorse = remorseComponent.createObject(null)
-                            remorse.z = item.z + 1
-                            //: Remorse popup text
-                            //% "Deleting"
-                            remorse.execute(item, qsTrId("history-menu-delete_remorse"),
-                                function() { model.remove(item.modelIndex) })
-                        }
+                        onClicked: delegate.deleteItem()
                     }
                     MenuItem {
                         //: Context menu item

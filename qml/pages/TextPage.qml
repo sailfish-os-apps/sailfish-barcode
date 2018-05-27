@@ -34,9 +34,12 @@ Page {
     property string text
     property string recordId
     property bool hasImage
+    property bool canDelete
     property alias format: textArea.label
 
     onTextChanged: textArea.text = text
+
+    signal deleteEntry()
 
     onStatusChanged: {
         if (status === PageStatus.Deactivating) {
@@ -49,6 +52,16 @@ Page {
     SilicaFlickable {
         anchors.fill: parent
         contentHeight: column.height
+
+        PullDownMenu {
+            visible: textPage.canDelete
+            MenuItem {
+                //: Context menu item
+                //% "Delete"
+                text: qsTrId("history-menu-delete")
+                onClicked: textPage.deleteEntry()
+            }
+        }
 
         Column {
             id: column
