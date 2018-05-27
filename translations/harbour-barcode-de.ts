@@ -93,6 +93,21 @@
         <extracomment>Switch button text</extracomment>
         <translation>Scannen bei Programmstart</translation>
     </message>
+    <message id="settings-save_images-label">
+        <source>Save barcode images</source>
+        <extracomment>Switch button text</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="settings-save_images-description">
+        <source>This will delete all previously saved barcode images.</source>
+        <extracomment>Switch button description (explanation)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="settings-save_images-confirm_delete">
+        <source>Confirm delete</source>
+        <extracomment>Button label (confirm deletion of image files)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
     <message id="settings-history-section">
         <source>History</source>
         <extracomment>Section header</extracomment>
@@ -121,7 +136,7 @@
         <extracomment>Button label</extracomment>
         <translation>Bestätigen</translation>
     </message>
-    <message id="settings-history-cancel_resize">
+    <message id="settings-history-cancel">
         <source>Cancel</source>
         <extracomment>Button label</extracomment>
         <translation>Abbruch</translation>

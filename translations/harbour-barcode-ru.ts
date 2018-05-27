@@ -93,6 +93,21 @@
         <extracomment>Switch button text</extracomment>
         <translation>Сканировать при старте</translation>
     </message>
+    <message id="settings-save_images-label">
+        <source>Save barcode images</source>
+        <extracomment>Switch button text</extracomment>
+        <translation>Сохранять снимки баркодов</translation>
+    </message>
+    <message id="settings-save_images-description">
+        <source>This will delete all previously saved barcode images.</source>
+        <extracomment>Switch button description (explanation)</extracomment>
+        <translation>Это удалит все ранее сохранённые снимки баркодов.</translation>
+    </message>
+    <message id="settings-save_images-confirm_delete">
+        <source>Confirm delete</source>
+        <extracomment>Button label (confirm deletion of image files)</extracomment>
+        <translation>Потвердить</translation>
+    </message>
     <message id="settings-history-section">
         <source>History</source>
         <extracomment>Section header</extracomment>
@@ -122,7 +137,7 @@
         <extracomment>Button label</extracomment>
         <translation>Потвердить</translation>
     </message>
-    <message id="settings-history-cancel_resize">
+    <message id="settings-history-cancel">
         <source>Cancel</source>
         <extracomment>Button label</extracomment>
         <translation>Отмена</translation>

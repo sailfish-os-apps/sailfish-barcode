@@ -80,6 +80,62 @@ Page {
                 onCheckedChanged: AppSettings.scanOnStart = checked
             }
 
+            IconTextSwitch {
+                id: saveImagesSwitch
+                checked: AppSettings.saveImages
+                //: Switch button text
+                //% "Save barcode images"
+                text: qsTrId("settings-save_images-label")
+                icon.source: "image://theme/icon-m-camera"
+                automaticCheck: false
+                onClicked: {
+                    if (checked) {
+                        //: Switch button description (explanation)
+                        //% "This will delete all previously saved barcode images."
+                        description = qsTrId("settings-save_images-description")
+                        picturesConfirmButtons.visible = true
+                    } else {
+                        AppSettings.saveImages = true
+                    }
+                }
+                onCheckedChanged: {
+                    description = ""
+                    picturesConfirmButtons.visible = false
+                }
+            }
+
+            Row {
+                id: picturesConfirmButtons
+
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: Theme.horizontalPageMargin
+                    rightMargin: Theme.horizontalPageMargin
+                }
+                spacing: Theme.paddingMedium
+                visible: false
+
+                Button {
+                    width: Math.round((parent.width - parent.spacing) / 2)
+                    //: Button label (confirm deletion of image files)
+                    //% "Confirm delete"
+                    text: qsTrId("settings-save_images-confirm_delete")
+                    onClicked: AppSettings.saveImages = false
+                }
+
+                Button {
+                    width: Math.round((parent.width - parent.spacing) / 2)
+                    //: Button label
+                    //% "Cancel"
+                    text: qsTrId("settings-history-cancel")
+                    onClicked: {
+                        saveImagesSwitch.description = ""
+                        picturesConfirmButtons.visible = false
+                    }
+                }
+            }
+
             //: Section header
             //% "History"
             SectionHeader { text: qsTrId("settings-history-section") }
@@ -127,7 +183,7 @@ Page {
                 visible: false
 
                 Button {
-                    width: Math.round((historyConfirmButtons.width - historyConfirmButtons.spacing) / 2)
+                    width: Math.round((parent.width - parent.spacing) / 2)
                     //: Button label
                     //% "Confirm resize"
                     text: qsTrId("settings-history-confirm_resize")
@@ -138,14 +194,15 @@ Page {
                 }
 
                 Button {
-                    width: Math.round((historyConfirmButtons.width - historyConfirmButtons.spacing) / 2)
+                    width: Math.round((parent.width - parent.spacing) / 2)
                     //: Button label
                     //% "Cancel"
-                    text: qsTrId("settings-history-cancel_resize")
-                    onClicked: historyConfirmButtons.visible = false
+                    text: qsTrId("settings-history-cancel")
+                    onClicked: {
+                        historySizeSlider.value = AppSettings.historySize
+                        historyConfirmButtons.visible = false
+                    }
                 }
-
-                Behavior on visible { FadeAnimation {} }
             }
 
             //: Section header
