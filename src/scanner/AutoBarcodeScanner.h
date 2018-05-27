@@ -77,10 +77,6 @@ public slots:
     void onGrabImage();
 
 private:
-    void createConnections();
-    void markLastCaptureImage(QImage aImage, QList<QPointF> aPoints);
-
-private:
     bool m_grabbing;
     Decoder* m_decoder;
     QImage m_captureImage;

@@ -87,11 +87,13 @@ OTHER_FILES += \
 
 SOURCES += \
     harbour-lib/src/HarbourDisplayBlanking.cpp \
-    harbour-lib/src/HarbourMce.cpp
+    harbour-lib/src/HarbourMce.cpp \
+    harbour-lib/src/HarbourTask.cpp
 
 HEADERS += \
     harbour-lib/include/HarbourDebug.h \
     harbour-lib/include/HarbourDisplayBlanking.h \
+    harbour-lib/include/HarbourTask.h \
     harbour-lib/src/HarbourMce.h
 
 # zxing

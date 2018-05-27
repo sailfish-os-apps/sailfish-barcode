@@ -28,6 +28,9 @@ THE SOFTWARE.
 
 #define DCONF_PATH                      "/apps/harbour-barcode/"
 
+// New keys (the ones that have only been in dconf)
+#define KEY_SAVE_IMAGES                "save_images"
+
 #define DEFAULT_SOUND                   false
 #define DEFAULT_DIGITAL_ZOOM            3
 #define DEFAULT_SCAN_DURATION           20
@@ -35,6 +38,7 @@ THE SOFTWARE.
 #define DEFAULT_MARKER_COLOR            "#00FF00"
 #define DEFAULT_HISTORY_SIZE            50
 #define DEFAULT_SCAN_ON_START           false
+#define DEFAULT_SAVE_IMAGES             false
 
 // ==========================================================================
 // Settings::Private
@@ -52,6 +56,7 @@ public:
     MGConfItem* iMarkerColor;
     MGConfItem* iHistorySize;
     MGConfItem* iScanOnStart;
+    MGConfItem* iSaveImages;
 };
 
 Settings::Private::Private(Settings* aSettings) :
@@ -61,7 +66,8 @@ Settings::Private::Private(Settings* aSettings) :
     iResultViewDuration(new MGConfItem(DCONF_PATH KEY_RESULT_VIEW_DURATION, aSettings)),
     iMarkerColor(new MGConfItem(DCONF_PATH KEY_MARKER_COLOR, aSettings)),
     iHistorySize(new MGConfItem(DCONF_PATH KEY_HISTORY_SIZE, aSettings)),
-    iScanOnStart(new MGConfItem(DCONF_PATH KEY_SCAN_ON_START, aSettings))
+    iScanOnStart(new MGConfItem(DCONF_PATH KEY_SCAN_ON_START, aSettings)),
+    iSaveImages(new MGConfItem(DCONF_PATH KEY_SAVE_IMAGES, aSettings))
 {
     connect(iSound, SIGNAL(valueChanged()), aSettings, SIGNAL(soundChanged()));
     connect(iDigitalZoom, SIGNAL(valueChanged()), aSettings, SIGNAL(digitalZoomChanged()));
@@ -70,6 +76,7 @@ Settings::Private::Private(Settings* aSettings) :
     connect(iMarkerColor, SIGNAL(valueChanged()), aSettings, SIGNAL(markerColorChanged()));
     connect(iHistorySize, SIGNAL(valueChanged()), aSettings, SIGNAL(historySizeChanged()));
     connect(iScanOnStart, SIGNAL(valueChanged()), aSettings, SIGNAL(scanOnStartChanged()));
+    connect(iSaveImages, SIGNAL(valueChanged()), aSettings, SIGNAL(saveImagesChanged()));
 }
 
 // ==========================================================================
@@ -155,4 +162,14 @@ bool Settings::scanOnStart() const
 void Settings::setScanOnStart(bool aValue)
 {
     iPrivate->iScanOnStart->set(aValue);
+}
+
+bool Settings::saveImages() const
+{
+    return iPrivate->iSaveImages->value(DEFAULT_SAVE_IMAGES).toBool();
+}
+
+void Settings::setSaveImages(bool aValue)
+{
+    iPrivate->iSaveImages->set(aValue);
 }

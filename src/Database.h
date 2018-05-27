@@ -25,6 +25,7 @@ THE SOFTWARE.
 #ifndef BARCODE_DATABASE_H
 #define BARCODE_DATABASE_H
 
+#include <QDir>
 #include <QSqlDatabase>
 
 class QQmlEngine;
@@ -36,6 +37,7 @@ class Database {
 public:
     static void initialize(QQmlEngine* aEngine, Settings* aSettings);
     static QSqlDatabase database();
+    static QDir imageDir();
 };
 
 #endif // BARCODE_DATABASE_H

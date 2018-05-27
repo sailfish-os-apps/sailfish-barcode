@@ -28,6 +28,8 @@ THE SOFTWARE.
 #include <QObject>
 #include <QString>
 
+// Old keys (the ones that may need to be imported from the database)
+
 #define KEY_SOUND                   "sound"
 #define KEY_DIGITAL_ZOOM            "digital_zoom"
 #define KEY_SCAN_DURATION           "scan_duration"
@@ -45,31 +47,35 @@ class Settings : public QObject {
     Q_PROPERTY(QString markerColor READ markerColor WRITE setMarkerColor NOTIFY markerColorChanged)
     Q_PROPERTY(int historySize READ historySize WRITE setHistorySize NOTIFY historySizeChanged)
     Q_PROPERTY(bool scanOnStart READ scanOnStart WRITE setScanOnStart NOTIFY scanOnStartChanged)
+    Q_PROPERTY(bool saveImages READ saveImages WRITE setSaveImages NOTIFY saveImagesChanged)
 
 public:
     explicit Settings(QObject* aParent = Q_NULLPTR);
     ~Settings();
 
     bool sound() const;
-    void setSound(bool value);
+    void setSound(bool aValue);
 
     int digitalZoom() const;
-    void setDigitalZoom(int value);
+    void setDigitalZoom(int aValue);
 
     int scanDuration() const;
-    void setScanDuration(int value);
+    void setScanDuration(int aValue);
 
     int resultViewDuration() const;
-    void setResultViewDuration(int value);
+    void setResultViewDuration(int aValue);
 
     QString markerColor() const;
-    void setMarkerColor(QString value);
+    void setMarkerColor(QString aValue);
 
     int historySize() const;
-    void setHistorySize(int value);
+    void setHistorySize(int aValue);
 
     bool scanOnStart() const;
-    void setScanOnStart(bool value);
+    void setScanOnStart(bool aValue);
+
+    bool saveImages() const;
+    void setSaveImages(bool aValue);
 
 Q_SIGNALS:
     void soundChanged();
@@ -79,6 +85,7 @@ Q_SIGNALS:
     void markerColorChanged();
     void historySizeChanged();
     void scanOnStartChanged();
+    void saveImagesChanged();
 
 private:
     class Private;

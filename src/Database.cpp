@@ -40,6 +40,8 @@ THE SOFTWARE.
 #define SETTINGS_FIELD_KEY      "key"
 #define SETTINGS_FIELD_VALUE    "value"
 
+#define HISTORY_TMP_TABLE        HISTORY_TABLE "_tmp"
+
 // ==========================================================================
 // Database::Private
 // ==========================================================================
@@ -50,6 +52,7 @@ public:
     static const QString DB_NAME;
 
     static QString gDatabasePath;
+    static QDir gImageDir;
 
     typedef void (Settings::*SetBool)(bool aValue);
     typedef void (Settings::*SetInt)(int aValue);
@@ -68,6 +71,7 @@ const QString Database::Private::DB_TYPE("QSQLITE");
 const QString Database::Private::DB_NAME("CodeReader");
 
 QString Database::Private::gDatabasePath;
+QDir Database::Private::gImageDir;
 
 QVariant Database::Private::settingsValue(QSqlDatabase aDb, QString aKey)
 {
@@ -149,6 +153,10 @@ void Database::initialize(QQmlEngine* aEngine, Settings* aSettings)
         dir.mkpath(".");
     }
 
+    // Directory for storing the images (don't create it just yet)
+    Private::gImageDir = QDir(dir.path() + QDir::separator() +
+        QLatin1String("images"));
+
     // This is how LocalStorage plugin generates database file name
     QCryptographicHash md5(QCryptographicHash::Md5);
     md5.addData(Private::DB_NAME.toUtf8());
@@ -179,12 +187,47 @@ void Database::initialize(QQmlEngine* aEngine, Settings* aSettings)
         QSqlRecord record(db.record(history));
         if (record.indexOf(HISTORY_FIELD_FORMAT) < 0) {
             // There's no format field, need to add one
-            HDEBUG("Upgrading the database");
+            HDEBUG("Adding " HISTORY_FIELD_FORMAT " to the database");
             QSqlQuery query(db);
             query.prepare("ALTER TABLE " HISTORY_TABLE " ADD COLUMN "
                 HISTORY_FIELD_FORMAT " TEXT DEFAULT ''");
             if (!query.exec()) {
                 HWARN(query.lastError());
+            }
+            record = db.record(history);
+        }
+        if (record.indexOf(HISTORY_FIELD_ID) < 0) {
+            // QSQLITE can't add a primary key to the existing table.
+            // We need to create a new table, copy the old stuff over
+            // and rename the table.
+            static const char* stmts[] = {
+                "CREATE TABLE " HISTORY_TMP_TABLE " ("
+                   HISTORY_FIELD_ID " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                   HISTORY_FIELD_VALUE " TEXT, "
+                   HISTORY_FIELD_TIMESTAMP " TEXT, "
+                   HISTORY_FIELD_FORMAT" TEXT)",
+               "INSERT INTO " HISTORY_TMP_TABLE "("
+                   HISTORY_FIELD_VALUE ", "
+                   HISTORY_FIELD_TIMESTAMP ", "
+                   HISTORY_FIELD_FORMAT ") SELECT "
+                   HISTORY_FIELD_VALUE ", "
+                   HISTORY_FIELD_TIMESTAMP ", "
+                   HISTORY_FIELD_FORMAT " FROM " HISTORY_TABLE,
+               "DROP TABLE " HISTORY_TABLE,
+               "ALTER TABLE " HISTORY_TMP_TABLE " RENAME TO " HISTORY_TABLE,
+                NULL
+            };
+            HDEBUG("Adding " HISTORY_FIELD_ID " to the database");
+            HVERIFY(db.transaction());
+            bool ok = true;
+            for (int i = 0; ok && stmts[i]; i++) {
+                ok = QSqlQuery(db).exec(QLatin1String(stmts[i]));
+            }
+            if (ok) {
+                HVERIFY(db.commit());
+            } else {
+                HWARN(db.lastError());
+                HVERIFY(db.rollback());
             }
         }
         if (tables.contains(SETTINGS_TABLE)) {
@@ -217,6 +260,7 @@ void Database::initialize(QQmlEngine* aEngine, Settings* aSettings)
         HDEBUG("Initializing the database");
         QSqlQuery query(db);
         if (!query.exec("CREATE TABLE " HISTORY_TABLE " ("
+            HISTORY_FIELD_ID " INTEGER PRIMARY KEY AUTOINCREMENT, "
             HISTORY_FIELD_VALUE " TEXT, "
             HISTORY_FIELD_TIMESTAMP " TEXT, "
             HISTORY_FIELD_FORMAT " TEXT)")) {
@@ -230,4 +274,9 @@ QSqlDatabase Database::database()
     QSqlDatabase db = QSqlDatabase::database(Private::DB_NAME);
     HASSERT(db.isValid());
     return db;
+}
+
+QDir Database::imageDir()
+{
+    return Private::gImageDir;
 }

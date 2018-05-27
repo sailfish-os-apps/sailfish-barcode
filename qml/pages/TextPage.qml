@@ -31,13 +31,14 @@ import "../js/Utils.js" as Utils
 Page {
     id: textPage
 
-    property string text: ""
+    property string text
+    property string recordId
+    property bool hasImage
     property alias format: textArea.label
 
     onTextChanged: textArea.text = text
 
     onStatusChanged: {
-        console.log(status)
         if (status === PageStatus.Deactivating) {
             // Hide the keyboard on flick
             console.log("Hiding keyboard")
@@ -89,6 +90,7 @@ Page {
             }
 
             Button {
+                id: button
                 anchors.horizontalCenter: parent.horizontalCenter
                 //: Button text
                 //% "Open"
@@ -107,9 +109,26 @@ Page {
             }
 
             Item {
-                height: Theme.paddingMedium
+                visible: button.visible
+                height: Theme.paddingLarge
+                width: parent.width
+            }
+
+            Image {
+                id: image
+                anchors.horizontalCenter: parent.horizontalCenter
+                source: (hasImage && recordId.length && AppSettings.saveImages) ? "image://scanner/saved/" + recordId : ""
+                visible: status === Image.Ready
+                cache: false
+            }
+
+            Item {
+                visible: image.visible
+                height: Theme.paddingLarge
                 width: parent.width
             }
         }
+
+        VerticalScrollDecorator { }
     }
 }

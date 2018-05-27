@@ -24,14 +24,135 @@ THE SOFTWARE.
 
 #include "HistoryModel.h"
 #include "Database.h"
+#include "scanner/CaptureImageProvider.h"
 
 #include "HarbourDebug.h"
+#include "HarbourTask.h"
 
+#include <QDirIterator>
+#include <QThreadPool>
+#include <QFileInfo>
+#include <QImage>
+#include <QSqlQuery>
 #include <QSqlError>
 #include <QSqlRecord>
 #include <QSqlTableModel>
 
 #define DEFAULT_MAX_COUNT (100)
+
+// ==========================================================================
+// HistoryModel::CleanupTask
+// Removes image files not associated with any rows in the database
+// ==========================================================================
+
+class HistoryModel::CleanupTask : public HarbourTask {
+    Q_OBJECT
+public:
+    CleanupTask(QThreadPool* aPool, QStringList aList);
+    void performTask() Q_DECL_OVERRIDE;
+
+public:
+    QStringList iList;
+};
+
+HistoryModel::CleanupTask::CleanupTask(QThreadPool* aPool, QStringList aList) :
+    HarbourTask(aPool), iList(aList)
+{
+}
+
+void HistoryModel::CleanupTask::performTask()
+{
+    QDirIterator it(Database::imageDir().path(), QDir::Files);
+    while (it.hasNext()) {
+        it.next();
+        const QString name(it.fileName());
+        if (name.endsWith(CaptureImageProvider::IMAGE_EXT)) {
+            const QString base(name.left(name.length() -
+                CaptureImageProvider::IMAGE_EXT.length()));
+            const int pos = iList.indexOf(base);
+            if (pos >= 0) {
+                iList.removeAt(pos);
+            } else {
+                const QString path(it.filePath());
+                HDEBUG("deleting" << base << qPrintable(path));
+                if (!QFile::remove(path)) {
+                    HWARN("Failed to delete" << qPrintable(path));
+                }
+            }
+        }
+    }
+    HDEBUG("done");
+}
+
+// ==========================================================================
+// HistoryModel::SaveTask
+// ==========================================================================
+
+class HistoryModel::SaveTask : public HarbourTask {
+    Q_OBJECT
+public:
+    SaveTask(QThreadPool* aPool, QImage aImage, QString aId);
+    void performTask() Q_DECL_OVERRIDE;
+
+public:
+    QImage iImage;
+    QString iId;
+    QString iName;
+};
+
+HistoryModel::SaveTask::SaveTask(QThreadPool* aPool, QImage aImage, QString aId) :
+    HarbourTask(aPool), iImage(aImage), iId(aId),
+    iName(aId + CaptureImageProvider::IMAGE_EXT)
+{
+}
+
+void HistoryModel::SaveTask::performTask()
+{
+    QDir dir(Database::imageDir());
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
+    const QString path(dir.path() + QDir::separator() + iName);
+    HDEBUG(qPrintable(path));
+    if (!iImage.save(path)) {
+        HWARN("Fails to save" << qPrintable(path));
+    }
+    HDEBUG("done");
+}
+
+// ==========================================================================
+// HistoryModel::PurgeTask
+// ==========================================================================
+
+class HistoryModel::PurgeTask : public HarbourTask {
+    Q_OBJECT
+public:
+    PurgeTask(QThreadPool* aPool) : HarbourTask(aPool) {}
+    void performTask() Q_DECL_OVERRIDE;
+};
+
+void HistoryModel::PurgeTask::performTask()
+{
+    QDirIterator it(Database::imageDir().path(), QDir::Files);
+    while (it.hasNext()) {
+        it.next();
+        const QString name(it.fileName());
+        if (name.endsWith(CaptureImageProvider::IMAGE_EXT)) {
+            bool ok = false;
+            const QString base(name.left(name.length() -
+                CaptureImageProvider::IMAGE_EXT.length()));
+            base.toInt(&ok);
+            if (ok) {
+                const QString path(it.filePath());
+                HDEBUG("deleting" << base << qPrintable(path));
+                if (!QFile::remove(path)) {
+                    HWARN("Failed to delete" << qPrintable(path));
+                }
+            }
+        }
+    }
+    HDEBUG("done");
+}
 
 // ==========================================================================
 // HistoryModel::Private
@@ -41,15 +162,17 @@ class HistoryModel::Private : public QSqlTableModel {
     Q_OBJECT
 public:
     enum {
+        FIELD_ID,
         FIELD_VALUE,
-        FIELD_TIMESTAMP,
+        FIELD_TIMESTAMP, // DB_SORT_COLUMN (see below)
         FIELD_FORMAT,
         NUM_FIELDS
     };
-    static const int DB_SORT_COLUMN = 1;
+    static const int DB_SORT_COLUMN = FIELD_TIMESTAMP;
     static const QString DB_TABLE;
     static const QString DB_FIELD[NUM_FIELDS];
 
+#define DB_FIELD_ID DB_FIELD[HistoryModel::Private::FIELD_ID]
 #define DB_FIELD_VALUE DB_FIELD[HistoryModel::Private::FIELD_VALUE]
 #define DB_FIELD_TIMESTAMP DB_FIELD[HistoryModel::Private::FIELD_TIMESTAMP]
 #define DB_FIELD_FORMAT DB_FIELD[HistoryModel::Private::FIELD_FORMAT]
@@ -58,13 +181,20 @@ public:
     ~Private();
 
     HistoryModel* historyModel() const;
+    QVariant valueAt(int aRow, int aField) const;
     bool removeExtraRows(int aReserve = 0);
     void commitChanges();
+    void cleanupFiles();
 
     QHash<int,QByteArray> roleNames() const Q_DECL_OVERRIDE;
     QVariant data(const QModelIndex& aIndex, int aRole) const Q_DECL_OVERRIDE;
 
+private Q_SLOTS:
+    void onSaveDone();
+
 public:
+    QThreadPool* iThreadPool;
+    bool iSaveImages;
     int iMaxCount;
     int iLastKnownCount;
     int iFieldIndex[NUM_FIELDS];
@@ -72,6 +202,7 @@ public:
 
 const QString HistoryModel::Private::DB_TABLE(QLatin1String(HISTORY_TABLE));
 const QString HistoryModel::Private::DB_FIELD[] = {
+    QLatin1String(HISTORY_FIELD_ID),
     QLatin1String(HISTORY_FIELD_VALUE),
     QLatin1String(HISTORY_FIELD_TIMESTAMP),
     QLatin1String(HISTORY_FIELD_FORMAT)
@@ -79,9 +210,12 @@ const QString HistoryModel::Private::DB_FIELD[] = {
 
 HistoryModel::Private::Private(HistoryModel* aPublicModel) :
     QSqlTableModel(aPublicModel, Database::database()),
+    iThreadPool(new QThreadPool(this)),
+    iSaveImages(true),
     iMaxCount(DEFAULT_MAX_COUNT),
     iLastKnownCount(0)
 {
+    iThreadPool->setMaxThreadCount(1);
     for (int i = 0; i < NUM_FIELDS; i++) iFieldIndex[i] = -1;
     QSqlDatabase db = database();
     if (db.open()) {
@@ -103,11 +237,14 @@ HistoryModel::Private::Private(HistoryModel* aPublicModel) :
         sort(sortColumn, Qt::DescendingOrder);
     }
     setEditStrategy(QSqlTableModel::OnManualSubmit);
+    // At startup we assume that images are being saved
+    cleanupFiles();
 }
 
 HistoryModel::Private::~Private()
 {
     commitChanges();
+    iThreadPool->waitForDone();
 }
 
 HistoryModel* HistoryModel::Private::historyModel() const
@@ -140,6 +277,17 @@ QVariant HistoryModel::Private::data(const QModelIndex& aIndex, int aRole) const
     return QVariant();
 }
 
+QVariant HistoryModel::Private::valueAt(int aRow, int aField) const
+{
+    if (aField >= 0 && aField < NUM_FIELDS) {
+        const int column = iFieldIndex[aField];
+        if (column >= 0) {
+            return QSqlTableModel::data(index(aRow, column));
+        }
+    }
+    return QVariant();
+}
+
 bool HistoryModel::Private::removeExtraRows(int aReserve)
 {
     if (iMaxCount > 0) {
@@ -165,12 +313,43 @@ void HistoryModel::Private::commitChanges()
         QSqlDatabase db = database();
         db.transaction();
         HDEBUG("Commiting changes");
-       if (submitAll()) {
+        if (submitAll()) {
             db.commit();
         } else {
             HWARN(db.lastError());
             db.rollback();
         }
+    }
+}
+
+void HistoryModel::Private::cleanupFiles()
+{
+    QSqlQuery query(database());
+    query.prepare("SELECT " HISTORY_FIELD_ID " FROM " HISTORY_TABLE);
+    if (query.exec()) {
+        QStringList ids;
+        while (query.next()) {
+            ids.append(query.value(0).toString());
+        }
+        // Submit the cleanup task
+        HDEBUG("ids:" << ids);
+        HarbourTask* task = new CleanupTask(iThreadPool, ids);
+        task->submit();
+        task->release();
+    } else {
+        HWARN(query.lastError());
+    }
+}
+
+void HistoryModel::Private::onSaveDone()
+{
+    SaveTask* task = qobject_cast<SaveTask*>(sender());
+    HASSERT(task);
+    if (task) {
+        if (CaptureImageProvider::instance()) {
+            CaptureImageProvider::instance()->dropFromCache(task->iId);
+        }
+        task->release();
     }
 }
 
@@ -222,32 +401,67 @@ void HistoryModel::setMaxCount(int aValue)
         if (iPrivate->removeExtraRows()) {
             invalidateFilter();
             commitChanges();
+            iPrivate->cleanupFiles();
         }
         Q_EMIT maxCountChanged();
     }
 }
 
+bool HistoryModel::saveImages() const
+{
+    return iPrivate->iSaveImages;
+}
+
+void HistoryModel::setSaveImages(bool aValue)
+{
+    if (iPrivate->iSaveImages != aValue) {
+        iPrivate->iSaveImages = aValue;
+        HDEBUG(aValue);
+        if (!aValue) {
+            if (CaptureImageProvider::instance()) {
+                CaptureImageProvider::instance()->clearCache();
+            }
+            // Delete all files on a separate thread
+            HarbourTask* task = new PurgeTask(iPrivate->iThreadPool);
+            task->submit();
+            task->release();
+        }
+        Q_EMIT saveImagesChanged();
+    }
+}
+
 QVariantMap HistoryModel::get(int aRow)
 {
+    QString id;
     QVariantMap map;
     QModelIndex modelIndex = index(aRow, 0);
     for (int i = 0; i < Private::NUM_FIELDS; i++) {
         QVariant value = data(modelIndex, Qt::UserRole + i);
         if (value.isValid()) {
             map.insert(Private::DB_FIELD[i], value);
+            if (i == Private::FIELD_ID) {
+                id = value.toString();
+            }
         }
     }
+    // Addition field telling QML whether image file exists
+    static const QString HAS_IMAGE("hasImage");
+    QString path(Database::imageDir().path() + QDir::separator() + id +
+        CaptureImageProvider::IMAGE_EXT);
+    map.insert(HAS_IMAGE, QVariant::fromValue(QFile::exists(path)));
+
     HDEBUG(aRow << map);
     return map;
 }
 
 QString HistoryModel::getValue(int aRow)
 {
-    return data(index(aRow, 0), Qt::UserRole + Private::FIELD_VALUE).toString();
+    return iPrivate->valueAt(aRow, Private::FIELD_VALUE).toString();
 }
 
-void HistoryModel::insert(QString aText, QString aFormat)
+QString HistoryModel::insert(QString aText, QString aFormat)
 {
+    QString id;
     QString timestamp(QDateTime::currentDateTime().toString(Qt::ISODate));
     HDEBUG(aText << aFormat << timestamp);
     QSqlRecord record(iPrivate->database().record(Private::DB_TABLE));
@@ -258,9 +472,25 @@ void HistoryModel::insert(QString aText, QString aFormat)
         invalidateFilter();
         commitChanges();
     }
-    iPrivate->insertRecord(0, record);
-    invalidateFilter();
-    commitChanges();
+    const int row = 0;
+    if (iPrivate->insertRecord(row, record)) {
+        invalidateFilter();
+        // Just commit the changes, no need for cleanup:
+        iPrivate->commitChanges();
+        id = iPrivate->valueAt(row, Private::FIELD_ID).toString();
+        HDEBUG(id << iPrivate->record(row));
+        if (iPrivate->iSaveImages) {
+            // Save the image on a separate thread. While we are saving
+            // it, the image will remain cached by CaptureImageProvider.
+            // It will be removed from the cache by Private::onSaveDone()
+            CaptureImageProvider* ip = CaptureImageProvider::instance();
+            if (ip && ip->cacheMarkedImage(id)) {
+                (new SaveTask(iPrivate->iThreadPool, ip->iMarkedImage, id))->
+                    submit(iPrivate, SLOT(onSaveDone()));
+            }
+        }
+    }
+    return id;
 }
 
 void HistoryModel::remove(int aRow)
@@ -283,6 +513,9 @@ void HistoryModel::removeAll()
 void HistoryModel::commitChanges()
 {
     iPrivate->commitChanges();
+    if (iPrivate->iSaveImages) {
+        iPrivate->cleanupFiles();
+    }
 }
 
 QString HistoryModel::formatTimestamp(QString aTimestamp)

@@ -2,6 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
+Copyright (c) 2018 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,18 +27,30 @@ THE SOFTWARE.
 #define CAPTUREIMAGEPROVIDER_H
 
 #include <QImage>
-#include <QString>
 #include <QQuickImageProvider>
 
 class CaptureImageProvider : public QQuickImageProvider {
 public:
-    CaptureImageProvider() : QQuickImageProvider(QQuickImageProvider::Image) { }
-    QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize);
+    CaptureImageProvider();
+    ~CaptureImageProvider();
 
-    static void setMarkedImage(QImage img) { markedImage = img; }
+    static const QString IMAGE_EXT;
+
+    static CaptureImageProvider* instance();
+
+    QImage requestImage(const QString& aId, QSize* aSize,
+        const QSize& aRequested) Q_DECL_OVERRIDE;
+
+    bool cacheMarkedImage(QString aImageId);
+    void dropFromCache(QString aImageId);
+    void clearCache();
+
+public:
+    QImage iMarkedImage;
 
 private:
-    static QImage markedImage;
+    class Private;
+    Private* iPrivate;
 };
 
 #endif // CAPTUREIMAGEPROVIDER_H

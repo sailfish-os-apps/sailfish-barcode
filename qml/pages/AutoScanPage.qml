@@ -88,8 +88,8 @@ Page {
         console.log(result.format, text)
         if (text.length > 0) {
             Clipboard.text = text
-            clickableResult.setValue(text, result.format)
-            historyModel.insert(text, result.format)
+            var recId = historyModel.insert(text, result.format)
+            clickableResult.setValue(recId, text, result.format)
         }
     }
 
@@ -548,16 +548,19 @@ Page {
                 id: clickableResult
 
                 property bool isLink: false
+                property string recordId: ""
                 property string text: ""
                 property string format: ""
 
-                function setValue(text, format) {
+                function setValue(recId, text, format) {
+                    clickableResult.recordId = recId
                     clickableResult.text = Utils.getValueText(text)
                     clickableResult.format = Utils.barcodeFormat(format)
                     clickableResult.isLink = Utils.isLink(text)
                 }
 
                 function clear() {
+                    clickableResult.recordId = ""
                     clickableResult.text = ""
                     clickableResult.format = ""
                     clickableResult.isLink = false
@@ -619,6 +622,8 @@ Page {
                             holdOffTimer.restart()
                         } else {
                             pageStack.push("TextPage.qml", {
+                                hasImage: AppSettings.saveImages,
+                                recordId: clickableResult.recordId,
                                 text: clickableResult.text,
                                 format: clickableResult.format
                             })

@@ -37,7 +37,7 @@ THE SOFTWARE.
 
 #include <fstream>
 
-#ifdef DEBUG
+#ifdef HARBOUR_DEBUG
 static void saveDebugImage(const QImage& aImage, const QString& aFileName)
 {
     QString path = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation) + "/codereader/" + aFileName;
@@ -60,10 +60,18 @@ AutoBarcodeScanner::AutoBarcodeScanner(QObject* parent) :
     m_markerColor(QColor(0, 255, 0)) // default green
 {
     HDEBUG("start init AutoBarcodeScanner");
-
-    createConnections();
     m_timeoutTimer->setSingleShot(true);
-    connect(m_timeoutTimer, SIGNAL(timeout()), this, SLOT(onScanningTimeout()));
+    connect(m_timeoutTimer, SIGNAL(timeout()),
+        this, SLOT(onScanningTimeout()));
+
+    // Handled on the main thread
+    connect(this, SIGNAL(decodingDone(QImage,Decoder::Result)),
+        SLOT(onDecodingDone(QImage,Decoder::Result)),
+        Qt::QueuedConnection);
+
+    // Forward needImage emitted by the decoding thread
+    connect(this, SIGNAL(needImage()), SLOT(onGrabImage()),
+        Qt::QueuedConnection);
 }
 
 AutoBarcodeScanner::~AutoBarcodeScanner()
@@ -74,16 +82,6 @@ AutoBarcodeScanner::~AutoBarcodeScanner()
     stopScanning();
     m_scanFuture.waitForFinished();
     delete m_decoder;
-}
-
-void AutoBarcodeScanner::createConnections()
-{
-    // Handled on the main thread
-    connect(this, SIGNAL(decodingDone(QImage,Decoder::Result)),
-            this, SLOT(onDecodingDone(QImage,Decoder::Result)),
-            Qt::QueuedConnection);
-    // Forward needImage emitted by the decoding thread
-    connect(this, SIGNAL(needImage()), this, SLOT(onGrabImage()), Qt::QueuedConnection);
 }
 
 void AutoBarcodeScanner::onGrabImage()
@@ -270,11 +268,28 @@ void AutoBarcodeScanner::onDecodingDone(QImage aImage, Decoder::Result aResult)
 {
     HDEBUG(aResult.getText());
     if (!aImage.isNull()) {
+        const QList<QPointF> points(aResult.getPoints());
         HDEBUG("image:" << aImage);
-        HDEBUG("points:" << aResult.getPoints());
+        HDEBUG("points:" << points);
         HDEBUG("format:" << aResult.getFormat() << aResult.getFormatName());
-        markLastCaptureImage(aImage, aResult.getPoints());
+        if (!points.isEmpty()) {
+            QPainter painter(&aImage);
+            painter.setPen(m_markerColor);
+            QBrush markerBrush(m_markerColor);
+            for (int i = 0; i < points.size(); i++) {
+                const QPoint p(points.at(i).toPoint());
+                painter.fillRect(QRect(p.x()-3, p.y()-15, 6, 30), markerBrush);
+                painter.fillRect(QRect(p.x()-15, p.y()-3, 30, 6), markerBrush);
+            }
+            painter.end();
+            saveDebugImage(aImage, "debug_marks.bmp");
+        }
     }
+
+    if (CaptureImageProvider::instance()) {
+        CaptureImageProvider::instance()->iMarkedImage = aImage;
+    }
+
     m_captureImage = QImage();
     m_timeoutTimer->stop();
     m_flagScanRunning = false;
@@ -284,23 +299,6 @@ void AutoBarcodeScanner::onDecodingDone(QImage aImage, Decoder::Result aResult)
     result.insert("text", QVariant::fromValue(aResult.getText()));
     result.insert("format", QVariant::fromValue(aResult.getFormatName()));
     emit decodingFinished(result);
-}
-
-void AutoBarcodeScanner::markLastCaptureImage(QImage aImage, QList<QPointF> aPoints)
-{
-    if (!aPoints.isEmpty()) {
-        QPainter painter(&aImage);
-        painter.setPen(m_markerColor);
-        QBrush markerBrush(m_markerColor);
-        for (int i = 0; i < aPoints.size(); i++) {
-            QPoint p(aPoints.at(i).toPoint());
-            painter.fillRect(QRect(p.x()-3, p.y()-15, 6, 30), markerBrush);
-            painter.fillRect(QRect(p.x()-15, p.y()-3, 30, 6), markerBrush);
-        }
-        painter.end();
-        saveDebugImage(aImage, "debug_marks.bmp");
-    }
-    CaptureImageProvider::setMarkedImage(aImage);
 }
 
 void AutoBarcodeScanner::onScanningTimeout()

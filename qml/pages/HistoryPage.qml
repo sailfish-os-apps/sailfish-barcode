@@ -63,6 +63,8 @@ Page {
             onClicked: {
                 var historyItem = historyList.model.get(index)
                 pageStack.push("TextPage.qml", {
+                    hasImage: historyItem.hasImage,
+                    recordId: historyItem.id,
                     text: historyItem.value,
                     format: Utils.barcodeFormat(historyItem.format)
                 })

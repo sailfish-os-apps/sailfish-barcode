@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include <QSortFilterProxyModel>
 
 #define HISTORY_TABLE           "history"
+#define HISTORY_FIELD_ID        "id"
 #define HISTORY_FIELD_VALUE     "value"
 #define HISTORY_FIELD_TIMESTAMP "timestamp"
 #define HISTORY_FIELD_FORMAT    "format"
@@ -37,6 +38,7 @@ class HistoryModel: public QSortFilterProxyModel {
     Q_OBJECT
     Q_PROPERTY(int count READ rowCount NOTIFY countChanged)
     Q_PROPERTY(int maxCount READ maxCount WRITE setMaxCount NOTIFY maxCountChanged)
+    Q_PROPERTY(bool saveImages READ saveImages WRITE setSaveImages NOTIFY saveImagesChanged)
 
 public:
     HistoryModel(QObject* aParent = NULL);
@@ -44,9 +46,12 @@ public:
     int maxCount() const;
     void setMaxCount(int aValue);
 
+    bool saveImages() const;
+    void setSaveImages(bool aValue);
+
     Q_INVOKABLE QVariantMap get(int row);
     Q_INVOKABLE QString getValue(int row);
-    Q_INVOKABLE void insert(QString value, QString format);
+    Q_INVOKABLE QString insert(QString value, QString format);
     Q_INVOKABLE void remove(int row);
     Q_INVOKABLE void removeAll();
     Q_INVOKABLE void commitChanges();
@@ -63,9 +68,13 @@ private Q_SLOTS:
 Q_SIGNALS:
     void countChanged();
     void maxCountChanged();
+    void saveImagesChanged();
 
 private:
     class Private;
+    class SaveTask;
+    class CleanupTask;
+    class PurgeTask;
     Private* iPrivate;
 };
 

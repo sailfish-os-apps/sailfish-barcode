@@ -39,6 +39,7 @@ ApplicationWindow {
     HistoryModel {
         id: historyModel
         maxCount: AppSettings.historySize
+        saveImages: AppSettings.saveImages
     }
 
     initialPage:  Component { Page {} }
