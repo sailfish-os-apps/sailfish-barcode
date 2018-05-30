@@ -40,6 +40,10 @@ function removeLineBreak(text) {
     return text.replace(/\n/g, " ");
 }
 
+function convertLineBreaks(text) {
+    return text.replace(/\r\n/g, "\n");
+}
+
 function getValueText(value) {
     if (isLink(value)) {
         return value

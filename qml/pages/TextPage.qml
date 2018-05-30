@@ -36,6 +36,7 @@ Page {
     property bool hasImage
     property bool canDelete
     property alias format: textArea.label
+    readonly property string normalizedText: Utils.convertLineBreaks(text)
 
     onTextChanged: textArea.text = text
 
@@ -88,7 +89,7 @@ Page {
                     currentCursorPosition = cursorPosition
                 }
                 onTextChanged: {
-                    if (text !== textPage.text) {
+                    if (Utils.convertLineBreaks(text) !== textPage.normalizedText) {
                         text = textPage.text
                         // The text doesn't actually get updated until the
                         // cursor position changes
