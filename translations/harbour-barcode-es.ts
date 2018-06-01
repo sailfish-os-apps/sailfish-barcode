@@ -155,8 +155,8 @@
         <source>%1 second(s)</source>
         <extracomment>Marker slider value</extracomment>
         <translation type="unfinished">
+            <numerusform>%1 segundo</numerusform>
             <numerusform>%1 segundos</numerusform>
-            <numerusform></numerusform>
         </translation>
     </message>
     <message id="history-title">
@@ -200,9 +200,9 @@
         <translation>Texto decodificado</translation>
     </message>
     <message id="text-open_link">
-        <source>Open</source>
+        <source>Open link</source>
         <extracomment>Button text</extracomment>
-        <translation type="unfinished">Abrir</translation>
+        <translation>Abrir enlace</translation>
     </message>
     <message id="notification-copied_to_clipboard">
         <source>Copied to clipboard</source>

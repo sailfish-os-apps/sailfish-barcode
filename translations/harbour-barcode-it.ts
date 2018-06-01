@@ -111,7 +111,7 @@
     <message id="settings-history-section">
         <source>History</source>
         <extracomment>Section header</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Cronologia</translation>
     </message>
     <message id="settings-history-slider_label">
         <source>Max history size (saved values: %1)</source>
@@ -155,14 +155,14 @@
         <source>%1 second(s)</source>
         <extracomment>Marker slider value</extracomment>
         <translation type="unfinished">
+            <numerusform>%1 secondo</numerusform>
             <numerusform>%1 secondi</numerusform>
-            <numerusform></numerusform>
         </translation>
     </message>
     <message id="history-title">
         <source>History</source>
         <extracomment>History page title</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Cronologia</translation>
     </message>
     <message id="history-menu-delete_all">
         <source>Delete all</source>
@@ -200,9 +200,9 @@
         <translation type="unfinished"></translation>
     </message>
     <message id="text-open_link">
-        <source>Open</source>
+        <source>Open link</source>
         <extracomment>Button text</extracomment>
-        <translation type="unfinished">Apri</translation>
+        <translation>Apri link</translation>
     </message>
     <message id="notification-copied_to_clipboard">
         <source>Copied to clipboard</source>

@@ -107,7 +107,7 @@ Page {
                 id: button
                 anchors.horizontalCenter: parent.horizontalCenter
                 //: Button text
-                //% "Open"
+                //% "Open link"
                 text: qsTrId("text-open_link")
                 visible: Utils.isLink(textPage.text)
                 enabled: !holdOffTimer.running
