@@ -37,17 +37,37 @@ Page {
     property bool canDelete
     property alias format: textArea.label
     readonly property string normalizedText: Utils.convertLineBreaks(text)
-
-    onTextChanged: textArea.text = text
+    readonly property bool isVCard: Utils.isVcard(normalizedText)
+    readonly property bool haveContact: vcard ? (vcard.count > 0) : false
+    property var vcard
 
     signal deleteEntry()
+
+    onNormalizedTextChanged: {
+        textArea.text = normalizedText
+        if (vcard) {
+            vcard.content = normalizedText
+        }
+    }
+
+    onIsVCardChanged: {
+        if (isVCard && !vcard) {
+            var component = Qt.createComponent("VCard.qml");
+            if (component.status === Component.Ready) {
+                vcard = component.createObject(textPage, { content: text })
+            }
+        }
+    }
 
     onStatusChanged: {
         if (status === PageStatus.Deactivating) {
             // Hide the keyboard on flick
-            console.log("Hiding keyboard")
             textArea.focus = false
         }
+    }
+
+    function importContact() {
+        vcard.importContact()
     }
 
     SilicaFlickable {
@@ -89,8 +109,8 @@ Page {
                     currentCursorPosition = cursorPosition
                 }
                 onTextChanged: {
-                    if (Utils.convertLineBreaks(text) !== textPage.normalizedText) {
-                        text = textPage.text
+                    if (text !== textPage.normalizedText) {
+                        text = textPage.normalizedText
                         // The text doesn't actually get updated until the
                         // cursor position changes
                         cursorPosition = lastCursorPosition
@@ -124,6 +144,37 @@ Page {
 
             Item {
                 visible: button.visible
+                height: Theme.paddingLarge
+                width: parent.width
+            }
+
+            Button {
+                id: contactButton
+                anchors.horizontalCenter: parent.horizontalCenter
+                //: Button text
+                //% "Contact card"
+                text: qsTrId("text-contact_card")
+                visible: haveContact
+                onClicked: {
+                    // Workaround for Sailfish.Contacts not being allowed in harbour apps
+                    var page = Qt.createQmlObject('import QtQuick 2.0;import Sailfish.Silica 1.0;import Sailfish.Contacts 1.0; \
+                        Page { property var parentPage; \
+                            property alias contact: card.contact; property alias saveText: saveMenu.text; \
+                            ContactCard { id: card; PullDownMenu { MenuItem { id: saveMenu; \
+                                onClicked: { parentPage.importContact(); pageStack.pop() }}}}}',
+                        textPage, "ContactPage")
+                    pageStack.push(page, {
+                        contact: vcard.contact(),
+                        parentPage: textPage,
+                        //: Pulley menu item (saves contact)
+                        //% "Save"
+                        saveText: qsTrId("contact-menu-save")
+                    })
+                }
+            }
+
+            Item {
+                visible: contactButton.visible
                 height: Theme.paddingLarge
                 width: parent.width
             }

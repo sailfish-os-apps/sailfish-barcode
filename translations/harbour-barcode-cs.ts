@@ -206,6 +206,21 @@
         <extracomment>Button text</extracomment>
         <translation>Otevřít odkaz</translation>
     </message>
+    <message id="text-contact_card">
+        <source>Contact card</source>
+        <extracomment>Button text</extracomment>
+        <translation>Karta kontaktu</translation>
+    </message>
+    <message id="contact-menu-save">
+        <source>Save</source>
+        <extracomment>Pulley menu item (saves contact)</extracomment>
+        <translation>Uložit</translation>
+    </message>
+    <message id="contact-notification-saved">
+        <source>Saved contact</source>
+        <extracomment>Pop-up notification</extracomment>
+        <translation>Kontakt uložen</translation>
+    </message>
     <message id="notification-copied_to_clipboard">
         <source>Copied to clipboard</source>
         <extracomment>Pop-up notification</extracomment>

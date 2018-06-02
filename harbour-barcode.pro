@@ -19,6 +19,8 @@ PKGCONFIG += sailfishapp mlite5
 
 QT += multimedia concurrent sql
 
+LIBS += -ldl
+
 isEmpty(VERSION) {
     VERSION = 1.0.9
     message("VERSION is unset, assuming $$VERSION")
@@ -36,6 +38,7 @@ CONFIG(debug, debug|release) {
 }
 
 SOURCES += \
+    src/ContactsPlugin.cpp \
     src/Database.cpp \
     src/harbour-barcode.cpp \
     src/HistoryModel.cpp \
@@ -46,6 +49,7 @@ SOURCES += \
     src/scanner/ImageSource.cpp
 
 HEADERS += \
+    src/ContactsPlugin.h \
     src/Database.h \
     src/HistoryModel.h \
     src/Settings.h \
@@ -78,6 +82,7 @@ OTHER_FILES += \
     qml/pages/img/maxicode_240.png \
     qml/pages/img/pdf417_240.png \
     qml/pages/AutoScanPage.qml \
+    qml/pages/VCard.qml \
     qml/pages/SettingsPage.qml \
     qml/pages/TextPage.qml \
     qml/pages/HistoryPage.qml \
@@ -88,12 +93,16 @@ OTHER_FILES += \
 SOURCES += \
     harbour-lib/src/HarbourDisplayBlanking.cpp \
     harbour-lib/src/HarbourMce.cpp \
-    harbour-lib/src/HarbourTask.cpp
+    harbour-lib/src/HarbourPluginLoader.cpp \
+    harbour-lib/src/HarbourTask.cpp \
+    harbour-lib/src/HarbourTemporaryFile.cpp
 
 HEADERS += \
     harbour-lib/include/HarbourDebug.h \
     harbour-lib/include/HarbourDisplayBlanking.h \
+    harbour-lib/include/HarbourPluginLoader.h \
     harbour-lib/include/HarbourTask.h \
+    harbour-lib/include/HarbourTemporaryFile.h \
     harbour-lib/src/HarbourMce.h
 
 # zxing

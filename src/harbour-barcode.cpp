@@ -37,7 +37,9 @@ THE SOFTWARE.
 
 #include "HarbourDebug.h"
 #include "HarbourDisplayBlanking.h"
+#include "HarbourTemporaryFile.h"
 
+#include "ContactsPlugin.h"
 #include "Database.h"
 #include "HistoryModel.h"
 #include "Settings.h"
@@ -46,9 +48,11 @@ THE SOFTWARE.
 #  define ""
 #endif
 
-static void register_types(const char* uri, int v1 = 1, int v2 = 0)
+static void register_types(QQmlEngine* engine, const char* uri, int v1, int v2)
 {
+    ContactsPlugin::registerTypes(engine, uri, v1, v2);
     qmlRegisterType<HarbourDisplayBlanking>(uri, v1, v2, "DisplayBlanking");
+    qmlRegisterType<HarbourTemporaryFile>(uri, v1, v2, "TemporaryFile");
     qmlRegisterType<AutoBarcodeScanner>(uri, v1, v2, "AutoBarcodeScanner");
     qmlRegisterType<HistoryModel>(uri, v1, v2, "HistoryModel");
 }
@@ -56,8 +60,6 @@ static void register_types(const char* uri, int v1 = 1, int v2 = 0)
 int main(int argc, char *argv[])
 {
     QScopedPointer<QGuiApplication> app(SailfishApp::application(argc, argv));
-    register_types("harbour.barcode");
-
     bool torchSupported = false;
 
     // Parse Qt version to find out what's supported and what's not
@@ -99,6 +101,7 @@ int main(int argc, char *argv[])
     QScopedPointer<QQuickView> view(SailfishApp::createView());
 
     QQmlEngine* engine = view->engine();
+    register_types(engine, "harbour.barcode", 1, 0);
     engine->addImageProvider("scanner", new CaptureImageProvider());
 
     Settings* settings = new Settings(app.data());

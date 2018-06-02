@@ -25,11 +25,15 @@ THE SOFTWARE.
 
 .pragma library
 
+function isVcard(text) {
+    var vcard = text.match(/^(BEGIN:VCARD(\r|\n)+)/)
+    return vcard && vcard.length > 0
+}
+
 function isLink(text) {
-    var urls = text.match(/^(http[s]*:\/\/.{3,500}|www\..{3,500}|sms:.*)$/);
-    var vcard = text.match(/^(.+VCARD.+)$/);
+    var urls = text.match(/^(http[s]*:\/\/.{3,500}|www\..{3,500}|sms:.*)$/)
     // is a known url scheme and not a vcard
-    return (urls && urls.length > 0 && !(vcard && vcard.length > 0));
+    return urls && urls.length > 0 && !isVcard(text)
 }
 
 function isText(text) {
@@ -37,11 +41,11 @@ function isText(text) {
 }
 
 function removeLineBreak(text) {
-    return text.replace(/\n/g, " ");
+    return text.replace(/(\r|\n)+/g, ' ')
 }
 
 function convertLineBreaks(text) {
-    return text.replace(/\r\n/g, "\n");
+    return text.replace(/\r\n/g, '\n')
 }
 
 function getValueText(value) {
@@ -90,7 +94,6 @@ function barcodeFormat(format) {
     } else if (format == "ASSUME_GS1") {
         return "GS1"
     } else {
-        return "";
+        return ""
     }
-
 }

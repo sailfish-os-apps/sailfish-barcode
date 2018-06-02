@@ -554,7 +554,7 @@ Page {
 
                 function setValue(recId, text, format) {
                     clickableResult.recordId = recId
-                    clickableResult.text = Utils.getValueText(text)
+                    clickableResult.text = text
                     clickableResult.format = Utils.barcodeFormat(format)
                     clickableResult.isLink = Utils.isLink(text)
                 }
@@ -573,7 +573,7 @@ Page {
                 Item {
                     height: parent.height
                     width: parentViewFinder.x
-                    visible: clickableResult.text !== ""
+                    visible: clickableResult.text.length > 0
                     anchors.verticalCenter: parent.verticalCenter
                     IconButton {
                         id: clipboardButton
@@ -600,7 +600,7 @@ Page {
                         width: parent.width - x
                         anchors.verticalCenter: parent.verticalCenter
                         Label {
-                            text: clickableResult.text
+                            text: Utils.getValueText(clickableResult.text)
                             color: resultItem.highlighted ? Theme.highlightColor : Theme.primaryColor
                             width: parent.width
                             truncationMode: TruncationMode.Fade
