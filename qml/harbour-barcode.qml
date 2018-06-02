@@ -32,8 +32,11 @@ import "pages"
 ApplicationWindow {
     id: window
 
-    function getMainPage() {
-        return mainPage
+    function startScan() {
+        while (pageStack.pop(null, PageStackAction.Immediate));
+        while (pageStack.depth > 1 && pageStack.popAttached(null, PageStackAction.Immediate));
+        pageStack.pushAttached(historyPage)
+        pageStack.currentPage.requestScan()
     }
 
     HistoryModel {
@@ -42,19 +45,18 @@ ApplicationWindow {
         saveImages: AppSettings.saveImages
     }
 
-    initialPage:  Component { Page {} }
+    initialPage: mainPage
     cover: Qt.resolvedUrl("cover/CoverPage.qml")
 
-    Component.onCompleted: {
-        console.log("ApplicationWindow onCompleted")
-        pageStack.replace(mainPage)
-        pageStack.pushAttached(historyPage)
-    }
+    Component.onCompleted: pageStack.pushAttached(historyPage)
 
     Component {
         id: mainPage
-        AutoScanPage {}
+        AutoScanPage {
+            flagAutoScan: AppSettings.scanOnStart
+        }
     }
+
     Component {
         id: historyPage
         HistoryPage {}

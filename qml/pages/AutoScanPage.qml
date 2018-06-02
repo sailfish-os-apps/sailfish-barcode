@@ -35,10 +35,7 @@ Page {
     id: scanPage
 
     property Item viewFinder
-
-    property bool flagAutoScan: true
-    property bool flagScanByCover: false
-
+    property bool flagAutoScan
     property int scanTimeout: 60
 
     function createScanner() {
@@ -53,7 +50,7 @@ Page {
             viewFinder.source.start()
             autoStart()
         } else {
-            stateAbort();
+            stateAbort()
         }
     }
 
@@ -72,14 +69,12 @@ Page {
     }
 
     function autoStart() {
-        if (viewFinder) {
-            if (flagScanByCover || (flagAutoScan && AppSettings.scanOnStart)) {
+        if (viewFinder && viewFinder.cameraActive) {
+            if (flagAutoScan) {
                 console.log("auto-starting scan ...")
-                startScan();
+                startScan()
             }
-
             flagAutoScan = false
-            flagScanByCover = false
         }
     }
 
@@ -90,6 +85,14 @@ Page {
             Clipboard.text = text
             var recId = historyModel.insert(text, result.format)
             clickableResult.setValue(recId, text, result.format)
+        }
+    }
+
+    function requestScan() {
+        if (scanPage.status === PageStatus.Active && Qt.application.active && viewFinder.cameraActive) {
+            startScan()
+        } else {
+            flagAutoScan = true
         }
     }
 
@@ -150,7 +153,9 @@ Page {
     onStatusChanged: {
         if (scanPage.status === PageStatus.Active) {
             console.log("Page is ACTIVE")
-            createScanner()
+            if (Qt.application.active) {
+                createScanner()
+            }
         } else if (scanPage.status === PageStatus.Inactive) {
             console.log("Page is INACTIVE")
             // stop scanning if page is not active
@@ -166,13 +171,13 @@ Page {
     Connections {
         target: Qt.application
         onActiveChanged: {
-            if (Qt.application.active && scanPage.status === PageStatus.Active) {
-                console.log("application state changed to ACTIVE and AutoScanPage is active")
-                createScanner()
+            if (Qt.application.active) {
+                console.log("Application is ACTIVE")
+                if (scanPage.status === PageStatus.Active) {
+                    createScanner()
+                }
             } else if (!Qt.application.active) {
-                console.log("application state changed to INACTIVE")
-                // if the application is deactivated we have to stop the camera and destroy the scanner object
-                // because of power consumption issues and impact to the camera application
+                console.log("Application is INACTIVE")
                 destroyScanner()
             }
         }
@@ -180,16 +185,8 @@ Page {
 
     function cameraStarted() {
         console.log("camera is started")
-
-        if (!Qt.application.active) {
-            // use case: start app => lock device immediately => signal Qt.application.onActiveChanged is not emitted
-            console.log("WARN: device immediately locked")
-            destroyScanner()
-            return
-        }
-
         stateReady()
-        autoStart();
+        autoStart()
     }
 
     Notification {
@@ -238,6 +235,7 @@ Page {
             property bool showMarker: false
             property bool playBeep: false
             property alias digitalZoom: camera.digitalZoom
+            readonly property bool cameraActive: camera.cameraState === Camera.ActiveState
             readonly property bool tapFocusActive: focusTimer.running
             readonly property bool flashOn: camera.flash.mode !== Camera.FlashOff
             // Not sure why not just camera.orientation but this makes the camera
@@ -374,7 +372,7 @@ Page {
                     }
                     color: "transparent"
 
-                    readonly property rect mappedRect: frameToViewfinderRect(area);
+                    readonly property rect mappedRect: frameToViewfinderRect(area)
                     readonly property real diameter: Math.round(Math.min(mappedRect.width, mappedRect.height))
 
                     x: Math.round(mappedRect.x + (mappedRect.width - diameter)/2)
@@ -450,17 +448,13 @@ Page {
                 //: About page title, label and menu item
                 //% "About CodeReader"
                 text: qsTrId("about-title")
-                onClicked: {
-                    pageStack.push("AboutPage.qml");
-                }
+                onClicked: pageStack.push("AboutPage.qml")
             }
             MenuItem {
                 //: Setting page title and menu item
                 //% "Settings"
                 text: qsTrId("settings-title")
-                onClicked: {
-                    pageStack.push("SettingsPage.qml");
-                }
+                onClicked: pageStack.push("SettingsPage.qml")
             }
         }
 

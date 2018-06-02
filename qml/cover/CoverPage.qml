@@ -59,12 +59,7 @@ CoverBackground {
         CoverAction {
             iconSource: "image://theme/icon-cover-new"
             onTriggered: {
-                if (pageStack.depth > 1) {
-                    pageStack.clear()
-                    pageStack.replace(window.getMainPage())
-                    pageStack.completeAnimation()
-                }
-                pageStack.currentPage.flagScanByCover = true
+                window.startScan()
                 window.activate();
             }
         }
