@@ -69,18 +69,8 @@ OTHER_FILES += \
     qml/pages/AboutPage.qml \
     qml/components/LabelText.qml \
     qml/cover/cover-image.svg \
-    qml/pages/img/upc_240.png \
-    qml/pages/img/qr-code_240.png \
-    qml/pages/img/interleaved_240.png \
-    qml/pages/img/ean-13_240.png \
-    qml/pages/img/datamatrix_240.png \
-    qml/pages/img/code-39_240.png \
-    qml/pages/img/code-93_240.png \
-    qml/pages/img/code-128_240.png \
-    qml/pages/img/aztec_240.png \
-    qml/pages/img/codebar_240.png \
-    qml/pages/img/maxicode_240.png \
-    qml/pages/img/pdf417_240.png \
+    qml/pages/img/*.png \
+    qml/pages/img/*.svg \
     qml/pages/AutoScanPage.qml \
     qml/pages/VCard.qml \
     qml/pages/SettingsPage.qml \
@@ -92,6 +82,7 @@ OTHER_FILES += \
 
 SOURCES += \
     harbour-lib/src/HarbourDisplayBlanking.cpp \
+    harbour-lib/src/HarbourImageProvider.cpp \
     harbour-lib/src/HarbourMce.cpp \
     harbour-lib/src/HarbourPluginLoader.cpp \
     harbour-lib/src/HarbourTask.cpp \
@@ -100,6 +91,7 @@ SOURCES += \
 HEADERS += \
     harbour-lib/include/HarbourDebug.h \
     harbour-lib/include/HarbourDisplayBlanking.h \
+    harbour-lib/include/HarbourImageProvider.h \
     harbour-lib/include/HarbourPluginLoader.h \
     harbour-lib/include/HarbourTask.h \
     harbour-lib/include/HarbourTemporaryFile.h \

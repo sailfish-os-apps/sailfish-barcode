@@ -24,7 +24,7 @@ THE SOFTWARE.
 */
 
 import QtQuick 2.0
-import QtMultimedia 5.0
+import QtMultimedia 5.4
 import Sailfish.Silica 1.0
 import org.nemomobile.notifications 1.0
 import harbour.barcode 1.0
@@ -44,7 +44,9 @@ Page {
         }
 
         console.log("creating viewfinder ...")
-        viewFinder = viewFinderComponent.createObject(parentViewFinder)
+        viewFinder = viewFinderComponent.createObject(parentViewFinder, {
+            viewfinderResolution: parentViewFinder.viewfinderResolution
+        })
 
         if (viewFinder.source.availability === Camera.Available) {
             viewFinder.source.start()
@@ -231,16 +233,35 @@ Page {
             layer.enabled: true
 
             anchors.fill: parent
-            fillMode: VideoOutput.PreserveAspectCrop
+            fillMode: VideoOutput.Stretch
             property bool showMarker: false
             property bool playBeep: false
             property alias digitalZoom: camera.digitalZoom
+            property size viewfinderResolution
+            property bool completed
             readonly property bool cameraActive: camera.cameraState === Camera.ActiveState
             readonly property bool tapFocusActive: focusTimer.running
             readonly property bool flashOn: camera.flash.mode !== Camera.FlashOff
             // Not sure why not just camera.orientation but this makes the camera
             // behave similar to what it does for Jolla Camera
             readonly property int cameraOrientation: 360 - camera.orientation
+
+            onViewfinderResolutionChanged: {
+                if (viewfinderResolution && camera.viewfinder.resolution !== viewfinderResolution) {
+                    if (camera.cameraState === Camera.UnloadedState) {
+                        camera.viewfinder.resolution = viewfinderResolution
+                    } else {
+                        reloadTimer.restart()
+                    }
+                }
+            }
+
+            Component.onCompleted: {
+                if (viewfinderResolution) {
+                    camera.viewfinder.resolution = viewfinderResolution
+                }
+                completed = true
+            }
 
             function turnFlashOn() {
                 camera.flash.mode = Camera.FlashTorch
@@ -334,6 +355,8 @@ Page {
                 imageProcessing.whiteBalanceMode: flashOn ?
                     CameraImageProcessing.WhiteBalanceFlash :
                     CameraImageProcessing.WhiteBalanceTungsten
+                cameraState: completed && !reloadTimer.running ?
+                    Camera.ActiveState : Camera.UnloadedState
                 exposure {
                     exposureCompensation: 1.0
                     exposureMode: Camera.ExposureAuto
@@ -354,8 +377,18 @@ Page {
                         } else {
                             cameraStarted()
                         }
+                    } else if (cameraState === Camera.UnloadedState) {
+                        if (viewFinderItem.viewfinderResolution &&
+                            viewFinderItem.viewfinderResolution !== viewfinder.resolution) {
+                            viewfinder.resolution = viewFinderItem.viewfinderResolution
+                        }
                     }
                 }
+            }
+
+            Timer {
+                id: reloadTimer
+                interval: 100
             }
 
             // Display focus areas
@@ -468,14 +501,28 @@ Page {
             Item {
                 id: parentViewFinder
 
+                readonly property bool canSwitchResolutions: typeof ViewfinderResolution_4_3 !== "undefined" &&
+                    typeof ViewfinderResolution_16_9 !== "undefined"
+                readonly property int defaultWidth: Math.round(window.width * 0.56) & (-2)
+                readonly property int narrowWidth: canSwitchResolutions ? height/16*9 : defaultWidth
+                readonly property int wideWidth: canSwitchResolutions ? height/4*3 : defaultWidth
+                readonly property size viewfinderResolution: canSwitchResolutions ?
+                    (wideMode ? ViewfinderResolution_4_3 : ViewfinderResolution_16_9) : Qt.size(0,0)
+                readonly property bool wideMode: canSwitchResolutions && AppSettings.wideMode
                 anchors.horizontalCenter: parent.horizontalCenter
-                width: Math.round(window.width * 0.56) & (-2)
-                height: Math.round(window.height * 0.56) & (-2)
+                width: wideMode ? wideWidth : narrowWidth
+                height: Math.round(window.height * 0.56) & (-16)
 
                 onWidthChanged: updateViewFinderPosition()
                 onHeightChanged: updateViewFinderPosition()
                 onXChanged: updateViewFinderPosition()
                 onYChanged: updateViewFinderPosition()
+
+                onViewfinderResolutionChanged: {
+                    if (viewFinder && viewfinderResolution && canSwitchResolutions) {
+                        viewFinder.viewfinderResolution = viewfinderResolution
+                    }
+                }
 
                 function updateViewFinderPosition() {
                     scanner.setViewFinderRect(Qt.rect(x + parent.x, y + parent.y, width, height))
@@ -488,7 +535,10 @@ Page {
 
                 Item {
                     height: parent.height
-                    width: parentViewFinder.x
+                    anchors {
+                        left: parent.left
+                        right: zoomSlider.left
+                    }
                     visible: TorchSupported
                     IconButton {
                         id: flashButton
@@ -502,8 +552,8 @@ Page {
 
                 Slider {
                     id: zoomSlider
-                    x: parentViewFinder.x
-                    width: parentViewFinder.width
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: parentViewFinder.narrowWidth
                     leftMargin: 0
                     rightMargin: 0
                     minimumValue: 1.0
@@ -524,6 +574,24 @@ Page {
                         id: saveZoomDelay
                         interval: 500
                         onTriggered: AppSettings.digitalZoom = zoomSlider.value
+                    }
+                }
+
+                Item {
+                    height: parent.height
+                    visible: parentViewFinder.canSwitchResolutions
+                    anchors {
+                        left: zoomSlider.right
+                        right: parent.right
+                    }
+                    IconButton {
+                        id: aspectButton
+                        readonly property string icon_16_9: "image://harbour/" + Qt.resolvedUrl("img/resolution_16_9.svg")
+                        readonly property string icon_4_3: "image://harbour/" + Qt.resolvedUrl("img/resolution_4_3.svg")
+                        anchors.centerIn: parent
+                        icon.sourceSize: Qt.size(width*4/5, height*4/5) // e.g. 64/80
+                        icon.source: AppSettings.wideMode ? icon_4_3 : icon_16_9
+                        onClicked: AppSettings.wideMode = !AppSettings.wideMode
                     }
                 }
             }
@@ -566,7 +634,7 @@ Page {
 
                 Item {
                     height: parent.height
-                    width: parentViewFinder.x
+                    width: resultItem.x
                     visible: clickableResult.text.length > 0
                     anchors.verticalCenter: parent.verticalCenter
                     IconButton {
@@ -582,7 +650,7 @@ Page {
 
                 BackgroundItem {
                     id: resultItem
-                    x: parentViewFinder.x
+                    x: zoomSlider.x
                     height: Math.max(resultColumn.height, implicitHeight)
                     width: parent.width - x
                     enabled: parent.enabled

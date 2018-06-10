@@ -48,6 +48,7 @@ class Settings : public QObject {
     Q_PROPERTY(int historySize READ historySize WRITE setHistorySize NOTIFY historySizeChanged)
     Q_PROPERTY(bool scanOnStart READ scanOnStart WRITE setScanOnStart NOTIFY scanOnStartChanged)
     Q_PROPERTY(bool saveImages READ saveImages WRITE setSaveImages NOTIFY saveImagesChanged)
+    Q_PROPERTY(bool wideMode READ wideMode WRITE setWideMode NOTIFY wideModeChanged)
 
 public:
     explicit Settings(QObject* aParent = Q_NULLPTR);
@@ -77,6 +78,9 @@ public:
     bool saveImages() const;
     void setSaveImages(bool aValue);
 
+    bool wideMode() const;
+    void setWideMode(bool aValue);
+
 Q_SIGNALS:
     void soundChanged();
     void digitalZoomChanged();
@@ -86,6 +90,7 @@ Q_SIGNALS:
     void historySizeChanged();
     void scanOnStartChanged();
     void saveImagesChanged();
+    void wideModeChanged();
 
 private:
     class Private;

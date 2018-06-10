@@ -37,6 +37,7 @@ THE SOFTWARE.
 
 #include "HarbourDebug.h"
 #include "HarbourDisplayBlanking.h"
+#include "HarbourImageProvider.h"
 #include "HarbourTemporaryFile.h"
 
 #include "ContactsPlugin.h"
@@ -48,6 +49,8 @@ THE SOFTWARE.
 #  define ""
 #endif
 
+#define CAMERA_DCONF_KEY(name) "/apps/jolla-camera/primary/image/" name
+
 static void register_types(QQmlEngine* engine, const char* uri, int v1, int v2)
 {
     ContactsPlugin::registerTypes(engine, uri, v1, v2);
@@ -55,6 +58,25 @@ static void register_types(QQmlEngine* engine, const char* uri, int v1, int v2)
     qmlRegisterType<HarbourTemporaryFile>(uri, v1, v2, "TemporaryFile");
     qmlRegisterType<AutoBarcodeScanner>(uri, v1, v2, "AutoBarcodeScanner");
     qmlRegisterType<HistoryModel>(uri, v1, v2, "HistoryModel");
+}
+
+static QSize toSize(QVariant var)
+{
+    // e.g. "1920x1080"
+    if (var.isValid()) {
+        QStringList values(var.toString().split('x'));
+        if (values.count() == 2) {
+            bool ok = false;
+            int width = values.at(0).toInt(&ok);
+            if (ok && width > 0) {
+                int height = values.at(1).toInt(&ok);
+                if (ok && height > 0) {
+                    return QSize(width, height);
+                }
+            }
+        }
+    }
+    return QSize();
 }
 
 int main(int argc, char *argv[])
@@ -72,7 +94,7 @@ int main(int argc, char *argv[])
             if (v >= QT_VERSION_CHECK(5,6,0)) {
                 // If flash is not supported at all, this key contains [2]
                 // at least on the most recent versions of Sailfish OS
-                QString flashValuesKey("/apps/jolla-camera/primary/image/flashValues");
+                QString flashValuesKey(CAMERA_DCONF_KEY("flashValues"));
                 MGConfItem flashValuesConf(flashValuesKey);
                 QVariantList flashValues(flashValuesConf.value().toList());
                 if (flashValues.size() == 1 &&
@@ -85,6 +107,13 @@ int main(int argc, char *argv[])
             }
         }
     }
+
+    // Available 4/3 and 16/9 resolutions
+    QString key_4_3(CAMERA_DCONF_KEY("viewfinderResolution_4_3"));
+    QString key_16_9(CAMERA_DCONF_KEY("viewfinderResolution_16_9"));
+    QSize res_4_3(toSize(MGConfItem(key_4_3).value()));
+    QSize res_16_9(toSize(MGConfItem(key_16_9).value()));
+    HDEBUG("Resolutions" << res_4_3 << res_16_9);
 
     QLocale locale;
     QTranslator* translator = new QTranslator(app.data());
@@ -102,7 +131,8 @@ int main(int argc, char *argv[])
 
     QQmlEngine* engine = view->engine();
     register_types(engine, "harbour.barcode", 1, 0);
-    engine->addImageProvider("scanner", new CaptureImageProvider());
+    engine->addImageProvider("scanner", new CaptureImageProvider);
+    engine->addImageProvider("harbour", new HarbourImageProvider);
 
     Settings* settings = new Settings(app.data());
     Database::initialize(engine, settings);
@@ -111,6 +141,12 @@ int main(int argc, char *argv[])
     root->setContextProperty("AppVersion", APP_VERSION);
     root->setContextProperty("AppSettings", settings);
     root->setContextProperty("TorchSupported", torchSupported);
+    if (res_4_3.isValid()) {
+        root->setContextProperty("ViewfinderResolution_4_3", res_4_3);
+    }
+    if (res_16_9.isValid()) {
+        root->setContextProperty("ViewfinderResolution_16_9", res_16_9);
+    }
 
     view->setSource(SailfishApp::pathTo("qml/harbour-barcode.qml"));
     view->setTitle("CodeReader");

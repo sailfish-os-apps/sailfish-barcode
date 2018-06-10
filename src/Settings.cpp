@@ -30,6 +30,7 @@ THE SOFTWARE.
 
 // New keys (the ones that have only been in dconf)
 #define KEY_SAVE_IMAGES                "save_images"
+#define KEY_WIDE_MODE                  "wide_mode"
 
 #define DEFAULT_SOUND                   false
 #define DEFAULT_DIGITAL_ZOOM            3
@@ -39,6 +40,7 @@ THE SOFTWARE.
 #define DEFAULT_HISTORY_SIZE            50
 #define DEFAULT_SCAN_ON_START           false
 #define DEFAULT_SAVE_IMAGES             true
+#define DEFAULT_WIDE_MODE               false
 
 // ==========================================================================
 // Settings::Private
@@ -57,6 +59,7 @@ public:
     MGConfItem* iHistorySize;
     MGConfItem* iScanOnStart;
     MGConfItem* iSaveImages;
+    MGConfItem* iWideMode;
 };
 
 Settings::Private::Private(Settings* aSettings) :
@@ -67,7 +70,8 @@ Settings::Private::Private(Settings* aSettings) :
     iMarkerColor(new MGConfItem(DCONF_PATH KEY_MARKER_COLOR, aSettings)),
     iHistorySize(new MGConfItem(DCONF_PATH KEY_HISTORY_SIZE, aSettings)),
     iScanOnStart(new MGConfItem(DCONF_PATH KEY_SCAN_ON_START, aSettings)),
-    iSaveImages(new MGConfItem(DCONF_PATH KEY_SAVE_IMAGES, aSettings))
+    iSaveImages(new MGConfItem(DCONF_PATH KEY_SAVE_IMAGES, aSettings)),
+    iWideMode(new MGConfItem(DCONF_PATH KEY_WIDE_MODE, aSettings))
 {
     connect(iSound, SIGNAL(valueChanged()), aSettings, SIGNAL(soundChanged()));
     connect(iDigitalZoom, SIGNAL(valueChanged()), aSettings, SIGNAL(digitalZoomChanged()));
@@ -77,6 +81,7 @@ Settings::Private::Private(Settings* aSettings) :
     connect(iHistorySize, SIGNAL(valueChanged()), aSettings, SIGNAL(historySizeChanged()));
     connect(iScanOnStart, SIGNAL(valueChanged()), aSettings, SIGNAL(scanOnStartChanged()));
     connect(iSaveImages, SIGNAL(valueChanged()), aSettings, SIGNAL(saveImagesChanged()));
+    connect(iWideMode, SIGNAL(valueChanged()), aSettings, SIGNAL(wideModeChanged()));
 }
 
 // ==========================================================================
@@ -172,4 +177,14 @@ bool Settings::saveImages() const
 void Settings::setSaveImages(bool aValue)
 {
     iPrivate->iSaveImages->set(aValue);
+}
+
+bool Settings::wideMode() const
+{
+    return iPrivate->iWideMode->value(DEFAULT_WIDE_MODE).toBool();
+}
+
+void Settings::setWideMode(bool aValue)
+{
+    iPrivate->iWideMode->set(aValue);
 }
