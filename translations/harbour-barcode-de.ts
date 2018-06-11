@@ -177,7 +177,7 @@
     <message id="history-menu-copy">
         <source>Copy to clipboard</source>
         <extracomment>Context menu item</extracomment>
-        <translation>Kopieren in Zwischenablage</translation>
+        <translation>In Zwischenablage kopieren</translation>
     </message>
     <message id="history-menu-delete_all_remorse">
         <source>Deleting all</source>
@@ -223,6 +223,21 @@
         <source>Copied to clipboard</source>
         <extracomment>Pop-up notification</extracomment>
         <translation>In Zwischenablage kopiert</translation>
+    </message>
+    <message id="hint-toggle-flash">
+        <source>Toggle flashlight</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Taschenlampe</translation>
+    </message>
+    <message id="hint-aspect-ratio">
+        <source>Switch the aspect ratio between 9:16 and 3:4</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Seitenverhältnis</translation>
+    </message>
+    <message id="hint-copy-clipboard">
+        <source>Copy to clipboard</source>
+        <extracomment>Hint label</extracomment>
+        <translation>In Zwischenablage kopieren</translation>
     </message>
 </context>
 </TS>

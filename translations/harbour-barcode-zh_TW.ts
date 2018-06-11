@@ -165,7 +165,7 @@
     <message id="history-menu-copy">
         <source>Copy to clipboard</source>
         <extracomment>Context menu item</extracomment>
-        <translation>複製到剪貼簿</translation>
+        <translation>複製至剪貼簿</translation>
     </message>
     <message id="history-menu-delete_all_remorse">
         <source>Deleting all</source>
@@ -221,6 +221,21 @@
         <source>Copied to clipboard</source>
         <extracomment>Pop-up notification</extracomment>
         <translation>已複製至剪貼簿</translation>
+    </message>
+    <message id="hint-toggle-flash">
+        <source>Toggle flashlight</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">閃光燈</translation>
+    </message>
+    <message id="hint-aspect-ratio">
+        <source>Switch the aspect ratio between 9:16 and 3:4</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">長寬比</translation>
+    </message>
+    <message id="hint-copy-clipboard">
+        <source>Copy to clipboard</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">複製至剪貼簿</translation>
     </message>
 </context>
 </TS>

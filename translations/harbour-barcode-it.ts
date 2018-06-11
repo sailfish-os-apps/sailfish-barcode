@@ -224,5 +224,20 @@
         <extracomment>Pop-up notification</extracomment>
         <translation>Copiato negli appunti</translation>
     </message>
+    <message id="hint-toggle-flash">
+        <source>Toggle flashlight</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Torcia</translation>
+    </message>
+    <message id="hint-aspect-ratio">
+        <source>Switch the aspect ratio between 9:16 and 3:4</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Rapporto proporzioni</translation>
+    </message>
+    <message id="hint-copy-clipboard">
+        <source>Copy to clipboard</source>
+        <extracomment>Hint label</extracomment>
+        <translation>Copia negli appunti</translation>
+    </message>
 </context>
 </TS>

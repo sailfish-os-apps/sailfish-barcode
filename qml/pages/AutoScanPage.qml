@@ -35,6 +35,7 @@ Page {
     id: scanPage
 
     property Item viewFinder
+    property Item hint
     property bool flagAutoScan
     property int scanTimeout: 60
 
@@ -135,6 +136,16 @@ Page {
 
     function stateAbort() {
         state = "ABORT"
+    }
+
+    function showHint(text) {
+        if (!hint) {
+            var component = Qt.createComponent("Hint.qml");
+            if (component.status === Component.Ready) {
+                hint = component.createObject(scanPage)
+            }
+        }
+        hint.show(text)
     }
 
     state: "INACTIVE"
@@ -535,6 +546,9 @@ Page {
                                 "image://theme/icon-camera-flash-on" :
                                 "image://theme/icon-camera-flash-off"
                         onClicked: if (viewFinder) viewFinder.toggleFlash()
+                        //: Hint label
+                        //% "Toggle flashlight"
+                        onPressAndHold: showHint(qsTrId("hint-toggle-flash"))
                     }
                 }
 
@@ -580,6 +594,9 @@ Page {
                         icon.sourceSize: Qt.size(width*4/5, height*4/5) // e.g. 64/80
                         icon.source: AppSettings.wideMode ? icon_4_3 : icon_16_9
                         onClicked: AppSettings.wideMode = !AppSettings.wideMode
+                        //: Hint label
+                        //% "Switch the aspect ratio between 9:16 and 3:4"
+                        onPressAndHold: showHint(qsTrId("hint-aspect-ratio"))
                     }
                 }
             }
@@ -633,6 +650,9 @@ Page {
                             Clipboard.text = clickableResult.text
                             clipboardNotification.publish()
                         }
+                        //: Hint label
+                        //% "Copy to clipboard"
+                        onPressAndHold: showHint(qsTrId("hint-copy-clipboard"))
                     }
                 }
 

@@ -66,16 +66,11 @@ OTHER_FILES += \
     README.md \
     harbour-barcode.desktop \
     qml/harbour-barcode.qml \
-    qml/pages/AboutPage.qml \
-    qml/components/LabelText.qml \
+    qml/components/*.qml \
     qml/cover/cover-image.svg \
     qml/pages/img/*.png \
     qml/pages/img/*.svg \
-    qml/pages/AutoScanPage.qml \
-    qml/pages/VCard.qml \
-    qml/pages/SettingsPage.qml \
-    qml/pages/TextPage.qml \
-    qml/pages/HistoryPage.qml \
+    qml/pages/*.qml \
     qml/js/Utils.js
 
 # harbour-lib

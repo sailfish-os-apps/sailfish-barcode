@@ -224,5 +224,20 @@
         <extracomment>Pop-up notification</extracomment>
         <translation>Copied to clipboard</translation>
     </message>
+    <message id="hint-toggle-flash">
+        <source>Toggle flashlight</source>
+        <extracomment>Hint label</extracomment>
+        <translation>Toggle flashlight</translation>
+    </message>
+    <message id="hint-aspect-ratio">
+        <source>Switch the aspect ratio between 9:16 and 3:4</source>
+        <extracomment>Hint label</extracomment>
+        <translation>Switch the aspect ratio between 9:16 and 3:4</translation>
+    </message>
+    <message id="hint-copy-clipboard">
+        <source>Copy to clipboard</source>
+        <extracomment>Hint label</extracomment>
+        <translation>Copy to clipboard</translation>
+    </message>
 </context>
 </TS>

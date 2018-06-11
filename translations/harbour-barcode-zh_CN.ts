@@ -222,5 +222,20 @@
         <extracomment>Pop-up notification</extracomment>
         <translation>已复制到剪贴板</translation>
     </message>
+    <message id="hint-toggle-flash">
+        <source>Toggle flashlight</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">闪光灯</translation>
+    </message>
+    <message id="hint-aspect-ratio">
+        <source>Switch the aspect ratio between 9:16 and 3:4</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">纵横比</translation>
+    </message>
+    <message id="hint-copy-clipboard">
+        <source>Copy to clipboard</source>
+        <extracomment>Hint label</extracomment>
+        <translation>复制到剪贴板</translation>
+    </message>
 </context>
 </TS>

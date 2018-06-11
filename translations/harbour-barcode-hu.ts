@@ -175,7 +175,7 @@
     <message id="history-menu-copy">
         <source>Copy to clipboard</source>
         <extracomment>Context menu item</extracomment>
-        <translation>Vágólapra</translation>
+        <translation type="unfinished">Vágólapra másolás</translation>
     </message>
     <message id="history-menu-delete_all_remorse">
         <source>Deleting all</source>
@@ -221,6 +221,21 @@
         <source>Copied to clipboard</source>
         <extracomment>Pop-up notification</extracomment>
         <translation>A vágólapra másolva</translation>
+    </message>
+    <message id="hint-toggle-flash">
+        <source>Toggle flashlight</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Zseblámpa</translation>
+    </message>
+    <message id="hint-aspect-ratio">
+        <source>Switch the aspect ratio between 9:16 and 3:4</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Kiválasztva</translation>
+    </message>
+    <message id="hint-copy-clipboard">
+        <source>Copy to clipboard</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Vágólapra másolás</translation>
     </message>
 </context>
 </TS>

@@ -226,5 +226,20 @@
         <extracomment>Pop-up notification</extracomment>
         <translation>Скопировано в буфер обмена</translation>
     </message>
+    <message id="hint-toggle-flash">
+        <source>Toggle flashlight</source>
+        <extracomment>Hint label</extracomment>
+        <translation>Можно включать вспышку в качестве подсветки</translation>
+    </message>
+    <message id="hint-aspect-ratio">
+        <source>Switch the aspect ratio between 9:16 and 3:4</source>
+        <extracomment>Hint label</extracomment>
+        <translation>Переключение камеры между режимами 9:16 и 3:4</translation>
+    </message>
+    <message id="hint-copy-clipboard">
+        <source>Copy to clipboard</source>
+        <extracomment>Hint label</extracomment>
+        <translation>Копирование в буфер обмена</translation>
+    </message>
 </context>
 </TS>

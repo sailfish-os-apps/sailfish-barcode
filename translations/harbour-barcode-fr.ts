@@ -224,5 +224,20 @@
         <extracomment>Pop-up notification</extracomment>
         <translation>Copié dans le presse-papiers</translation>
     </message>
+    <message id="hint-toggle-flash">
+        <source>Toggle flashlight</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Lampe de poche</translation>
+    </message>
+    <message id="hint-aspect-ratio">
+        <source>Switch the aspect ratio between 9:16 and 3:4</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Rapport d&apos;aspect</translation>
+    </message>
+    <message id="hint-copy-clipboard">
+        <source>Copy to clipboard</source>
+        <extracomment>Hint label</extracomment>
+        <translation>Copier dans le presse-papier</translation>
+    </message>
 </context>
 </TS>

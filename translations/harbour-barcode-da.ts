@@ -224,5 +224,20 @@
         <extracomment>Pop-up notification</extracomment>
         <translation>Kopieret til udklipsholder</translation>
     </message>
+    <message id="hint-toggle-flash">
+        <source>Toggle flashlight</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Lommelygte</translation>
+    </message>
+    <message id="hint-aspect-ratio">
+        <source>Switch the aspect ratio between 9:16 and 3:4</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Højde-bredde-forhold</translation>
+    </message>
+    <message id="hint-copy-clipboard">
+        <source>Copy to clipboard</source>
+        <extracomment>Hint label</extracomment>
+        <translation>Kopier til udklipsholder</translation>
+    </message>
 </context>
 </TS>

@@ -179,7 +179,7 @@
     <message id="history-menu-copy">
         <source>Copy to clipboard</source>
         <extracomment>Context menu item</extracomment>
-        <translation>Zkopírovat do schránky</translation>
+        <translation>Kopírovat do schránky</translation>
     </message>
     <message id="history-menu-delete_all_remorse">
         <source>Deleting all</source>
@@ -225,6 +225,21 @@
         <source>Copied to clipboard</source>
         <extracomment>Pop-up notification</extracomment>
         <translation>Zkopírováno do schránky</translation>
+    </message>
+    <message id="hint-toggle-flash">
+        <source>Toggle flashlight</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Svítilna</translation>
+    </message>
+    <message id="hint-aspect-ratio">
+        <source>Switch the aspect ratio between 9:16 and 3:4</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Poměr stran</translation>
+    </message>
+    <message id="hint-copy-clipboard">
+        <source>Copy to clipboard</source>
+        <extracomment>Hint label</extracomment>
+        <translation>Kopírovat do schránky</translation>
     </message>
 </context>
 </TS>
