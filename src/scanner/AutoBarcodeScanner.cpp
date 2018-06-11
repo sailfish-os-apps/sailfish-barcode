@@ -126,6 +126,18 @@ void AutoBarcodeScanner::setViewFinderItem(QObject* value)
     }
 }
 
+void AutoBarcodeScanner::setMarkerColor(QString aValue)
+{
+    if (QColor::isValidColor(aValue)) {
+        QColor color(aValue);
+        if (m_markerColor != color) {
+            m_markerColor = color;
+            HDEBUG(color);
+            emit markerColorChanged();
+        }
+    }
+}
+
 void AutoBarcodeScanner::startScanning(int timeout)
 {
     if (!m_flagScanRunning) {

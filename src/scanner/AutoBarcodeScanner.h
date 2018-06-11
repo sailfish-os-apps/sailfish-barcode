@@ -45,14 +45,11 @@ public:
     virtual ~AutoBarcodeScanner();
 
     Q_PROPERTY(QObject* viewFinderItem READ viewFinderItem WRITE setViewFinderItem NOTIFY viewFinderItemChanged)
+    Q_PROPERTY(QString markerColor READ markerColor WRITE setMarkerColor NOTIFY markerColorChanged)
     Q_PROPERTY(bool grabbing READ grabbing NOTIFY grabbingChanged)
 
     Q_INVOKABLE void startScanning(int timeout);
     Q_INVOKABLE void stopScanning();
-
-    Q_INVOKABLE void setMarkerColor(int red, int green, int blue) {
-        m_markerColor = QColor(red, green, blue);
-    }
 
     Q_INVOKABLE void setViewFinderRect(QRect rect);
 
@@ -60,14 +57,18 @@ public:
     void processDecode();
 
     QObject* viewFinderItem() const { return m_viewFinderItem; }
-    bool grabbing() const { return m_grabbing; }
-
     void setViewFinderItem(QObject* item);
+
+    QString markerColor() const { return m_markerColor.name(); }
+    void setMarkerColor(QString aValue);
+
+    bool grabbing() const { return m_grabbing; }
 
 signals:
     void decodingDone(QImage image, Decoder::Result result);
     void decodingFinished(QVariantMap result);
     void viewFinderItemChanged();
+    void markerColorChanged();
     void grabbingChanged();
     void needImage();
 

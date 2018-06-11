@@ -100,7 +100,6 @@ Page {
 
     function startScan() {
         viewFinder.showMarker = false
-        setMarkerColor()
         stateScanning()
         scanner.startScanning(scanTimeout * 1000)
     }
@@ -108,18 +107,6 @@ Page {
     function abortScan() {
         stateAbort()
         scanner.stopScanning()
-    }
-
-    function setMarkerColor() {
-        var markerColor = AppSettings.markerColor
-        console.log("marker color: ", markerColor)
-
-        var red =  parseInt(markerColor.substr(1, 2), 16)
-        var green =  parseInt(markerColor.substr(3, 2), 16)
-        var blue =  parseInt(markerColor.substr(5, 2), 16)
-
-        console.log("red: ", red, " green: ", green, " blue: ", blue)
-        scanner.setMarkerColor(red, green, blue)
     }
 
     function stateInactive() {
@@ -208,6 +195,7 @@ Page {
         id: scanner
 
         viewFinderItem: parentViewFinder
+        markerColor: AppSettings.markerColor
 
         onDecodingFinished: {
             statusText.text = ""
