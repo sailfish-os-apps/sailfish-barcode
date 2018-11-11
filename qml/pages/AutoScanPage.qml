@@ -38,6 +38,8 @@ Page {
     property Item hint
     property bool flagAutoScan
     property int scanTimeout: 60
+    readonly property string imageProvider: HarbourTheme.darkOnLight ? HarbourImageProviderDarkOnLight : HarbourImageProviderDefault
+    readonly property string iconSourcePrefix: "image://" + imageProvider + "/"
 
     function createScanner() {
         if (viewFinder) {
@@ -588,8 +590,8 @@ Page {
                     }
                     IconButton {
                         id: aspectButton
-                        readonly property string icon_16_9: "image://harbour/" + Qt.resolvedUrl("img/resolution_16_9.svg")
-                        readonly property string icon_4_3: "image://harbour/" + Qt.resolvedUrl("img/resolution_4_3.svg")
+                        readonly property string icon_16_9: iconSourcePrefix + Qt.resolvedUrl("img/resolution_16_9.svg")
+                        readonly property string icon_4_3: iconSourcePrefix +  Qt.resolvedUrl("img/resolution_4_3.svg")
                         anchors.centerIn: parent
                         icon.sourceSize: Qt.size(width*4/5, height*4/5) // e.g. 64/80
                         icon.source: AppSettings.wideMode ? icon_4_3 : icon_16_9

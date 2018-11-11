@@ -38,7 +38,7 @@ CoverBackground {
 
         Image {
             readonly property int size: Math.floor(cover.width * 0.56) & (-2)
-            source: Qt.resolvedUrl("cover-image.svg")
+            source: HarbourTheme.darkOnLight ? Qt.resolvedUrl("cover-image-dark.svg") :  Qt.resolvedUrl("cover-image.svg")
             fillMode: Image.PreserveAspectFit
             anchors.horizontalCenter: parent.horizontalCenter
             asynchronous: true

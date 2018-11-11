@@ -39,6 +39,7 @@ THE SOFTWARE.
 #include "HarbourDisplayBlanking.h"
 #include "HarbourImageProvider.h"
 #include "HarbourTemporaryFile.h"
+#include "HarbourTheme.h"
 
 #include "ContactsPlugin.h"
 #include "Database.h"
@@ -129,10 +130,15 @@ int main(int argc, char *argv[])
 
     QScopedPointer<QQuickView> view(SailfishApp::createView());
 
+    // Register our image provider (two sets - one for light-on-dark and
+    // one for dark-on-light, doesn't really matter which one)
+    QString providerDefault("harbour");
+    QString providerDarkOnLight("harbour-dark");
     QQmlEngine* engine = view->engine();
     register_types(engine, "harbour.barcode", 1, 0);
     engine->addImageProvider("scanner", new CaptureImageProvider);
-    engine->addImageProvider("harbour", new HarbourImageProvider);
+    engine->addImageProvider(providerDefault, new HarbourImageProvider);
+    engine->addImageProvider(providerDarkOnLight, new HarbourImageProvider);
 
     Settings* settings = new Settings(app.data());
     Database::initialize(engine, settings);
@@ -141,6 +147,9 @@ int main(int argc, char *argv[])
     root->setContextProperty("AppVersion", APP_VERSION);
     root->setContextProperty("AppSettings", settings);
     root->setContextProperty("TorchSupported", torchSupported);
+    root->setContextProperty("HarbourTheme", new HarbourTheme(app.data()));
+    root->setContextProperty("HarbourImageProviderDefault", providerDefault);
+    root->setContextProperty("HarbourImageProviderDarkOnLight", providerDarkOnLight);
     if (res_4_3.isValid()) {
         root->setContextProperty("ViewfinderResolution_4_3", res_4_3);
     }

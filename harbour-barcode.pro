@@ -67,7 +67,7 @@ OTHER_FILES += \
     harbour-barcode.desktop \
     qml/harbour-barcode.qml \
     qml/components/*.qml \
-    qml/cover/cover-image.svg \
+    qml/cover/*.svg \
     qml/pages/img/*.png \
     qml/pages/img/*.svg \
     qml/pages/*.qml \
@@ -81,7 +81,8 @@ SOURCES += \
     harbour-lib/src/HarbourMce.cpp \
     harbour-lib/src/HarbourPluginLoader.cpp \
     harbour-lib/src/HarbourTask.cpp \
-    harbour-lib/src/HarbourTemporaryFile.cpp
+    harbour-lib/src/HarbourTemporaryFile.cpp \
+    harbour-lib/src/HarbourTheme.cpp
 
 HEADERS += \
     harbour-lib/include/HarbourDebug.h \
@@ -90,6 +91,7 @@ HEADERS += \
     harbour-lib/include/HarbourPluginLoader.h \
     harbour-lib/include/HarbourTask.h \
     harbour-lib/include/HarbourTemporaryFile.h \
+    harbour-lib/include/HarbourTheme.h \
     harbour-lib/src/HarbourMce.h
 
 # zxing
