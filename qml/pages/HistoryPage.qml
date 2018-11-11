@@ -87,6 +87,7 @@ Page {
                     recordId: historyItem.id,
                     text: historyItem.value,
                     format: Utils.barcodeFormat(historyItem.format),
+                    timestamp: historyList.model.formatTimestamp(historyItem.timestamp),
                     canDelete: true
                 }).deleteEntry.connect(function() {
                     stack.pop()

@@ -33,6 +33,7 @@ Page {
 
     property string text
     property string recordId
+    property string timestamp
     property bool hasImage
     property bool canDelete
     property alias format: textArea.label
@@ -99,7 +100,6 @@ Page {
                 width: parent.width
                 selectionMode: TextEdit.SelectWords
                 labelVisible: true
-                focus: true
                 readOnly: false
                 wrapMode: TextEdit.Wrap
                 property int lastCursorPosition
@@ -185,6 +185,21 @@ Page {
                 source: (hasImage && recordId.length && AppSettings.saveImages) ? "image://scanner/saved/" + recordId : ""
                 visible: status === Image.Ready
                 cache: false
+            }
+
+            Item {
+                visible: timestampLabel.visible
+                height: Theme.paddingSmall
+                width: parent.width
+            }
+
+            Label {
+                id: timestampLabel
+                anchors.horizontalCenter: parent.horizontalCenter
+                color: Theme.secondaryColor
+                font.pixelSize: Theme.fontSizeExtraSmall
+                text: timestamp
+                visible: image.visible && timestamp.length > 0
             }
 
             Item {
