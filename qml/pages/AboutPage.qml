@@ -117,7 +117,7 @@ Page {
                     text: "https://github.com/monich/sailfish-barcode"
                     color: clickableUrl.highlighted ? Theme.highlightColor : Theme.primaryColor
                 }
-                onClicked: openInDefaultApp(labelUrl.text);
+                onClicked: Qt.openUrlExternally(labelUrl.text);
             }
 
             LabelText {
