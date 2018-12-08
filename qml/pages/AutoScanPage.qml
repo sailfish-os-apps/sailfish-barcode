@@ -30,6 +30,7 @@ import org.nemomobile.notifications 1.0
 import harbour.barcode 1.0
 
 import "../js/Utils.js" as Utils
+import "../components"
 
 Page {
     id: scanPage
@@ -147,7 +148,14 @@ Page {
                 hint = component.createObject(scanPage)
             }
         }
-        hint.show(text)
+        hint.text = text
+        hint.opacity = 1.0
+    }
+
+    function hideHint() {
+        if (hint) {
+            hint.opacity = 0.0
+        }
     }
 
     state: "INACTIVE"
@@ -541,7 +549,7 @@ Page {
                         right: zoomSlider.left
                     }
                     visible: TorchSupported
-                    IconButton {
+                    HintIconButton {
                         id: flashButton
                         anchors.centerIn: parent
                         icon.source: viewFinder && viewFinder.flashOn ?
@@ -550,7 +558,9 @@ Page {
                         onClicked: if (viewFinder) viewFinder.toggleFlash()
                         //: Hint label
                         //% "Toggle flashlight"
-                        onPressAndHold: showHint(qsTrId("hint-toggle-flash"))
+                        hint: qsTrId("hint-toggle-flash")
+                        onShowHint: scanPage.showHint(hint)
+                        onHideHint: scanPage.hideHint()
                     }
                 }
 
@@ -588,7 +598,7 @@ Page {
                         left: zoomSlider.right
                         right: parent.right
                     }
-                    IconButton {
+                    HintIconButton {
                         id: aspectButton
                         readonly property string icon_16_9: iconSourcePrefix + Qt.resolvedUrl("img/resolution_16_9.svg")
                         readonly property string icon_4_3: iconSourcePrefix +  Qt.resolvedUrl("img/resolution_4_3.svg")
@@ -598,7 +608,9 @@ Page {
                         onClicked: AppSettings.wideMode = !AppSettings.wideMode
                         //: Hint label
                         //% "Switch the aspect ratio between 9:16 and 3:4"
-                        onPressAndHold: showHint(qsTrId("hint-aspect-ratio"))
+                        hint: qsTrId("hint-aspect-ratio")
+                        onShowHint: scanPage.showHint(hint)
+                        onHideHint: scanPage.hideHint()
                     }
                 }
             }
@@ -644,7 +656,7 @@ Page {
                     width: resultItem.x
                     visible: clickableResult.text.length > 0
                     anchors.verticalCenter: parent.verticalCenter
-                    IconButton {
+                    HintIconButton {
                         id: clipboardButton
                         anchors.centerIn: parent
                         icon.source: "image://theme/icon-m-clipboard"
@@ -654,7 +666,9 @@ Page {
                         }
                         //: Hint label
                         //% "Copy to clipboard"
-                        onPressAndHold: showHint(qsTrId("hint-copy-clipboard"))
+                        hint: qsTrId("hint-copy-clipboard")
+                        onShowHint: scanPage.showHint(hint)
+                        onHideHint: scanPage.hideHint()
                     }
                 }
 

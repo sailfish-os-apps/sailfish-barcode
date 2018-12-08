@@ -1,7 +1,6 @@
 /*
 The MIT License (MIT)
 
-Copyright (c) 2014 Steffen Förster
 Copyright (c) 2018 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,26 +25,13 @@ THE SOFTWARE.
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 
-InteractionHintLabel {
-    id: label
-    anchors.fill: parent
-    invert: true
-    visible: opacity > 0
-    opacity: hintTimer.running ? 1.0 : 0.0
+IconButton {
+    property string hint
+    signal showHint(var text)
+    signal hideHint()
 
-    function show(text) {
-        label.text = text
-        hintTimer.restart()
-    }
-
-    Timer {
-        id: hintTimer
-        interval: 1000
-    }
-
-    Behavior on opacity {
-        FadeAnimation {
-            duration: 1000
-        }
-    }
+    onClicked: hideHint()
+    onReleased: hideHint()
+    onCanceled: hideHint()
+    onPressAndHold: if (hint !== "") showHint(hint)
 }
