@@ -239,5 +239,15 @@
         <extracomment>Hint label</extracomment>
         <translation>Copy to clipboard</translation>
     </message>
+    <message id="hint-open_contact_card">
+        <source>Open contact card</source>
+        <extracomment>Hint label</extracomment>
+        <translation>Open contact card</translation>
+    </message>
+    <message id="hint-open_link">
+        <source>Open link in browser</source>
+        <extracomment>Hint label</extracomment>
+        <translation>Open link in browser</translation>
+    </message>
 </context>
 </TS>

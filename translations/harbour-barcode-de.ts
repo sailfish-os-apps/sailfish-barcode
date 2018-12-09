@@ -239,5 +239,16 @@
         <extracomment>Hint label</extracomment>
         <translation>In Zwischenablage kopieren</translation>
     </message>
+    <message id="hint-open_contact_card">
+        <source>Open contact card</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Kontaktkarte öffnen</translation>
+    </message>
+    <message id="hint-open_link">
+        <source>Open link in browser</source>
+        <oldsource>Open link</oldsource>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Link im Browser öffnen</translation>
+    </message>
 </context>
 </TS>

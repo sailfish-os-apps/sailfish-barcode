@@ -67,10 +67,6 @@ Page {
         }
     }
 
-    function importContact() {
-        vcard.importContact()
-    }
-
     SilicaFlickable {
         anchors.fill: parent
         contentHeight: column.height
@@ -157,18 +153,19 @@ Page {
                 visible: haveContact
                 onClicked: {
                     // Workaround for Sailfish.Contacts not being allowed in harbour apps
-                    var page = Qt.createQmlObject('import QtQuick 2.0;import Sailfish.Silica 1.0;import Sailfish.Contacts 1.0; \
-                        Page { property var parentPage; \
-                            property alias contact: card.contact; property alias saveText: saveMenu.text; \
-                            ContactCard { id: card; PullDownMenu { MenuItem { id: saveMenu; \
-                                onClicked: { parentPage.importContact(); pageStack.pop() }}}}}',
+                    var page = Qt.createQmlObject("import QtQuick 2.0;import Sailfish.Silica 1.0;import Sailfish.Contacts 1.0; \
+Page { id: page; signal saveContact(); property alias contact: card.contact; property alias saveText: saveMenu.text; \
+ContactCard { id: card; PullDownMenu { MenuItem { id: saveMenu; onClicked: page.saveContact(); }}}}",
                         textPage, "ContactPage")
                     pageStack.push(page, {
-                        contact: vcard.contact(),
+                        contact: textPage.vcard.contact(),
                         parentPage: textPage,
                         //: Pulley menu item (saves contact)
                         //% "Save"
                         saveText: qsTrId("contact-menu-save")
+                    }).saveContact.connect(function() {
+                       pageStack.pop()
+                       textPage.vcard.importContact()
                     })
                 }
             }

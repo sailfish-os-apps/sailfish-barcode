@@ -239,5 +239,16 @@
         <extracomment>Hint label</extracomment>
         <translation>Copiar en el portapapeles</translation>
     </message>
+    <message id="hint-open_contact_card">
+        <source>Open contact card</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Abrir tarjeta de contacto</translation>
+    </message>
+    <message id="hint-open_link">
+        <source>Open link in browser</source>
+        <oldsource>Open link</oldsource>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Abrir enlace en el navegador</translation>
+    </message>
 </context>
 </TS>

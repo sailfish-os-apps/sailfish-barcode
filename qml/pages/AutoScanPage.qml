@@ -141,12 +141,14 @@ Page {
         state = "ABORT"
     }
 
+    Component {
+        id: hintComponent
+        Hint { }
+    }
+
     function showHint(text) {
         if (!hint) {
-            var component = Qt.createComponent("Hint.qml");
-            if (component.status === Component.Ready) {
-                hint = component.createObject(scanPage)
-            }
+            hint = hintComponent.createObject(scanPage)
         }
         hint.text = text
         hint.opacity = 1.0
@@ -224,7 +226,7 @@ Page {
                 if (result.ok) {
                     applyResult(result)
                     viewFinder.decodingFinished()
-                } else {
+                } else if (scanPage.state !== "INACTIVE") {
                     //: Scan status label
                     //% "No code detected! Try again."
                     statusText.text = qsTrId("scan-status-nothing_found")
@@ -628,32 +630,50 @@ Page {
             Item {
                 id: clickableResult
 
-                property bool isLink: false
-                property string recordId: ""
-                property string text: ""
-                property string format: ""
+                property string recordId
+                property string text
+                property string format
+
+                property var vcard: null
+                readonly property bool haveContact: vcard && vcard.count > 0
+                readonly property string normalizedText: Utils.convertLineBreaks(text)
+                readonly property bool isVCard: Utils.isVcard(normalizedText)
+                readonly property bool isLink: Utils.isLink(normalizedText)
 
                 function setValue(recId, text, format) {
                     clickableResult.recordId = recId
                     clickableResult.text = text
                     clickableResult.format = Utils.barcodeFormat(format)
-                    clickableResult.isLink = Utils.isLink(text)
                     opacity = 1.0
                 }
 
                 function clear() {
+                    opacity = 0.0
                     clickableResult.recordId = ""
                     clickableResult.text = ""
                     clickableResult.format = ""
-                    clickableResult.isLink = false
-                    opacity = 0.0
                 }
 
                 signal itemHidden()
 
-                height: Math.max(resultItem.height, clipboardButton.height)
+                onIsVCardChanged: {
+                    if (isVCard) {
+                        if (!vcard) {
+                            var component = Qt.createComponent("VCard.qml");
+                            if (component.status === Component.Ready) {
+                                vcard = component.createObject(scanPage, { content: normalizedText })
+                            }
+                        }
+                    } else {
+                        if (vcard) {
+                            vcard.destroy()
+                            vcard = null
+                        }
+                    }
+                }
+
+                height: Math.max(resultItem.height, Theme.itemSizeSmall)
                 width: parent.width
-                enabled: text !== "" && !holdOffTimer.running
 
                 // Hide the results button when it touches the scan button
                 readonly property real bottomY: y + flickableColumn.y - scanPageFlickable.contentY + scanPageFlickable.y + height
@@ -678,10 +698,11 @@ Page {
                     width: resultItem.x
                     visible: clickableResult.text.length > 0
                     anchors.verticalCenter: parent.verticalCenter
+
                     HintIconButton {
-                        id: clipboardButton
                         anchors.centerIn: parent
                         icon.source: "image://theme/icon-m-clipboard"
+                        visible: !linkButton.visible && !vcardButton.visible
                         onClicked: {
                             Clipboard.text = clickableResult.text
                             clipboardNotification.publish()
@@ -691,6 +712,55 @@ Page {
                         hint: qsTrId("hint-copy-clipboard")
                         onShowHint: scanPage.showHint(hint)
                         onHideHint: scanPage.hideHint()
+                    }
+
+                    HintIconButton {
+                        id: linkButton
+                        anchors.centerIn: parent
+                        icon.source: iconSourcePrefix + Qt.resolvedUrl("img/open_link.svg")
+                        visible: !clickableResult.haveContact && clickableResult.isLink
+                        enabled: visible && !holdOffTimer.running
+                        //: Hint label
+                        //% "Open link in browser"
+                        hint: qsTrId("hint-open_link")
+                        onShowHint: scanPage.showHint(hint)
+                        onHideHint: scanPage.hideHint()
+                        onClicked: {
+                            console.log("opening", clickableResult.text)
+                            Qt.openUrlExternally(clickableResult.text)
+                            holdOffTimer.restart()
+                        }
+                        Timer {
+                            id: holdOffTimer
+                            interval: 2000
+                        }
+                    }
+
+                    HintIconButton {
+                        id: vcardButton
+                        anchors.centerIn: parent
+                        icon.source: iconSourcePrefix + Qt.resolvedUrl("img/open_vcard.svg")
+                        visible: clickableResult.haveContact && !clickableResult.isLink
+                        //: Hint label
+                        //% "Open contact card"
+                        hint: qsTrId("hint-open_contact_card")
+                        onShowHint: scanPage.showHint(hint)
+                        onHideHint: scanPage.hideHint()
+                        onClicked: {
+                            var page = Qt.createQmlObject("import QtQuick 2.0;import Sailfish.Silica 1.0;import Sailfish.Contacts 1.0; \
+Page { id: page; signal saveContact(); property alias contact: card.contact; property alias saveText: saveMenu.text; \
+ContactCard { id: card; PullDownMenu { MenuItem { id: saveMenu; onClicked: page.saveContact(); }}}}",
+                                scanPage, "ContactPage")
+                            pageStack.push(page, {
+                                contact: clickableResult.vcard.contact(),
+                                //: Pulley menu item (saves contact)
+                                //% "Save"
+                                saveText: qsTrId("contact-menu-save")
+                            }).saveContact.connect(function() {
+                                pageStack.pop()
+                                clickableResult.vcard.importContact()
+                            })
+                        }
                     }
                 }
 
@@ -750,11 +820,6 @@ Page {
                             pageStack.pop()
                             resultItem.deleteItem()
                         })
-                    }
-
-                    Timer {
-                        id: holdOffTimer
-                        interval: 2000
                     }
                 }
             }

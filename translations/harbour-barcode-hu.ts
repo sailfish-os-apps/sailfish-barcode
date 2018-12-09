@@ -237,5 +237,16 @@
         <extracomment>Hint label</extracomment>
         <translation type="unfinished">Vágólapra másolás</translation>
     </message>
+    <message id="hint-open_contact_card">
+        <source>Open contact card</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Nyissa meg a névjegykártyát</translation>
+    </message>
+    <message id="hint-open_link">
+        <source>Open link in browser</source>
+        <oldsource>Open link</oldsource>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Megnyitás böngészőben</translation>
+    </message>
 </context>
 </TS>

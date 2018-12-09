@@ -26,14 +26,20 @@ THE SOFTWARE.
 .pragma library
 
 function isVcard(text) {
-    var vcard = text.match(/^(BEGIN:VCARD(\r|\n)+)/)
-    return vcard && vcard.length > 0
+    if (text !== "") {
+        var vcard = text.match(/^(BEGIN:VCARD(\r|\n)+)/)
+        return vcard && vcard.length > 0
+    }
+    return false
 }
 
 function isLink(text) {
-    var urls = text.match(/^(http[s]*:\/\/.{3,500}|www\..{3,500}|sms:.*)$/)
-    // is a known url scheme and not a vcard
-    return urls && urls.length > 0 && !isVcard(text)
+    if (text !== "") {
+        var urls = text.match(/^(http[s]*:\/\/.{3,500}|www\..{3,500}|sms:.*)$/)
+        // is a known url scheme and not a vcard
+        return urls && urls.length > 0 && !isVcard(text)
+    }
+    return false
 }
 
 function isText(text) {

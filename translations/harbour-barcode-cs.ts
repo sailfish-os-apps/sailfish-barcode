@@ -241,5 +241,15 @@
         <extracomment>Hint label</extracomment>
         <translation>Kopírovat do schránky</translation>
     </message>
+    <message id="hint-open_contact_card">
+        <source>Open contact card</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Otevřete kartu kontaktu</translation>
+    </message>
+    <message id="hint-open_link">
+        <source>Open link in browser</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Otevřít odkaz v prohlížeči</translation>
+    </message>
 </context>
 </TS>

@@ -239,5 +239,16 @@
         <extracomment>Hint label</extracomment>
         <translation>Kopiera till urklipp</translation>
     </message>
+    <message id="hint-open_contact_card">
+        <source>Open contact card</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Öppna kontaktkort</translation>
+    </message>
+    <message id="hint-open_link">
+        <source>Open link in browser</source>
+        <oldsource>Open link</oldsource>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Öppna länken i webbläsaren</translation>
+    </message>
 </context>
 </TS>

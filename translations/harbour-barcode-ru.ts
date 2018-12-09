@@ -241,5 +241,16 @@
         <extracomment>Hint label</extracomment>
         <translation>Копирование в буфер обмена</translation>
     </message>
+    <message id="hint-open_contact_card">
+        <source>Open contact card</source>
+        <extracomment>Hint label</extracomment>
+        <translation>Открыть карточку контакта</translation>
+    </message>
+    <message id="hint-open_link">
+        <source>Open link in browser</source>
+        <oldsource>Open link</oldsource>
+        <extracomment>Hint label</extracomment>
+        <translation>Открыть ссылку в браузере</translation>
+    </message>
 </context>
 </TS>

@@ -237,5 +237,16 @@
         <extracomment>Hint label</extracomment>
         <translation>复制到剪贴板</translation>
     </message>
+    <message id="hint-open_contact_card">
+        <source>Open contact card</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">联系人卡片</translation>
+    </message>
+    <message id="hint-open_link">
+        <source>Open link in browser</source>
+        <oldsource>Open link</oldsource>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">在浏览器中打开</translation>
+    </message>
 </context>
 </TS>

@@ -239,5 +239,15 @@
         <extracomment>Hint label</extracomment>
         <translation>Kopier til udklipsholder</translation>
     </message>
+    <message id="hint-open_contact_card">
+        <source>Open contact card</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Åbn kontaktkort</translation>
+    </message>
+    <message id="hint-open_link">
+        <source>Open link in browser</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Åbn link i browser</translation>
+    </message>
 </context>
 </TS>
