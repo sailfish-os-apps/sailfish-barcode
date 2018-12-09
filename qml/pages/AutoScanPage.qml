@@ -605,8 +605,10 @@ Page {
                         readonly property string icon_16_9: iconSourcePrefix + Qt.resolvedUrl("img/resolution_16_9.svg")
                         readonly property string icon_4_3: iconSourcePrefix +  Qt.resolvedUrl("img/resolution_4_3.svg")
                         anchors.centerIn: parent
-                        icon.sourceSize: Qt.size(width*4/5, height*4/5) // e.g. 64/80
-                        icon.source: AppSettings.wideMode ? icon_4_3 : icon_16_9
+                        icon {
+                            source: AppSettings.wideMode ? icon_4_3 : icon_16_9
+                            sourceSize: Qt.size(Theme.iconSizeMedium, Theme.iconSizeMedium)
+                        }
                         onClicked: AppSettings.wideMode = !AppSettings.wideMode
                         //: Hint label
                         //% "Switch the aspect ratio between 9:16 and 3:4"
@@ -717,7 +719,10 @@ Page {
                     HintIconButton {
                         id: linkButton
                         anchors.centerIn: parent
-                        icon.source: iconSourcePrefix + Qt.resolvedUrl("img/open_link.svg")
+                        icon {
+                            source: iconSourcePrefix + Qt.resolvedUrl("img/open_link.svg")
+                            sourceSize: Qt.size(Theme.iconSizeMedium, Theme.iconSizeMedium)
+                        }
                         visible: !clickableResult.haveContact && clickableResult.isLink
                         enabled: visible && !holdOffTimer.running
                         //: Hint label
@@ -739,7 +744,10 @@ Page {
                     HintIconButton {
                         id: vcardButton
                         anchors.centerIn: parent
-                        icon.source: iconSourcePrefix + Qt.resolvedUrl("img/open_vcard.svg")
+                        icon {
+                            source: iconSourcePrefix + Qt.resolvedUrl("img/open_vcard.svg")
+                            sourceSize: Qt.size(Theme.iconSizeMedium, Theme.iconSizeMedium)
+                        }
                         visible: clickableResult.haveContact && !clickableResult.isLink
                         //: Hint label
                         //% "Open contact card"
