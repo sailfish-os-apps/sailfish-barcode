@@ -30,6 +30,7 @@ InteractionHintLabel {
     anchors.fill: parent
     invert: true
     visible: opacity > 0
+    opacity: 0.0
 
     Behavior on opacity {
         FadeAnimation {
