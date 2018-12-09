@@ -243,7 +243,10 @@ HistoryModel::Private::Private(HistoryModel* aPublicModel) :
 
 HistoryModel::Private::~Private()
 {
-    commitChanges();
+    if (isDirty()) {
+        commitChanges();
+        cleanupFiles();
+    }
     iThreadPool->waitForDone();
 }
 
