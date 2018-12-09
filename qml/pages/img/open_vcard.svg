@@ -1,12 +1,37 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-<svg version="1.1"
-     xmlns="http://www.w3.org/2000/svg"
-     xmlns:xlink="http://www.w3.org/1999/xlink"
-     x="0px"
-     y="0px"
-     viewBox="0 0 64 64"
-     style="enable-background:new 0 0 64 64;"
-     xml:space="preserve">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   x="0px"
+   y="0px"
+   viewBox="0 0 64 64"
+   style="enable-background:new 0 0 64 64;"
+   xml:space="preserve"
+   id="svg18"
+   sodipodi:docname="open_vcard.svg"
+   inkscape:version="0.92.3">
+  <metadata>
+    <rdf:RDF>
+      <cc:Work rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+        <dc:title/>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <path
+      inkscape:connector-curvature="0"
+      style="opacity:0.5;fill:#ffffff;stroke-width:0.90249997"
+      d="M 33.371242,44.04417 H 19.578336 c -0.626335,0 -1.219278,-0.277067 -1.625403,-0.7581 -0.406125,-0.481935 -0.579405,-1.112782 -0.47291,-1.731897 0.477423,-2.79414 2.193075,-5.184863 4.604555,-6.524173 -1.04329,-1.117295 -1.637135,-2.5992 -1.637135,-4.18038 0,-1.749947 0.74366,-3.419572 2.040553,-4.578382 1.289672,-1.153395 2.948467,-1.683163 4.673144,-1.48732 2.773382,0.312265 5.004362,2.578442 5.303992,5.388827 0.19494,1.821245 -0.403417,3.574803 -1.600132,4.857255 2.410577,1.33931 4.127132,3.730935 4.603652,6.524173 0.105593,0.620017 -0.06679,1.250865 -0.47291,1.7328 -0.407027,0.481032 -0.999067,0.757197 -1.6245,0.757197 z"
+      sodipodi:nodetypes="sscccsccccccs"/>
   <g>
     <rect
         style="opacity:0;fill:#FFFFFF;"
