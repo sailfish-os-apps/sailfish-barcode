@@ -638,6 +638,7 @@ Page {
                     clickableResult.text = text
                     clickableResult.format = Utils.barcodeFormat(format)
                     clickableResult.isLink = Utils.isLink(text)
+                    opacity = 1.0
                 }
 
                 function clear() {
@@ -645,11 +646,32 @@ Page {
                     clickableResult.text = ""
                     clickableResult.format = ""
                     clickableResult.isLink = false
+                    opacity = 0.0
                 }
+
+                signal itemHidden()
 
                 height: Math.max(resultItem.height, clipboardButton.height)
                 width: parent.width
                 enabled: text !== "" && !holdOffTimer.running
+
+                // Hide the results button when it touches the scan button
+                readonly property real bottomY: y + flickableColumn.y - scanPageFlickable.contentY + scanPageFlickable.y + height
+                onBottomYChanged: {
+                    if (visible && bottomY >= actionButton.y) {
+                        opacity = 0.0
+                        itemHidden()
+                    }
+                }
+                visible: opacity > 0.0
+
+                Behavior on opacity { FadeAnimation { } }
+
+                // Clear results when the first history item gets deleted
+                Connections {
+                    target: historyModel
+                    onRowsRemoved: if (first == 0) clickableResult.clear()
+                }
 
                 Item {
                     height: parent.height
@@ -680,6 +702,22 @@ Page {
                     enabled: parent.enabled
                     anchors.verticalCenter: parent.verticalCenter
 
+                    function deleteItem() {
+                        var remorse = remorseComponent.createObject(null)
+                        //: Remorse popup text
+                        //% "Deleting"
+                        remorse.execute(resultItem, qsTrId("history-menu-delete_remorse"),
+                            function() {
+                                historyModel.remove(0)
+                                if (scanPage.status === PageStatus.Active) {
+                                    historyModel.commitChanges()
+                                }
+                                remorse.destroy()
+                            })
+                        actionButton.clicked.connect(remorse.destroy)
+                        clickableResult.itemHidden.connect(remorse.destroy)
+                    }
+
                     Column {
                         id: resultColumn
                         x: Theme.paddingSmall
@@ -702,18 +740,16 @@ Page {
                     }
 
                     onClicked: {
-                        if (clickableResult.isLink) {
-                            console.log("opening", clickableResult.text)
-                            Qt.openUrlExternally(clickableResult.text)
-                            holdOffTimer.restart()
-                        } else {
-                            pageStack.push("TextPage.qml", {
-                                hasImage: AppSettings.saveImages,
-                                recordId: clickableResult.recordId,
-                                text: clickableResult.text,
-                                format: clickableResult.format
-                            })
-                        }
+                        pageStack.push("TextPage.qml", {
+                            hasImage: AppSettings.saveImages,
+                            recordId: clickableResult.recordId,
+                            text: clickableResult.text,
+                            format: clickableResult.format,
+                            canDelete: true
+                        }).deleteEntry.connect(function() {
+                            pageStack.pop()
+                            resultItem.deleteItem()
+                        })
                     }
 
                     Timer {
@@ -740,5 +776,10 @@ Page {
             }
         }
         enabled: (scanPage.state === "READY") || (scanPage.state === "SCANNING")
+    }
+
+    Component {
+        id: remorseComponent
+        RemorseItem { }
     }
 }

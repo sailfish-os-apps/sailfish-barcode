@@ -75,7 +75,10 @@ Page {
                 //: Remorse popup text
                 //% "Deleting"
                 remorse.execute(delegate, qsTrId("history-menu-delete_remorse"),
-                    function() { model.remove(item.modelIndex) })
+                    function() {
+                        model.remove(item.modelIndex)
+                        remorse.destroy()
+                    })
             }
 
             onClicked: {
