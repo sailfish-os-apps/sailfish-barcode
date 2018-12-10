@@ -50,10 +50,10 @@ public:
   FurthestFromAverageComparator(float averageModuleSize) :
     averageModuleSize_(averageModuleSize) {
   }
-  int operator()(Ref<FinderPattern> a, Ref<FinderPattern> b) {
+  bool operator()(Ref<FinderPattern> a, Ref<FinderPattern> b) {
     float dA = abs(a->getEstimatedModuleSize() - averageModuleSize_);
     float dB = abs(b->getEstimatedModuleSize() - averageModuleSize_);
-    return dA < dB ? -1 : dA == dB ? 0 : 1;
+    return dA > dB;
   }
 };
 
@@ -63,14 +63,14 @@ public:
   CenterComparator(float averageModuleSize) :
     averageModuleSize_(averageModuleSize) {
   }
-  int operator()(Ref<FinderPattern> a, Ref<FinderPattern> b) {
+  bool operator()(Ref<FinderPattern> a, Ref<FinderPattern> b) {
     // N.B.: we want the result in descending order ...
     if (a->getCount() != b->getCount()) {
-      return b->getCount() - a->getCount();
+      return a->getCount() > b->getCount();
     } else {
       float dA = abs(a->getEstimatedModuleSize() - averageModuleSize_);
       float dB = abs(b->getEstimatedModuleSize() - averageModuleSize_);
-      return dA < dB ? 1 : dA == dB ? 0 : -1;
+      return dA < dB;
     }
   }
 };
