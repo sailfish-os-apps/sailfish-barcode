@@ -103,7 +103,7 @@ Ref<BitMatrix> GlobalHistogramBinarizer::getBlackMatrix() {
     LuminanceSource& source = *getLuminanceSource();
     int width = source.getWidth();
     int height = source.getHeight();
-    BitMatrix* matrix = new BitMatrix(width, height);
+    Ref<BitMatrix> matrix(new BitMatrix(width, height));
 
     // Quickly calculates the histogram by sampling four rows from the image.
     // This proved to be more robust on the blackbox tests than sampling a
@@ -138,7 +138,7 @@ Ref<BitMatrix> GlobalHistogramBinarizer::getBlackMatrix() {
         }
     }
 
-    return Ref<BitMatrix>(matrix);
+    return matrix;
 }
 
 using namespace std;
