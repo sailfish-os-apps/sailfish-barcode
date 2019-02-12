@@ -2,7 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
-Copyright (c) 2018 Slava Monich
+Copyright (c) 2018-2019 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,34 +23,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#ifndef CAPTUREIMAGEPROVIDER_H
-#define CAPTUREIMAGEPROVIDER_H
+#ifndef HISTORYIMAGEPROVIDER_H
+#define HISTORYIMAGEPROVIDER_H
 
 #include <QImage>
 #include <QQuickImageProvider>
 
-class CaptureImageProvider : public QQuickImageProvider {
+class HistoryImageProvider : public QQuickImageProvider {
 public:
-    CaptureImageProvider();
-    ~CaptureImageProvider();
+    HistoryImageProvider();
+    ~HistoryImageProvider();
 
     static const QString IMAGE_EXT;
 
-    static CaptureImageProvider* instance();
+    static HistoryImageProvider* instance();
 
     QImage requestImage(const QString& aId, QSize* aSize,
         const QSize& aRequested) Q_DECL_OVERRIDE;
 
-    bool cacheMarkedImage(QString aImageId);
+    bool cacheImage(QString aImageId, QImage aImage);
     void dropFromCache(QString aImageId);
     void clearCache();
-
-public:
-    QImage iMarkedImage;
 
 private:
     class Private;
     Private* iPrivate;
 };
 
-#endif // CAPTUREIMAGEPROVIDER_H
+#endif // HISTORYIMAGEPROVIDER_H

@@ -2,7 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
-Copyright (c) 2018 Slava Monich
+Copyright (c) 2018-2019 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,42 +23,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#include "CaptureImageProvider.h"
+#include "HistoryImageProvider.h"
 #include "Database.h"
 #include "HarbourDebug.h"
 
 #include <QHash>
 
 // ==========================================================================
-// CaptureImageProvider::Private
+// HistoryImageProvider::Private
 // ==========================================================================
 
-class CaptureImageProvider::Private {
+class HistoryImageProvider::Private {
 public:
     Private() {}
     ~Private() {}
 
-    static const QString MARKED;
     static const QString SAVED;
 
-    static CaptureImageProvider* gInstance;
+    static HistoryImageProvider* gInstance;
 
 public:
     QHash<QString,QImage> iCache;
 };
 
-const QString CaptureImageProvider::Private::MARKED("marked");
-const QString CaptureImageProvider::Private::SAVED("saved/");
+const QString HistoryImageProvider::Private::SAVED("saved/");
 
-CaptureImageProvider* CaptureImageProvider::Private::gInstance = NULL;
+HistoryImageProvider* HistoryImageProvider::Private::gInstance = NULL;
 
 // ==========================================================================
-// CaptureImageProvider
+// HistoryImageProvider
 // ==========================================================================
 
-const QString CaptureImageProvider::IMAGE_EXT(".jpg");
+const QString HistoryImageProvider::IMAGE_EXT(".jpg");
 
-CaptureImageProvider::CaptureImageProvider() :
+HistoryImageProvider::HistoryImageProvider() :
     QQuickImageProvider(Image),
     iPrivate(new Private)
 {
@@ -67,7 +65,7 @@ CaptureImageProvider::CaptureImageProvider() :
     }
 }
 
-CaptureImageProvider::~CaptureImageProvider()
+HistoryImageProvider::~HistoryImageProvider()
 {
     delete iPrivate;
     if (Private::gInstance == this) {
@@ -75,17 +73,15 @@ CaptureImageProvider::~CaptureImageProvider()
     }
 }
 
-CaptureImageProvider* CaptureImageProvider::instance()
+HistoryImageProvider* HistoryImageProvider::instance()
 {
     return Private::gInstance;
 }
 
-QImage CaptureImageProvider::requestImage(const QString& aId, QSize* aSize, const QSize&)
+QImage HistoryImageProvider::requestImage(const QString& aId, QSize* aSize, const QSize&)
 {
     QImage img;
-    if (aId == Private::MARKED) {
-        img = iMarkedImage;
-    } else if (aId.startsWith(Private::SAVED)) {
+    if (aId.startsWith(Private::SAVED)) {
         // Extract database id
         const QString recId(aId.mid(Private::SAVED.length()));
         QImage cached(iPrivate->iCache.value(recId));
@@ -114,10 +110,10 @@ QImage CaptureImageProvider::requestImage(const QString& aId, QSize* aSize, cons
     return img;
 }
 
-bool CaptureImageProvider::cacheMarkedImage(QString aImageId)
+bool HistoryImageProvider::cacheImage(QString aImageId, QImage aImage)
 {
-    if (!aImageId.isEmpty() && !iMarkedImage.isNull()) {
-        iPrivate->iCache.insert(aImageId, iMarkedImage);
+    if (!aImageId.isEmpty() && !aImage.isNull()) {
+        iPrivate->iCache.insert(aImageId, aImage);
         HDEBUG(aImageId);
         return true;
     } else {
@@ -125,14 +121,14 @@ bool CaptureImageProvider::cacheMarkedImage(QString aImageId)
     }
 }
 
-void CaptureImageProvider::dropFromCache(QString aImageId)
+void HistoryImageProvider::dropFromCache(QString aImageId)
 {
     if (iPrivate->iCache.remove(aImageId)) {
         HDEBUG(aImageId);
     }
 }
 
-void CaptureImageProvider::clearCache()
+void HistoryImageProvider::clearCache()
 {
     iPrivate->iCache.clear();
 }

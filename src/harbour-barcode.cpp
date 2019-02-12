@@ -2,7 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
-Copyright (c) 2018 Slava Monich
+Copyright (c) 2018-2019 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -33,16 +33,17 @@ THE SOFTWARE.
 #include <MGConfItem>
 
 #include "scanner/AutoBarcodeScanner.h"
-#include "scanner/CaptureImageProvider.h"
 
 #include "HarbourDebug.h"
 #include "HarbourDisplayBlanking.h"
 #include "HarbourImageProvider.h"
+#include "HarbourSingleImageProvider.h"
 #include "HarbourTemporaryFile.h"
 #include "HarbourTheme.h"
 
 #include "ContactsPlugin.h"
 #include "Database.h"
+#include "HistoryImageProvider.h"
 #include "HistoryModel.h"
 #include "Settings.h"
 
@@ -55,6 +56,7 @@ THE SOFTWARE.
 static void register_types(QQmlEngine* engine, const char* uri, int v1, int v2)
 {
     ContactsPlugin::registerTypes(engine, uri, v1, v2);
+    qmlRegisterType<HarbourSingleImageProvider>(uri, v1, v2, "SingleImageProvider");
     qmlRegisterType<HarbourDisplayBlanking>(uri, v1, v2, "DisplayBlanking");
     qmlRegisterType<HarbourTemporaryFile>(uri, v1, v2, "TemporaryFile");
     qmlRegisterType<AutoBarcodeScanner>(uri, v1, v2, "AutoBarcodeScanner");
@@ -136,7 +138,7 @@ int main(int argc, char *argv[])
     QString providerDarkOnLight("harbour-dark");
     QQmlEngine* engine = view->engine();
     register_types(engine, "harbour.barcode", 1, 0);
-    engine->addImageProvider("scanner", new CaptureImageProvider);
+    engine->addImageProvider("scanner", new HistoryImageProvider);
     engine->addImageProvider(providerDefault, new HarbourImageProvider);
     engine->addImageProvider(providerDarkOnLight, new HarbourImageProvider);
 

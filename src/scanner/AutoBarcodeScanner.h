@@ -2,7 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
-Copyright (c) 2018 Slava Monich
+Copyright (c) 2018-2019 Slava Monich
 
 Some ideas are borrowed from qdeclarativecamera.cpp and qdeclarativecamera.h
 (https://git.gitorious.org/qt/qtmultimedia.git)
@@ -66,7 +66,7 @@ public:
 
 signals:
     void decodingDone(QImage image, Decoder::Result result);
-    void decodingFinished(QVariantMap result);
+    void decodingFinished(QImage image, QVariantMap result);
     void viewFinderItemChanged();
     void markerColorChanged();
     void grabbingChanged();

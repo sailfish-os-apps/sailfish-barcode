@@ -41,20 +41,20 @@ SOURCES += \
     src/ContactsPlugin.cpp \
     src/Database.cpp \
     src/harbour-barcode.cpp \
+    src/HistoryImageProvider.cpp \
     src/HistoryModel.cpp \
     src/Settings.cpp \
     src/scanner/AutoBarcodeScanner.cpp \
-    src/scanner/CaptureImageProvider.cpp \
     src/scanner/Decoder.cpp \
     src/scanner/ImageSource.cpp
 
 HEADERS += \
     src/ContactsPlugin.h \
     src/Database.h \
+    src/HistoryImageProvider.h \
     src/HistoryModel.h \
     src/Settings.h \
     src/scanner/AutoBarcodeScanner.h \
-    src/scanner/CaptureImageProvider.h \
     src/scanner/Decoder.h \
     src/scanner/ImageSource.h
 
@@ -80,6 +80,7 @@ SOURCES += \
     harbour-lib/src/HarbourImageProvider.cpp \
     harbour-lib/src/HarbourMce.cpp \
     harbour-lib/src/HarbourPluginLoader.cpp \
+    harbour-lib/src/HarbourSingleImageProvider.cpp \
     harbour-lib/src/HarbourTask.cpp \
     harbour-lib/src/HarbourTemporaryFile.cpp \
     harbour-lib/src/HarbourTheme.cpp
@@ -89,6 +90,7 @@ HEADERS += \
     harbour-lib/include/HarbourDisplayBlanking.h \
     harbour-lib/include/HarbourImageProvider.h \
     harbour-lib/include/HarbourPluginLoader.h \
+    harbour-lib/include/HarbourSingleImageProvider.h \
     harbour-lib/include/HarbourTask.h \
     harbour-lib/include/HarbourTemporaryFile.h \
     harbour-lib/include/HarbourTheme.h \

@@ -1,7 +1,7 @@
 /*
 The MIT License (MIT)
 
-Copyright (c) 2018 Slava Monich
+Copyright (c) 2018-2019 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +23,8 @@ THE SOFTWARE.
 */
 
 #include "HistoryModel.h"
+#include "HistoryImageProvider.h"
 #include "Database.h"
-#include "scanner/CaptureImageProvider.h"
 
 #include "HarbourDebug.h"
 #include "HarbourTask.h"
@@ -66,9 +66,9 @@ void HistoryModel::CleanupTask::performTask()
     while (it.hasNext()) {
         it.next();
         const QString name(it.fileName());
-        if (name.endsWith(CaptureImageProvider::IMAGE_EXT)) {
+        if (name.endsWith(HistoryImageProvider::IMAGE_EXT)) {
             const QString base(name.left(name.length() -
-                CaptureImageProvider::IMAGE_EXT.length()));
+                HistoryImageProvider::IMAGE_EXT.length()));
             const int pos = iList.indexOf(base);
             if (pos >= 0) {
                 iList.removeAt(pos);
@@ -102,7 +102,7 @@ public:
 
 HistoryModel::SaveTask::SaveTask(QThreadPool* aPool, QImage aImage, QString aId) :
     HarbourTask(aPool), iImage(aImage), iId(aId),
-    iName(aId + CaptureImageProvider::IMAGE_EXT)
+    iName(aId + HistoryImageProvider::IMAGE_EXT)
 {
 }
 
@@ -137,10 +137,10 @@ void HistoryModel::PurgeTask::performTask()
     while (it.hasNext()) {
         it.next();
         const QString name(it.fileName());
-        if (name.endsWith(CaptureImageProvider::IMAGE_EXT)) {
+        if (name.endsWith(HistoryImageProvider::IMAGE_EXT)) {
             bool ok = false;
             const QString base(name.left(name.length() -
-                CaptureImageProvider::IMAGE_EXT.length()));
+                HistoryImageProvider::IMAGE_EXT.length()));
             base.toInt(&ok);
             if (ok) {
                 const QString path(it.filePath());
@@ -349,8 +349,8 @@ void HistoryModel::Private::onSaveDone()
     SaveTask* task = qobject_cast<SaveTask*>(sender());
     HASSERT(task);
     if (task) {
-        if (CaptureImageProvider::instance()) {
-            CaptureImageProvider::instance()->dropFromCache(task->iId);
+        if (HistoryImageProvider::instance()) {
+            HistoryImageProvider::instance()->dropFromCache(task->iId);
         }
         task->release();
     }
@@ -421,8 +421,8 @@ void HistoryModel::setSaveImages(bool aValue)
         iPrivate->iSaveImages = aValue;
         HDEBUG(aValue);
         if (!aValue) {
-            if (CaptureImageProvider::instance()) {
-                CaptureImageProvider::instance()->clearCache();
+            if (HistoryImageProvider::instance()) {
+                HistoryImageProvider::instance()->clearCache();
             }
             // Delete all files on a separate thread
             HarbourTask* task = new PurgeTask(iPrivate->iThreadPool);
@@ -450,7 +450,7 @@ QVariantMap HistoryModel::get(int aRow)
     // Addition field telling QML whether image file exists
     static const QString HAS_IMAGE("hasImage");
     QString path(Database::imageDir().path() + QDir::separator() + id +
-        CaptureImageProvider::IMAGE_EXT);
+        HistoryImageProvider::IMAGE_EXT);
     map.insert(HAS_IMAGE, QVariant::fromValue(QFile::exists(path)));
 
     HDEBUG(aRow << map);
@@ -462,11 +462,11 @@ QString HistoryModel::getValue(int aRow)
     return iPrivate->valueAt(aRow, Private::FIELD_VALUE).toString();
 }
 
-QString HistoryModel::insert(QString aText, QString aFormat)
+QString HistoryModel::insert(QImage aImage, QString aText, QString aFormat)
 {
     QString id;
     QString timestamp(QDateTime::currentDateTime().toString(Qt::ISODate));
-    HDEBUG(aText << aFormat << timestamp);
+    HDEBUG(aText << aFormat << timestamp << aImage);
     QSqlRecord record(iPrivate->database().record(Private::DB_TABLE));
     record.setValue(Private::DB_FIELD_VALUE, aText);
     record.setValue(Private::DB_FIELD_TIMESTAMP, timestamp);
@@ -484,11 +484,11 @@ QString HistoryModel::insert(QString aText, QString aFormat)
         HDEBUG(id << iPrivate->record(row));
         if (iPrivate->iSaveImages) {
             // Save the image on a separate thread. While we are saving
-            // it, the image will remain cached by CaptureImageProvider.
+            // it, the image will remain cached by HistoryImageProvider.
             // It will be removed from the cache by Private::onSaveDone()
-            CaptureImageProvider* ip = CaptureImageProvider::instance();
-            if (ip && ip->cacheMarkedImage(id)) {
-                (new SaveTask(iPrivate->iThreadPool, ip->iMarkedImage, id))->
+            HistoryImageProvider* ip = HistoryImageProvider::instance();
+            if (ip && ip->cacheImage(id, aImage)) {
+                (new SaveTask(iPrivate->iThreadPool, aImage, id))->
                     submit(iPrivate, SLOT(onSaveDone()));
             }
         }

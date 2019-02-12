@@ -2,7 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
-Copyright (c) 2018 Slava Monich
+Copyright (c) 2018-2019 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,6 @@ THE SOFTWARE.
 */
 
 #include "AutoBarcodeScanner.h"
-#include "CaptureImageProvider.h"
 
 #include "HarbourDebug.h"
 
@@ -298,10 +297,6 @@ void AutoBarcodeScanner::onDecodingDone(QImage aImage, Decoder::Result aResult)
         }
     }
 
-    if (CaptureImageProvider::instance()) {
-        CaptureImageProvider::instance()->iMarkedImage = aImage;
-    }
-
     m_captureImage = QImage();
     m_timeoutTimer->stop();
     m_flagScanRunning = false;
@@ -310,7 +305,7 @@ void AutoBarcodeScanner::onDecodingDone(QImage aImage, Decoder::Result aResult)
     result.insert("ok", QVariant::fromValue(aResult.isValid()));
     result.insert("text", QVariant::fromValue(aResult.getText()));
     result.insert("format", QVariant::fromValue(aResult.getFormatName()));
-    emit decodingFinished(result);
+    emit decodingFinished(aImage, result);
 }
 
 void AutoBarcodeScanner::onScanningTimeout()

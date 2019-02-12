@@ -2,7 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
-Copyright (c) 2018 Slava Monich
+Copyright (c) 2018-2019 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -84,12 +84,13 @@ Page {
         }
     }
 
-    function applyResult(result) {
+    function applyResult(image,result) {
         var text = result.text
         console.log(result.format, text)
+        markerImageProvider.image = image
         if (text.length > 0) {
             Clipboard.text = text
-            var recId = historyModel.insert(text, result.format)
+            var recId = historyModel.insert(image, text, result.format)
             clickableResult.setValue(recId, text, result.format)
         }
     }
@@ -104,6 +105,7 @@ Page {
 
     function startScan() {
         viewFinder.showMarker = false
+        markerImageProvider.clear()
         stateScanning()
         scanner.startScanning(scanTimeout * 1000)
     }
@@ -214,6 +216,10 @@ Page {
         }
     }
 
+    SingleImageProvider {
+        id: markerImageProvider
+    }
+
     AutoBarcodeScanner {
         id: scanner
 
@@ -224,7 +230,7 @@ Page {
             statusText.text = ""
             if (scanPage.state !== "ABORT") {
                 if (result.ok) {
-                    applyResult(result)
+                    applyResult(image, result)
                     viewFinder.decodingFinished()
                 } else if (scanPage.state !== "INACTIVE") {
                     //: Scan status label
@@ -452,11 +458,10 @@ Page {
 
             Image {
                 id: markerImage
-                readonly property bool markerShown: showMarker
 
                 anchors.fill: parent
                 z: 2
-                source: markerShown ? "image://scanner/marked" : ""
+                source: showMarker ? markerImageProvider.source : ""
                 visible: status === Image.Ready
                 cache: false
             }
@@ -601,7 +606,6 @@ Page {
                         right: parent.right
                     }
                     HintIconButton {
-                        id: aspectButton
                         readonly property string icon_16_9: iconSourcePrefix + Qt.resolvedUrl("img/resolution_16_9.svg")
                         readonly property string icon_4_3: iconSourcePrefix +  Qt.resolvedUrl("img/resolution_4_3.svg")
                         anchors.centerIn: parent

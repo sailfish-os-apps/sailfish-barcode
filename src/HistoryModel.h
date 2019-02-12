@@ -1,7 +1,7 @@
 /*
 The MIT License (MIT)
 
-Copyright (c) 2018 Slava Monich
+Copyright (c) 2018-2019 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ THE SOFTWARE.
 #define BARCODE_HISTORY_MODEL_H
 
 #include <QtQml>
+#include <QImage>
 #include <QSortFilterProxyModel>
 
 #define HISTORY_TABLE           "history"
@@ -51,7 +52,7 @@ public:
 
     Q_INVOKABLE QVariantMap get(int row);
     Q_INVOKABLE QString getValue(int row);
-    Q_INVOKABLE QString insert(QString value, QString format);
+    Q_INVOKABLE QString insert(QImage image, QString value, QString format);
     Q_INVOKABLE void remove(int row);
     Q_INVOKABLE void removeAll();
     Q_INVOKABLE void commitChanges();
