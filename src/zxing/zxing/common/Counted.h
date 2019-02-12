@@ -33,19 +33,26 @@ public:
   virtual ~Counted() {
   }
   Counted *retain() {
+#ifdef __GNUC__
+    __sync_add_and_fetch(&count_, 1);
+#else
     count_++;
+#endif
     return this;
   }
   void release() {
+#if FBREADER_USE_GNUC_SYNC_BUILTINS
+    if (!__sync_sub_and_fetch(&count_, 1)) {
+#else
     count_--;
     if (count_ == 0) {
+#endif
       count_ = 0xDEADF001;
       delete this;
     }
   }
 
-
-  /* return the current count for denugging purposes or similar */
+  /* return the current count for debugging purposes or similar */
   int count() const {
     return count_;
   }
