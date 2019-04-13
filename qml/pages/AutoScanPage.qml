@@ -541,7 +541,7 @@ Page {
                 }
 
                 function updateViewFinderPosition() {
-                    scanner.setViewFinderRect(Qt.rect(x + parent.x, y + parent.y, width, height))
+                    scanner.viewFinderRect = Qt.rect(x + parent.x, y + parent.y, width, height)
                 }
             }
 

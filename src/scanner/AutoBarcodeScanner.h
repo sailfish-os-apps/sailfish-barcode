@@ -4,9 +4,6 @@ The MIT License (MIT)
 Copyright (c) 2014 Steffen Förster
 Copyright (c) 2018-2019 Slava Monich
 
-Some ideas are borrowed from qdeclarativecamera.cpp and qdeclarativecamera.h
-(https://git.gitorious.org/qt/qtmultimedia.git)
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -29,70 +26,48 @@ THE SOFTWARE.
 #ifndef AUTOBARCODESCANNER_H
 #define AUTOBARCODESCANNER_H
 
+#include <QObject>
 #include <QColor>
-#include <QtConcurrent>
-#include <QtQuick/QQuickItem>
 #include <QImage>
+#include <QRect>
+#include <QVariantMap>
 
-#include "Decoder.h"
-
-class AutoBarcodeScanner : public QObject
-{
+class AutoBarcodeScanner : public QObject {
     Q_OBJECT
-
-public:
-    AutoBarcodeScanner(QObject *parent = 0);
-    virtual ~AutoBarcodeScanner();
-
     Q_PROPERTY(QObject* viewFinderItem READ viewFinderItem WRITE setViewFinderItem NOTIFY viewFinderItemChanged)
+    Q_PROPERTY(QRect viewFinderRect READ viewFinderRect WRITE setViewFinderRect NOTIFY viewFinderRectChanged)
     Q_PROPERTY(QString markerColor READ markerColor WRITE setMarkerColor NOTIFY markerColorChanged)
     Q_PROPERTY(bool grabbing READ grabbing NOTIFY grabbingChanged)
 
-    Q_INVOKABLE void startScanning(int timeout);
+    class Private;
+
+public:
+    AutoBarcodeScanner(QObject* aParent = Q_NULLPTR);
+    virtual ~AutoBarcodeScanner();
+
+    Q_INVOKABLE void startScanning(int aTimeout);
     Q_INVOKABLE void stopScanning();
 
-    Q_INVOKABLE void setViewFinderRect(QRect rect);
+    QObject* viewFinderItem() const;
+    void setViewFinderItem(QObject* aItem);
 
-    // must be public, to start in new thread
-    void processDecode();
+    const QRect& viewFinderRect() const;
+    void setViewFinderRect(const QRect& aRect);
 
-    QObject* viewFinderItem() const { return m_viewFinderItem; }
-    void setViewFinderItem(QObject* item);
-
-    QString markerColor() const { return m_markerColor.name(); }
+    QString markerColor() const;
     void setMarkerColor(QString aValue);
 
-    bool grabbing() const { return m_grabbing; }
+    bool grabbing() const;
 
-signals:
-    void decodingDone(QImage image, Decoder::Result result);
+Q_SIGNALS:
     void decodingFinished(QImage image, QVariantMap result);
     void viewFinderItemChanged();
+    void viewFinderRectChanged();
     void markerColorChanged();
     void grabbingChanged();
-    void needImage();
-
-public slots:
-    void onScanningTimeout();
-    void onDecodingDone(QImage aImage, Decoder::Result aResult);
-    void onGrabImage();
 
 private:
-    bool m_grabbing;
-    Decoder* m_decoder;
-    QImage m_captureImage;
-    QQuickItem* m_viewFinderItem;
-    bool m_flagScanRunning;
-    bool m_flagScanAbort;
-    QTimer* m_timeoutTimer;
-
-    QMutex m_scanProcessMutex;
-    QWaitCondition m_scanProcessEvent;
-    QFuture<void> m_scanFuture;
-
-    // options
-    QRect m_viewFinderRect;
-    QColor m_markerColor;
+    Private* iPrivate;
 };
 
 #endif // AUTOBARCODESCANNER_H

@@ -24,19 +24,19 @@ THE SOFTWARE.
 */
 
 #include "AutoBarcodeScanner.h"
+#include "ImageSource.h"
+#include "Decoder.h"
 
 #include "HarbourDebug.h"
 
+#include <QtConcurrent>
+#include <QQuickWindow>
+#include <QQuickItem>
 #include <QPainter>
 #include <QBrush>
-#include <QStandardPaths>
-#include <QtQuick/QQuickWindow>
-
-#include "ImageSource.h"
-
-#include <fstream>
 
 #ifdef HARBOUR_DEBUG
+#include <QStandardPaths>
 static void saveDebugImage(const QImage& aImage, const QString& aFileName)
 {
     QString path = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation) + "/codereader/" + aFileName;
@@ -48,22 +48,66 @@ static void saveDebugImage(const QImage& aImage, const QString& aFileName)
 #  define saveDebugImage(image,fileName) ((void)0)
 #endif
 
-AutoBarcodeScanner::AutoBarcodeScanner(QObject* parent) :
-    QObject(parent),
-    m_grabbing(false),
-    m_decoder(new Decoder),
-    m_viewFinderItem(NULL),
-    m_flagScanRunning(false),
-    m_flagScanAbort(false),
-    m_timeoutTimer(new QTimer(this)),
-    m_markerColor(QColor(0, 255, 0)) // default green
+// ==========================================================================
+// AutoBarcodeScanner::Private
+// ==========================================================================
+
+class AutoBarcodeScanner::Private : public QObject {
+    Q_OBJECT
+public:
+    Private(AutoBarcodeScanner* aParent);
+    ~Private();
+
+    AutoBarcodeScanner* scanner();
+
+    bool setViewFinderRect(const QRect& aRect);
+    bool setViewFinderItem(QObject* aValue);
+    bool setMarkerColor(QString aValue);
+    void startScanning(int aTimeout);
+    void stopScanning();
+    void decodingThread();
+
+Q_SIGNALS:
+    void needImage();
+    void decodingDone(QImage image, Decoder::Result result);
+
+public Q_SLOTS:
+    void onScanningTimeout();
+    void onDecodingDone(QImage aImage, Decoder::Result aResult);
+    void onGrabImage();
+
+public:
+    bool iGrabbing;
+    bool iScanning;
+    bool iAbortScan;
+
+    QImage iCaptureImage;
+    QQuickItem* iViewFinderItem;
+    QTimer* iScanTimeout;
+
+    QMutex iDecodingMutex;
+    QWaitCondition iDecodingEvent;
+    QFuture<void> iDecodingFuture;
+
+    QRect iViewFinderRect;
+    QColor iMarkerColor;
+};
+
+AutoBarcodeScanner::Private::Private(AutoBarcodeScanner* aParent) :
+    QObject(aParent),
+    iGrabbing(false),
+    iScanning(false),
+    iAbortScan(false),
+    iViewFinderItem(NULL),
+    iScanTimeout(new QTimer(this)),
+    iMarkerColor(QColor(0, 255, 0)) // default green
 {
-    HDEBUG("start init AutoBarcodeScanner");
-    m_timeoutTimer->setSingleShot(true);
-    connect(m_timeoutTimer, SIGNAL(timeout()),
+    iScanTimeout->setSingleShot(true);
+    connect(iScanTimeout, SIGNAL(timeout()),
         this, SLOT(onScanningTimeout()));
 
     // Handled on the main thread
+    qRegisterMetaType<Decoder::Result>();
     connect(this, SIGNAL(decodingDone(QImage,Decoder::Result)),
         SLOT(onDecodingDone(QImage,Decoder::Result)),
         Qt::QueuedConnection);
@@ -73,99 +117,101 @@ AutoBarcodeScanner::AutoBarcodeScanner(QObject* parent) :
         Qt::QueuedConnection);
 }
 
-AutoBarcodeScanner::~AutoBarcodeScanner()
+AutoBarcodeScanner::Private::~Private()
 {
-    HDEBUG("AutoBarcodeScanner::~AutoBarcodeScanner");
-
-    // stopping a running scanning process
     stopScanning();
-    m_scanFuture.waitForFinished();
-    delete m_decoder;
+    iDecodingFuture.waitForFinished();
 }
 
-void AutoBarcodeScanner::onGrabImage()
+inline AutoBarcodeScanner* AutoBarcodeScanner::Private::scanner()
 {
-    if (m_viewFinderItem && m_flagScanRunning) {
-        QQuickWindow* window = m_viewFinderItem->window();
+    return qobject_cast<AutoBarcodeScanner*>(parent());
+}
+
+bool AutoBarcodeScanner::Private::setViewFinderRect(const QRect& aRect)
+{
+    if (iViewFinderRect != aRect) {
+        // iViewFinderRect is accessed by decodingThread() thread
+        iDecodingMutex.lock();
+        iViewFinderRect = aRect;
+        iDecodingMutex.unlock();
+        return true;
+    }
+    return false;
+}
+
+bool AutoBarcodeScanner::Private::setViewFinderItem(QObject* aItem)
+{
+    QQuickItem* item = qobject_cast<QQuickItem*>(aItem);
+    if (iViewFinderItem != item) {
+        iViewFinderItem = item;
+        return true;
+    }
+    return false;
+}
+
+bool AutoBarcodeScanner::Private::setMarkerColor(QString aValue)
+{
+    if (QColor::isValidColor(aValue)) {
+        QColor color(aValue);
+        if (iMarkerColor != color) {
+            iMarkerColor = color;
+            return true;
+        }
+    }
+    return false;
+}
+
+void AutoBarcodeScanner::Private::startScanning(int aTimeout)
+{
+    if (!iScanning) {
+        iScanning = true;
+        iAbortScan = false;
+        iScanTimeout->start(aTimeout);
+        iCaptureImage = QImage();
+        iDecodingFuture = QtConcurrent::run(this, &Private::decodingThread);
+    }
+}
+
+void AutoBarcodeScanner::Private::stopScanning()
+{
+    // stopping a running scanning process
+    iDecodingMutex.lock();
+    if (iScanning) {
+        iAbortScan = true;
+        iDecodingEvent.wakeAll();
+    }
+    iDecodingMutex.unlock();
+}
+
+void AutoBarcodeScanner::Private::onGrabImage()
+{
+    if (iViewFinderItem && iScanning) {
+        QQuickWindow* window = iViewFinderItem->window();
         if (window) {
+            AutoBarcodeScanner* parent = scanner();
             HDEBUG("grabbing image");
-            m_grabbing = true;
-            emit grabbingChanged();
+            iGrabbing = true;
+            Q_EMIT parent->grabbingChanged();
             QImage image = window->grabWindow();
-            m_grabbing = false;
-            emit grabbingChanged();
-            if (!image.isNull() && m_flagScanRunning) {
+            iGrabbing = false;
+            Q_EMIT parent->grabbingChanged();
+            if (!image.isNull() && iScanning) {
                 HDEBUG(image);
-                m_scanProcessMutex.lock();
-                m_captureImage = image;
-                m_scanProcessEvent.wakeAll();
-                m_scanProcessMutex.unlock();
+                iDecodingMutex.lock();
+                iCaptureImage = image;
+                iDecodingEvent.wakeAll();
+                iDecodingMutex.unlock();
             }
         }
     }
 }
 
-void AutoBarcodeScanner::setViewFinderRect(QRect rect)
+void AutoBarcodeScanner::Private::decodingThread()
 {
-    if (m_viewFinderRect != rect) {
-        HDEBUG(rect);
-        // m_viewFinderRect is accessed by processDecode() thread
-        m_scanProcessMutex.lock();
-        m_viewFinderRect = rect;
-        m_scanProcessMutex.unlock();
-    }
-}
+    HDEBUG("decodingThread() is called from " << QThread::currentThread());
 
-void AutoBarcodeScanner::setViewFinderItem(QObject* value)
-{
-    QQuickItem* item = qobject_cast<QQuickItem*>(value);
-    if (m_viewFinderItem != item) {
-        m_viewFinderItem = item;
-        emit viewFinderItemChanged();
-    }
-}
-
-void AutoBarcodeScanner::setMarkerColor(QString aValue)
-{
-    if (QColor::isValidColor(aValue)) {
-        QColor color(aValue);
-        if (m_markerColor != color) {
-            m_markerColor = color;
-            HDEBUG(color);
-            emit markerColorChanged();
-        }
-    }
-}
-
-void AutoBarcodeScanner::startScanning(int timeout)
-{
-    if (!m_flagScanRunning) {
-        m_flagScanRunning = true;
-        m_flagScanAbort = false;
-        m_timeoutTimer->start(timeout);
-        m_captureImage = QImage();
-        m_scanFuture = QtConcurrent::run(this, &AutoBarcodeScanner::processDecode);
-    }
-}
-
-void AutoBarcodeScanner::stopScanning()
-{
-    // stopping a running scanning process
-    m_scanProcessMutex.lock();
-    if (m_flagScanRunning) {
-        m_flagScanAbort = true;
-        m_scanProcessEvent.wakeAll();
-    }
-    m_scanProcessMutex.unlock();
-}
-
-/**
- * Runs in a pooled thread.
- */
-void AutoBarcodeScanner::processDecode()
-{
-    HDEBUG("processDecode() is called from " << QThread::currentThread());
-
+    Decoder decoder;
     Decoder::Result result;
     QImage image;
     qreal scale = 1;
@@ -175,21 +221,21 @@ void AutoBarcodeScanner::processDecode()
     const int maxWidth = 600;
     const int maxHeight = 800;
 
-    m_scanProcessMutex.lock();
-    while (!m_flagScanAbort && !result.isValid()) {
+    iDecodingMutex.lock();
+    while (!iAbortScan && !result.isValid()) {
         emit needImage();
         QRect viewFinderRect;
-        while (m_captureImage.isNull() && !m_flagScanAbort) {
-            m_scanProcessEvent.wait(&m_scanProcessMutex);
+        while (iCaptureImage.isNull() && !iAbortScan) {
+            iDecodingEvent.wait(&iDecodingMutex);
         }
-        if (m_flagScanAbort) {
+        if (iAbortScan) {
             image = QImage();
         } else {
-            image = m_captureImage;
-            m_captureImage = QImage();
+            image = iCaptureImage;
+            iCaptureImage = QImage();
         }
-        viewFinderRect = m_viewFinderRect;
-        m_scanProcessMutex.unlock();
+        viewFinderRect = iViewFinderRect;
+        iDecodingMutex.unlock();
 
         if (!image.isNull()) {
 #if HARBOUR_DEBUG
@@ -226,7 +272,7 @@ void AutoBarcodeScanner::processDecode()
             zxing::Ref<zxing::LuminanceSource> sourceRef(source);
 
             HDEBUG("decoding screenshot ...");
-            result = m_decoder->decode(sourceRef);
+            result = decoder.decode(sourceRef);
 
             if (!result.isValid()) {
                 // try the other orientation for 1D bar code
@@ -235,7 +281,7 @@ void AutoBarcodeScanner::processDecode()
                 scaledImage = scaledImage.transformed(transform);
                 saveDebugImage(scaledImage, "debug_rotated.bmp");
                 HDEBUG("decoding rotated screenshot ...");
-                result = m_decoder->decode(scaledImage);
+                result = decoder.decode(scaledImage);
                 // We need scaled width for rotating the points back
                 scaledWidth = scaledImage.width();
                 rotated = true;
@@ -244,9 +290,9 @@ void AutoBarcodeScanner::processDecode()
             }
             HDEBUG("decoding took" << time.elapsed() << "ms");
         }
-        m_scanProcessMutex.lock();
+        iDecodingMutex.lock();
     }
-    m_scanProcessMutex.unlock();
+    iDecodingMutex.unlock();
 
     if (result.isValid()) {
         HDEBUG("decoding succeeded:" << result.getText() << result.getPoints());
@@ -272,10 +318,10 @@ void AutoBarcodeScanner::processDecode()
         HDEBUG("nothing was decoded");
         image = QImage();
     }
-    emit decodingDone(image, result);
+    Q_EMIT decodingDone(image, result);
 }
 
-void AutoBarcodeScanner::onDecodingDone(QImage aImage, Decoder::Result aResult)
+void AutoBarcodeScanner::Private::onDecodingDone(QImage aImage, Decoder::Result aResult)
 {
     HDEBUG(aResult.getText());
     if (!aImage.isNull()) {
@@ -285,8 +331,8 @@ void AutoBarcodeScanner::onDecodingDone(QImage aImage, Decoder::Result aResult)
         HDEBUG("format:" << aResult.getFormat() << aResult.getFormatName());
         if (!points.isEmpty()) {
             QPainter painter(&aImage);
-            painter.setPen(m_markerColor);
-            QBrush markerBrush(m_markerColor);
+            painter.setPen(iMarkerColor);
+            QBrush markerBrush(iMarkerColor);
             for (int i = 0; i < points.size(); i++) {
                 const QPoint p(points.at(i).toPoint());
                 painter.fillRect(QRect(p.x()-3, p.y()-15, 6, 30), markerBrush);
@@ -297,22 +343,92 @@ void AutoBarcodeScanner::onDecodingDone(QImage aImage, Decoder::Result aResult)
         }
     }
 
-    m_captureImage = QImage();
-    m_timeoutTimer->stop();
-    m_flagScanRunning = false;
+    iCaptureImage = QImage();
+    iScanTimeout->stop();
+    iScanning = false;
 
     QVariantMap result;
     result.insert("ok", QVariant::fromValue(aResult.isValid()));
     result.insert("text", QVariant::fromValue(aResult.getText()));
     result.insert("format", QVariant::fromValue(aResult.getFormatName()));
-    emit decodingFinished(aImage, result);
+    Q_EMIT scanner()->decodingFinished(aImage, result);
 }
 
-void AutoBarcodeScanner::onScanningTimeout()
+void AutoBarcodeScanner::Private::onScanningTimeout()
 {
-    m_scanProcessMutex.lock();
-    m_flagScanAbort = true;
+    iDecodingMutex.lock();
+    iAbortScan = true;
     HDEBUG("decoding aborted by timeout");
-    m_scanProcessEvent.wakeAll();
-    m_scanProcessMutex.unlock();
+    iDecodingEvent.wakeAll();
+    iDecodingMutex.unlock();
 }
+
+// ==========================================================================
+// AutoBarcodeScanner::Private
+// ==========================================================================
+
+AutoBarcodeScanner::AutoBarcodeScanner(QObject* parent) :
+    QObject(parent),
+    iPrivate(new Private(this))
+{
+    HDEBUG("created");
+}
+
+AutoBarcodeScanner::~AutoBarcodeScanner()
+{
+    HDEBUG("destroyed");
+}
+
+const QRect& AutoBarcodeScanner::viewFinderRect() const
+{
+    return iPrivate->iViewFinderRect;
+}
+
+void AutoBarcodeScanner::setViewFinderRect(const QRect& aRect)
+{
+    if (iPrivate->setViewFinderRect(aRect)) {
+        HDEBUG(aRect);
+    }
+}
+
+QObject* AutoBarcodeScanner::viewFinderItem() const
+{
+    return iPrivate->iViewFinderItem;
+}
+
+void AutoBarcodeScanner::setViewFinderItem(QObject* aItem)
+{
+    if (iPrivate->setViewFinderItem(aItem)) {
+        Q_EMIT viewFinderItemChanged();
+    }
+}
+
+QString AutoBarcodeScanner::markerColor() const
+{
+    return iPrivate->iMarkerColor.name();
+}
+
+void AutoBarcodeScanner::setMarkerColor(QString aValue)
+{
+    if (iPrivate->setMarkerColor(aValue)) {
+        HDEBUG(aValue);
+        Q_EMIT markerColorChanged();
+    }
+}
+
+void AutoBarcodeScanner::startScanning(int aTimeout)
+{
+    iPrivate->startScanning(aTimeout);
+}
+
+void AutoBarcodeScanner::stopScanning()
+{
+    iPrivate->stopScanning();
+}
+
+bool AutoBarcodeScanner::grabbing() const
+{
+    return iPrivate->iGrabbing;
+}
+
+#include "AutoBarcodeScanner.moc"
