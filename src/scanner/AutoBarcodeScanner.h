@@ -37,11 +37,20 @@ class AutoBarcodeScanner : public QObject {
     Q_PROPERTY(QObject* viewFinderItem READ viewFinderItem WRITE setViewFinderItem NOTIFY viewFinderItemChanged)
     Q_PROPERTY(QRect viewFinderRect READ viewFinderRect WRITE setViewFinderRect NOTIFY viewFinderRectChanged)
     Q_PROPERTY(QString markerColor READ markerColor WRITE setMarkerColor NOTIFY markerColorChanged)
+    Q_PROPERTY(ScanState scanState READ scanState NOTIFY scanStateChanged)
     Q_PROPERTY(bool grabbing READ grabbing NOTIFY grabbingChanged)
+    Q_ENUMS(ScanState)
 
     class Private;
 
 public:
+    enum ScanState {
+        Idle,
+        Scanning,
+        Aborting,
+        TimedOut
+    };
+
     AutoBarcodeScanner(QObject* aParent = Q_NULLPTR);
     virtual ~AutoBarcodeScanner();
 
@@ -57,6 +66,8 @@ public:
     QString markerColor() const;
     void setMarkerColor(QString aValue);
 
+    ScanState scanState() const;
+
     bool grabbing() const;
 
 Q_SIGNALS:
@@ -64,6 +75,7 @@ Q_SIGNALS:
     void viewFinderItemChanged();
     void viewFinderRectChanged();
     void markerColorChanged();
+    void scanStateChanged();
     void grabbingChanged();
 
 private:

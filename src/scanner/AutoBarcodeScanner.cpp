@@ -66,6 +66,7 @@ public:
     void startScanning(int aTimeout);
     void stopScanning();
     void decodingThread();
+    void updateScanState();
 
 Q_SIGNALS:
     void needImage();
@@ -80,6 +81,8 @@ public:
     bool iGrabbing;
     bool iScanning;
     bool iAbortScan;
+    bool iTimedOut;
+    ScanState iLastKnownState;
 
     QImage iCaptureImage;
     QQuickItem* iViewFinderItem;
@@ -98,13 +101,13 @@ AutoBarcodeScanner::Private::Private(AutoBarcodeScanner* aParent) :
     iGrabbing(false),
     iScanning(false),
     iAbortScan(false),
+    iLastKnownState(Idle),
     iViewFinderItem(NULL),
     iScanTimeout(new QTimer(this)),
     iMarkerColor(QColor(0, 255, 0)) // default green
 {
     iScanTimeout->setSingleShot(true);
-    connect(iScanTimeout, SIGNAL(timeout()),
-        this, SLOT(onScanningTimeout()));
+    connect(iScanTimeout, SIGNAL(timeout()), SLOT(onScanningTimeout()));
 
     // Handled on the main thread
     qRegisterMetaType<Decoder::Result>();
@@ -167,9 +170,11 @@ void AutoBarcodeScanner::Private::startScanning(int aTimeout)
     if (!iScanning) {
         iScanning = true;
         iAbortScan = false;
+        iTimedOut = false;
         iScanTimeout->start(aTimeout);
         iCaptureImage = QImage();
         iDecodingFuture = QtConcurrent::run(this, &Private::decodingThread);
+        updateScanState();
     }
 }
 
@@ -182,6 +187,7 @@ void AutoBarcodeScanner::Private::stopScanning()
         iDecodingEvent.wakeAll();
     }
     iDecodingMutex.unlock();
+    updateScanState();
 }
 
 void AutoBarcodeScanner::Private::onGrabImage()
@@ -352,15 +358,30 @@ void AutoBarcodeScanner::Private::onDecodingDone(QImage aImage, Decoder::Result 
     result.insert("text", QVariant::fromValue(aResult.getText()));
     result.insert("format", QVariant::fromValue(aResult.getFormatName()));
     Q_EMIT scanner()->decodingFinished(aImage, result);
+    updateScanState();
 }
 
 void AutoBarcodeScanner::Private::onScanningTimeout()
 {
     iDecodingMutex.lock();
     iAbortScan = true;
+    iTimedOut = true;
     HDEBUG("decoding aborted by timeout");
     iDecodingEvent.wakeAll();
     iDecodingMutex.unlock();
+    updateScanState();
+}
+
+void AutoBarcodeScanner::Private::updateScanState()
+{
+    const ScanState state = iScanning ?
+        (iAbortScan ? Aborting : Scanning) :
+        (iTimedOut ? TimedOut : Idle);
+    if (iLastKnownState != state) {
+        HDEBUG("state" << iLastKnownState << "->" << state);
+        iLastKnownState = state;
+        Q_EMIT scanner()->scanStateChanged();
+    }
 }
 
 // ==========================================================================
@@ -424,6 +445,11 @@ void AutoBarcodeScanner::startScanning(int aTimeout)
 void AutoBarcodeScanner::stopScanning()
 {
     iPrivate->stopScanning();
+}
+
+AutoBarcodeScanner::ScanState AutoBarcodeScanner::scanState() const
+{
+    return iPrivate->iLastKnownState;
 }
 
 bool AutoBarcodeScanner::grabbing() const

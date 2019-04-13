@@ -37,8 +37,10 @@ Page {
 
     property Item viewFinder
     property Item hint
-    property bool flagAutoScan
+    property bool autoScan
     property int scanTimeout: 60
+
+    readonly property bool cameraActive: viewFinder && viewFinder.cameraActive
     readonly property string imageProvider: HarbourTheme.darkOnLight ? HarbourImageProviderDarkOnLight : HarbourImageProviderDefault
     readonly property string iconSourcePrefix: "image://" + imageProvider + "/"
 
@@ -54,9 +56,6 @@ Page {
 
         if (viewFinder.source.availability === Camera.Available) {
             viewFinder.source.start()
-            autoStart()
-        } else {
-            stateAbort()
         }
     }
 
@@ -70,18 +69,6 @@ Page {
         viewFinder.source.stop()
         viewFinder.destroy()
         viewFinder = null
-
-        stateInactive()
-    }
-
-    function autoStart() {
-        if (viewFinder && viewFinder.cameraActive) {
-            if (flagAutoScan) {
-                console.log("auto-starting scan ...")
-                startScan()
-            }
-            flagAutoScan = false
-        }
     }
 
     function applyResult(image,result) {
@@ -96,51 +83,28 @@ Page {
     }
 
     function requestScan() {
-        if (scanPage.status === PageStatus.Active && Qt.application.active && viewFinder.cameraActive) {
+        if (cameraActive) {
             startScan()
         } else {
-            flagAutoScan = true
+            autoScan = true // start scanning when camera becomes empty
         }
     }
 
     function startScan() {
         viewFinder.showMarker = false
         markerImageProvider.clear()
-        stateScanning()
         scanner.startScanning(scanTimeout * 1000)
     }
 
-    function abortScan() {
-        stateAbort()
-        scanner.stopScanning()
-    }
-
-    function stateInactive() {
-        state = "INACTIVE"
-        statusText.text = ""
-        if (viewFinder) viewFinder.turnFlashOff()
-    }
-
-    function stateReady() {
-        state = "READY"
-        //: Scan button label
-        //% "Scan"
-        actionButton.text = qsTrId("scan-action-scan")
-    }
-
-    function stateScanning() {
-        state = "SCANNING"
-        //: Scan status label
-        //% "Scan in progress ..."
-        statusText.text = qsTrId("scan-status-busy")
-        clickableResult.clear()
-        //: Scan button label
-        //% "Abort"
-        actionButton.text = qsTrId("scan-action-abort")
-    }
-
-    function stateAbort() {
-        state = "ABORT"
+    onCameraActiveChanged: {
+        if (cameraActive) {
+            console.log("camera has started")
+            if (autoScan) {
+                console.log("auto-starting scan ...")
+                autoScan = false
+                startScan()
+            }
+        }
     }
 
     Component {
@@ -162,8 +126,6 @@ Page {
         }
     }
 
-    state: "INACTIVE"
-
     onStatusChanged: {
         if (scanPage.status === PageStatus.Active) {
             console.log("Page is ACTIVE")
@@ -179,7 +141,7 @@ Page {
 
     // Pause blanking while scanning
     DisplayBlanking {
-        pauseRequested: state === "SCANNING"
+        pauseRequested: scanner.scanState === AutoBarcodeScanner.Scanning
     }
 
     Connections {
@@ -195,12 +157,6 @@ Page {
                 destroyScanner()
             }
         }
-    }
-
-    function cameraStarted() {
-        console.log("camera is started")
-        stateReady()
-        autoStart()
     }
 
     Notification {
@@ -223,22 +179,40 @@ Page {
     AutoBarcodeScanner {
         id: scanner
 
+        readonly property bool idle: scanState === AutoBarcodeScanner.Idle ||
+                                     scanState === AutoBarcodeScanner.TimedOut
+
         viewFinderItem: parentViewFinder
         markerColor: AppSettings.markerColor
 
         onDecodingFinished: {
-            statusText.text = ""
-            if (scanPage.state !== "ABORT") {
-                if (result.ok) {
-                    applyResult(image, result)
-                    viewFinder.decodingFinished()
-                } else if (scanPage.state !== "INACTIVE") {
-                    //: Scan status label
-                    //% "No code detected! Try again."
-                    statusText.text = qsTrId("scan-status-nothing_found")
-                }
+            if (result.ok) {
+                statusText.text = ""
+                applyResult(image, result)
+                viewFinder.decodingFinished()
             }
-            stateReady()
+        }
+
+        onScanStateChanged: {
+            if (viewFinder && scanState !== AutoBarcodeScanner.Scanning) {
+                viewFinder.turnFlashOff()
+            }
+            switch (scanState) {
+            case AutoBarcodeScanner.Idle:
+                statusText.text = ""
+                break
+            case AutoBarcodeScanner.Scanning:
+                //: Scan status label
+                //% "Scan in progress ..."
+                statusText.text = qsTrId("scan-status-busy")
+                clickableResult.clear()
+                break
+            case AutoBarcodeScanner.TimedOut:
+                //: Scan status label
+                //% "No code detected! Try again."
+                statusText.text = qsTrId("scan-status-nothing_found")
+                break
+            }
         }
     }
 
@@ -391,8 +365,6 @@ Page {
                     if (cameraState === Camera.ActiveState) {
                         if (viewFinderItem.playBeep) {
                             viewFinderItem.playBeep = false
-                        } else {
-                            cameraStarted()
                         }
                     } else if (cameraState === Camera.UnloadedState) {
                         if (viewFinderItem.viewfinderResolution &&
@@ -489,7 +461,7 @@ Page {
 
         PullDownMenu {
             id: menu
-            enabled: scanPage.state == "INACTIVE" || scanPage.state === "READY"
+            enabled: scanner.idle
             visible: enabled
             onActiveChanged: if (active) statusText.text = ""
 
@@ -666,7 +638,7 @@ Page {
                 onIsVCardChanged: {
                     if (isVCard) {
                         if (!vcard) {
-                            var component = Qt.createComponent("VCard.qml");
+                            var component = Qt.createComponent("VCard.qml")
                             if (component.status === Component.Ready) {
                                 vcard = component.createObject(scanPage, { content: normalizedText })
                             }
@@ -847,13 +819,20 @@ ContactCard { id: card; PullDownMenu { MenuItem { id: saveMenu; onClicked: page.
         y: window.height - height - Theme.paddingLarge
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
-            if (scanPage.state === "READY") {
+            if (scanner.scanState === AutoBarcodeScanner.Scanning) {
+                scanner.stopScanning()
+            } else {
                 startScan()
-            } else if (scanPage.state === "SCANNING") {
-                abortScan()
             }
         }
-        enabled: (scanPage.state === "READY") || (scanPage.state === "SCANNING")
+        enabled: scanner.scanState !== AutoBarcodeScanner.Aborting
+        text: scanner.idle ?
+            //: Scan button label
+            //% "Scan"
+            qsTrId("scan-action-scan") :
+            //: Scan button label
+            //% "Abort"
+            qsTrId("scan-action-abort")
     }
 
     Component {
