@@ -514,7 +514,7 @@ Page {
             width: parent.width - 2 * x
             spacing: Theme.paddingLarge
 
-            Item {
+            Rectangle {
                 id: parentViewFinder
 
                 readonly property bool canSwitchResolutions: typeof ViewfinderResolution_4_3 !== "undefined" &&
@@ -528,6 +528,7 @@ Page {
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: wideMode ? wideWidth : narrowWidth
                 height: Math.round(window.height * 0.56) & (-16)
+                color: "#20000000"
 
                 onWidthChanged: updateViewFinderPosition()
                 onHeightChanged: updateViewFinderPosition()
