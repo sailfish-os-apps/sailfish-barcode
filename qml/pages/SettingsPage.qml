@@ -63,11 +63,18 @@ Page {
             var item = orientationMenu.children[i]
             if (item.isMenuItem && (value === item.primary || value === item.invertable)) {
                 orientationComboBox.currentIndex = item.index
-                orientationInvertSwitch.checked = value === item.invertable
+                orientationInvertSwitch.enabled = (item.primary !== item.invertable)
+                if (orientationInvertSwitch.enabled) {
+                    orientationInvertSwitch.checked = (value === item.invertable)
+                } else {
+                    orientationInvertSwitch.checked = item.canInvert
+                }
                 return
             }
         }
         orientationComboBox.currentIndex = orientationMenu.defaultIndex
+        orientationInvertSwitch.checked = false
+        orientationInvertSwitch.enabled = false
     }
 
     Component.onCompleted: updateOrientation()
