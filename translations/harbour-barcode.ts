@@ -234,6 +234,11 @@
         <extracomment>Hint label</extracomment>
         <translation>Switch the aspect ratio between 9:16 and 3:4</translation>
     </message>
+    <message id="hint-aspect-ratio_landscape">
+        <source>Switch the aspect ratio between 16:9 and 4:3</source>
+        <extracomment>Hint label</extracomment>
+        <translation>Switch the aspect ratio between 16:9 and 4:3</translation>
+    </message>
     <message id="hint-copy-clipboard">
         <source>Copy to clipboard</source>
         <extracomment>Hint label</extracomment>

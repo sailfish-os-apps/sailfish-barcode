@@ -234,6 +234,11 @@
         <extracomment>Hint label</extracomment>
         <translation type="unfinished">Højde-bredde-forhold</translation>
     </message>
+    <message id="hint-aspect-ratio_landscape">
+        <source>Switch the aspect ratio between 16:9 and 4:3</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">Højde-bredde-forhold</translation>
+    </message>
     <message id="hint-copy-clipboard">
         <source>Copy to clipboard</source>
         <extracomment>Hint label</extracomment>
@@ -252,32 +257,32 @@
     <message id="settings-display-section">
         <source>Display</source>
         <extracomment>Section header</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Skærm</translation>
     </message>
     <message id="settings-display-orientation-label">
         <source>Orientation</source>
         <extracomment>Combo box label</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Retning</translation>
     </message>
     <message id="settings-display-orientation-primary">
         <source>Primary</source>
         <extracomment>Combo box value for primary orientation</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Primær</translation>
     </message>
     <message id="settings-display-orientation-portrait">
         <source>Portrait</source>
         <extracomment>Combo box value for portrait orientation</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Portræt</translation>
     </message>
     <message id="settings-display-orientation-landscape">
         <source>Landscape</source>
         <extracomment>Combo box value for landscape orientation</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Landskab</translation>
     </message>
     <message id="settings-display-orientation-dynamic">
         <source>Dynamic</source>
         <extracomment>Combo box value for dynamic orientation</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Dynamisk</translation>
     </message>
     <message id="settings-display-orientation-allow_inverted">
         <source>Allow inverted orientation</source>

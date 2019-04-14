@@ -232,6 +232,11 @@
         <extracomment>Hint label</extracomment>
         <translation type="unfinished">纵横比</translation>
     </message>
+    <message id="hint-aspect-ratio_landscape">
+        <source>Switch the aspect ratio between 16:9 and 4:3</source>
+        <extracomment>Hint label</extracomment>
+        <translation type="unfinished">纵横比</translation>
+    </message>
     <message id="hint-copy-clipboard">
         <source>Copy to clipboard</source>
         <extracomment>Hint label</extracomment>
@@ -251,12 +256,12 @@
     <message id="settings-display-section">
         <source>Display</source>
         <extracomment>Section header</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">显示</translation>
     </message>
     <message id="settings-display-orientation-label">
         <source>Orientation</source>
         <extracomment>Combo box label</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">屏幕显示方向</translation>
     </message>
     <message id="settings-display-orientation-primary">
         <source>Primary</source>
@@ -266,17 +271,17 @@
     <message id="settings-display-orientation-portrait">
         <source>Portrait</source>
         <extracomment>Combo box value for portrait orientation</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">竖屏</translation>
     </message>
     <message id="settings-display-orientation-landscape">
         <source>Landscape</source>
         <extracomment>Combo box value for landscape orientation</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">横屏</translation>
     </message>
     <message id="settings-display-orientation-dynamic">
         <source>Dynamic</source>
         <extracomment>Combo box value for dynamic orientation</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">自动旋转</translation>
     </message>
     <message id="settings-display-orientation-allow_inverted">
         <source>Allow inverted orientation</source>

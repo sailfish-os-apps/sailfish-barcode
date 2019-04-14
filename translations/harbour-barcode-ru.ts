@@ -236,6 +236,11 @@
         <extracomment>Hint label</extracomment>
         <translation>Переключение камеры между режимами 9:16 и 3:4</translation>
     </message>
+    <message id="hint-aspect-ratio_landscape">
+        <source>Switch the aspect ratio between 16:9 and 4:3</source>
+        <extracomment>Hint label</extracomment>
+        <translation>Переключение камеры между режимами 16:9 и 3:4</translation>
+    </message>
     <message id="hint-copy-clipboard">
         <source>Copy to clipboard</source>
         <extracomment>Hint label</extracomment>
