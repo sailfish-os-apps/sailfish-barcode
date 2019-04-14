@@ -1,7 +1,7 @@
 /*
 The MIT License (MIT)
 
-Copyright (c) 2018 Slava Monich
+Copyright (c) 2018-2019 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@ THE SOFTWARE.
 // New keys (the ones that have only been in dconf)
 #define KEY_SAVE_IMAGES                "save_images"
 #define KEY_WIDE_MODE                  "wide_mode"
+#define KEY_ORIENTATION                "orientation"
 
 #define DEFAULT_SOUND                   false
 #define DEFAULT_DIGITAL_ZOOM            3
@@ -41,6 +42,7 @@ THE SOFTWARE.
 #define DEFAULT_SCAN_ON_START           false
 #define DEFAULT_SAVE_IMAGES             true
 #define DEFAULT_WIDE_MODE               false
+#define DEFAULT_ORIENTATION             (Settings::OrientationAny)
 
 // ==========================================================================
 // Settings::Private
@@ -60,6 +62,7 @@ public:
     MGConfItem* iScanOnStart;
     MGConfItem* iSaveImages;
     MGConfItem* iWideMode;
+    MGConfItem* iOrientation;
 };
 
 Settings::Private::Private(Settings* aSettings) :
@@ -71,7 +74,8 @@ Settings::Private::Private(Settings* aSettings) :
     iHistorySize(new MGConfItem(DCONF_PATH KEY_HISTORY_SIZE, aSettings)),
     iScanOnStart(new MGConfItem(DCONF_PATH KEY_SCAN_ON_START, aSettings)),
     iSaveImages(new MGConfItem(DCONF_PATH KEY_SAVE_IMAGES, aSettings)),
-    iWideMode(new MGConfItem(DCONF_PATH KEY_WIDE_MODE, aSettings))
+    iWideMode(new MGConfItem(DCONF_PATH KEY_WIDE_MODE, aSettings)),
+    iOrientation(new MGConfItem(DCONF_PATH KEY_ORIENTATION, aSettings))
 {
     connect(iSound, SIGNAL(valueChanged()), aSettings, SIGNAL(soundChanged()));
     connect(iDigitalZoom, SIGNAL(valueChanged()), aSettings, SIGNAL(digitalZoomChanged()));
@@ -82,6 +86,7 @@ Settings::Private::Private(Settings* aSettings) :
     connect(iScanOnStart, SIGNAL(valueChanged()), aSettings, SIGNAL(scanOnStartChanged()));
     connect(iSaveImages, SIGNAL(valueChanged()), aSettings, SIGNAL(saveImagesChanged()));
     connect(iWideMode, SIGNAL(valueChanged()), aSettings, SIGNAL(wideModeChanged()));
+    connect(iOrientation, SIGNAL(valueChanged()), aSettings, SIGNAL(orientationChanged()));
 }
 
 // ==========================================================================
@@ -187,4 +192,14 @@ bool Settings::wideMode() const
 void Settings::setWideMode(bool aValue)
 {
     iPrivate->iWideMode->set(aValue);
+}
+
+Settings::Orientation Settings::orientation() const
+{
+    return (Orientation)iPrivate->iOrientation->value((int)DEFAULT_ORIENTATION).toInt();
+}
+
+void Settings::setOrientation(Orientation aValue)
+{
+    iPrivate->iOrientation->set((int)aValue);
 }

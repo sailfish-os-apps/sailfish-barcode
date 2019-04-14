@@ -126,7 +126,7 @@
     <message id="settings-history-slider_value" numerus="yes">
         <source>%1 item(s)</source>
         <extracomment>History slider value</extracomment>
-        <translation type="unfinished">
+        <translation>
             <numerusform>%1 item</numerusform>
             <numerusform>%1 items</numerusform>
         </translation>
@@ -154,7 +154,7 @@
     <message id="settings-marker-slider_value" numerus="yes">
         <source>%1 second(s)</source>
         <extracomment>Marker slider value</extracomment>
-        <translation type="unfinished">
+        <translation>
             <numerusform>%1 second</numerusform>
             <numerusform>%1 seconds</numerusform>
         </translation>
@@ -248,6 +248,46 @@
         <source>Open link in browser</source>
         <extracomment>Hint label</extracomment>
         <translation>Open link in browser</translation>
+    </message>
+    <message id="settings-display-section">
+        <source>Display</source>
+        <extracomment>Section header</extracomment>
+        <translation>Display</translation>
+    </message>
+    <message id="settings-display-orientation-label">
+        <source>Orientation</source>
+        <extracomment>Combo box label</extracomment>
+        <translation>Orientation</translation>
+    </message>
+    <message id="settings-display-orientation-primary">
+        <source>Primary</source>
+        <extracomment>Combo box value for primary orientation</extracomment>
+        <translation>Primary</translation>
+    </message>
+    <message id="settings-display-orientation-portrait">
+        <source>Portrait</source>
+        <extracomment>Combo box value for portrait orientation</extracomment>
+        <translation>Portrait</translation>
+    </message>
+    <message id="settings-display-orientation-landscape">
+        <source>Landscape</source>
+        <extracomment>Combo box value for landscape orientation</extracomment>
+        <translation>Landscape</translation>
+    </message>
+    <message id="settings-display-orientation-dynamic">
+        <source>Dynamic</source>
+        <extracomment>Combo box value for dynamic orientation</extracomment>
+        <translation>Dynamic</translation>
+    </message>
+    <message id="settings-display-orientation-allow_inverted">
+        <source>Allow inverted orientation</source>
+        <extracomment>Text switch label</extracomment>
+        <translation>Allow inverted orientation</translation>
+    </message>
+    <message id="settings-display-orientation-allow_inverted-description">
+        <source>If enabled, allows both primary and inverted landscape or portrait oprientations.</source>
+        <extracomment>Text switch description</extracomment>
+        <translation>If enabled, allows both primary and inverted landscape or portrait oprientations.</translation>
     </message>
 </context>
 </TS>

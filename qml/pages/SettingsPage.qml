@@ -25,6 +25,7 @@ THE SOFTWARE.
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import harbour.barcode 1.0
 
 Page {
     id: settingsPage
@@ -48,6 +49,34 @@ Page {
         return 0
     }
 
+    function applyOrientation() {
+        var item = orientationComboBox.currentItem
+        if (item) {
+            AppSettings.orientation = orientationInvertSwitch.checked ? item.invertable : item.primary
+        }
+    }
+
+    function updateOrientation() {
+        var value = AppSettings.orientation
+        var n = orientationMenu.children.length
+        for (var i = 0; i < n; i++) {
+            var item = orientationMenu.children[i]
+            if (item.isMenuItem && (value === item.primary || value === item.invertable)) {
+                orientationComboBox.currentIndex = item.index
+                orientationInvertSwitch.checked = value === item.invertable
+                return
+            }
+        }
+        orientationComboBox.currentIndex = orientationMenu.defaultIndex
+    }
+
+    Component.onCompleted: updateOrientation()
+
+    Connections {
+        target: AppSettings
+        onOrientationChanged: settingsPage.updateOrientation()
+    }
+
     SilicaFlickable {
         anchors.fill: parent
         contentHeight: content.height
@@ -59,6 +88,79 @@ Page {
             //: Setting page title and menu item
             //% "Settings"
             PageHeader { title: qsTrId("settings-title") }
+
+            //: Section header
+            //% "Display"
+            SectionHeader { text: qsTrId("settings-display-section") }
+
+            ComboBox {
+                id: orientationComboBox
+
+                //: Combo box label
+                //% "Orientation"
+                label: qsTrId("settings-display-orientation-label")
+                value: currentItem ? currentItem.text : ""
+                menu: ContextMenu {
+                    id: orientationMenu
+
+                    readonly property int defaultIndex: 0
+                    MenuItem {
+                        //: Combo box value for primary orientation
+                        //% "Primary"
+                        text: qsTrId("settings-display-orientation-primary")
+                        readonly property int index: 0
+                        readonly property int primary: Settings.OrientationPrimary
+                        readonly property int invertable: primary
+                        readonly property bool canInvert: false
+                        readonly property bool isMenuItem: true
+                    }
+                    MenuItem {
+                        //: Combo box value for portrait orientation
+                        //% "Portrait"
+                        text: qsTrId("settings-display-orientation-portrait")
+                        readonly property int index: 1
+                        readonly property int primary: Settings.OrientationPortrait
+                        readonly property int invertable: Settings.OrientationPortraitAny
+                        readonly property bool canInvert: true
+                        readonly property bool isMenuItem: true
+                    }
+                    MenuItem {
+                        //: Combo box value for landscape orientation
+                        //% "Landscape"
+                        text: qsTrId("settings-display-orientation-landscape")
+                        readonly property int index: 2
+                        readonly property int primary: Settings.OrientationLandscape
+                        readonly property int invertable: Settings.OrientationLandscapeAny
+                        readonly property bool canInvert: true
+                        readonly property bool isMenuItem: true
+                    }
+                    MenuItem {
+                        //: Combo box value for dynamic orientation
+                        //% "Dynamic"
+                        text: qsTrId("settings-display-orientation-dynamic")
+                        readonly property int index: 3
+                        readonly property int primary: Settings.OrientationAny
+                        readonly property int invertable: primary
+                        readonly property bool canInvert: true
+                        readonly property bool isMenuItem: true
+                    }
+                    onActivated: {
+                        orientationComboBox.currentIndex = index
+                        settingsPage.applyOrientation()
+                    }
+                }
+            }
+
+            TextSwitch {
+                id: orientationInvertSwitch
+                //: Text switch label
+                //% "Allow inverted orientation"
+                text: qsTrId("settings-display-orientation-allow_inverted")
+                //: Text switch description
+                //% "If enabled, allows both primary and inverted landscape or portrait oprientations."
+                description: qsTrId("settings-display-orientation-allow_inverted-description")
+                onClicked: settingsPage.applyOrientation()
+            }
 
             //: Section header
             //% "Scan"

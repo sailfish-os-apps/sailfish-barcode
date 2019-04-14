@@ -32,9 +32,19 @@ import "pages"
 ApplicationWindow {
     id: window
 
-    allowedOrientations: Orientation.All
     initialPage: mainPage
     cover: Qt.resolvedUrl("cover/CoverPage.qml")
+    allowedOrientations: {
+        switch (AppSettings.orientation) {
+        case Settings.OrientationPortrait: return Orientation.Portrait
+        case Settings.OrientationPortraitAny: return Orientation.PortraitMask
+        case Settings.OrientationLandscape: return Orientation.Landscape
+        case Settings.OrientationLandscapeAny: return Orientation.LandscapeMask
+        case Settings.OrientationAny: return Orientation.All
+        default: return (Screen.sizeCategory !== undefined && Screen.sizeCategory >= Screen.Large) ?
+                    Orientation.Landscape : Orientation.Portrait
+        }
+    }
 
     function startScan() {
         while (pageStack.pop(null, PageStackAction.Immediate));

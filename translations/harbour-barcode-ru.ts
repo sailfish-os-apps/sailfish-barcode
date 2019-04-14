@@ -126,7 +126,7 @@
     <message id="settings-history-slider_value" numerus="yes">
         <source>%1 item(s)</source>
         <extracomment>History slider value</extracomment>
-        <translation type="unfinished">
+        <translation>
             <numerusform>%1 запись</numerusform>
             <numerusform>%1 записи</numerusform>
             <numerusform>%1 записей</numerusform>
@@ -155,7 +155,7 @@
     <message id="settings-marker-slider_value" numerus="yes">
         <source>%1 second(s)</source>
         <extracomment>Marker slider value</extracomment>
-        <translation type="unfinished">
+        <translation>
             <numerusform>%1 секунда</numerusform>
             <numerusform>%1 секунды</numerusform>
             <numerusform>%1 секунд</numerusform>
@@ -251,6 +251,46 @@
         <oldsource>Open link</oldsource>
         <extracomment>Hint label</extracomment>
         <translation>Открыть ссылку в браузере</translation>
+    </message>
+    <message id="settings-display-section">
+        <source>Display</source>
+        <extracomment>Section header</extracomment>
+        <translation>Экран</translation>
+    </message>
+    <message id="settings-display-orientation-label">
+        <source>Orientation</source>
+        <extracomment>Combo box label</extracomment>
+        <translation>Ориентация</translation>
+    </message>
+    <message id="settings-display-orientation-primary">
+        <source>Primary</source>
+        <extracomment>Combo box value for primary orientation</extracomment>
+        <translation>Основная</translation>
+    </message>
+    <message id="settings-display-orientation-portrait">
+        <source>Portrait</source>
+        <extracomment>Combo box value for portrait orientation</extracomment>
+        <translation>Портретная</translation>
+    </message>
+    <message id="settings-display-orientation-landscape">
+        <source>Landscape</source>
+        <extracomment>Combo box value for landscape orientation</extracomment>
+        <translation>Альбомная</translation>
+    </message>
+    <message id="settings-display-orientation-dynamic">
+        <source>Dynamic</source>
+        <extracomment>Combo box value for dynamic orientation</extracomment>
+        <translation>Динамическая</translation>
+    </message>
+    <message id="settings-display-orientation-allow_inverted">
+        <source>Allow inverted orientation</source>
+        <extracomment>Text switch label</extracomment>
+        <translation>Разрешить обратную ориентацию</translation>
+    </message>
+    <message id="settings-display-orientation-allow_inverted-description">
+        <source>If enabled, allows both primary and inverted landscape or portrait oprientations.</source>
+        <extracomment>Text switch description</extracomment>
+        <translation>Разрешает как основную, так и обратную портретную или альбомную ориентацию.</translation>
     </message>
 </context>
 </TS>

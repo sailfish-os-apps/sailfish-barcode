@@ -248,5 +248,45 @@
         <extracomment>Hint label</extracomment>
         <translation type="unfinished">Megnyitás böngészőben</translation>
     </message>
+    <message id="settings-display-section">
+        <source>Display</source>
+        <extracomment>Section header</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="settings-display-orientation-label">
+        <source>Orientation</source>
+        <extracomment>Combo box label</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="settings-display-orientation-primary">
+        <source>Primary</source>
+        <extracomment>Combo box value for primary orientation</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="settings-display-orientation-portrait">
+        <source>Portrait</source>
+        <extracomment>Combo box value for portrait orientation</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="settings-display-orientation-landscape">
+        <source>Landscape</source>
+        <extracomment>Combo box value for landscape orientation</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="settings-display-orientation-dynamic">
+        <source>Dynamic</source>
+        <extracomment>Combo box value for dynamic orientation</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="settings-display-orientation-allow_inverted">
+        <source>Allow inverted orientation</source>
+        <extracomment>Text switch label</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message id="settings-display-orientation-allow_inverted-description">
+        <source>If enabled, allows both primary and inverted landscape or portrait oprientations.</source>
+        <extracomment>Text switch description</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

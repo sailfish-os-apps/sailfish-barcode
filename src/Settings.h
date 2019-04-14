@@ -1,7 +1,7 @@
 /*
 The MIT License (MIT)
 
-Copyright (c) 2018 Slava Monich
+Copyright (c) 2018-2019 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,8 @@ THE SOFTWARE.
 #include <QObject>
 #include <QString>
 
+#include <QtQml>
+
 // Old keys (the ones that may need to be imported from the database)
 
 #define KEY_SOUND                   "sound"
@@ -49,8 +51,19 @@ class Settings : public QObject {
     Q_PROPERTY(bool scanOnStart READ scanOnStart WRITE setScanOnStart NOTIFY scanOnStartChanged)
     Q_PROPERTY(bool saveImages READ saveImages WRITE setSaveImages NOTIFY saveImagesChanged)
     Q_PROPERTY(bool wideMode READ wideMode WRITE setWideMode NOTIFY wideModeChanged)
+    Q_PROPERTY(Orientation orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
+    Q_ENUMS(Orientation)
 
 public:
+    enum Orientation {
+        OrientationPrimary,
+        OrientationPortrait,
+        OrientationPortraitAny,
+        OrientationLandscape,
+        OrientationLandscapeAny,
+        OrientationAny
+    };
+
     explicit Settings(QObject* aParent = Q_NULLPTR);
     ~Settings();
 
@@ -81,6 +94,9 @@ public:
     bool wideMode() const;
     void setWideMode(bool aValue);
 
+    Orientation orientation() const;
+    void setOrientation(Orientation aValue);
+
 Q_SIGNALS:
     void soundChanged();
     void digitalZoomChanged();
@@ -91,10 +107,13 @@ Q_SIGNALS:
     void scanOnStartChanged();
     void saveImagesChanged();
     void wideModeChanged();
+    void orientationChanged();
 
 private:
     class Private;
     Private* iPrivate;
 };
+
+QML_DECLARE_TYPE(Settings)
 
 #endif // BARCODE_SETTINGS_H
