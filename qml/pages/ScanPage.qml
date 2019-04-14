@@ -427,11 +427,16 @@ Page {
                 icon {
                     source: AppSettings.wideMode ? icon_4_3 : icon_16_9
                     sourceSize: Qt.size(Theme.iconSizeMedium, Theme.iconSizeMedium)
+                    rotation: landscapeLayout ? 90 : 0
                 }
                 onClicked: AppSettings.wideMode = !AppSettings.wideMode
-                //: Hint label
-                //% "Switch the aspect ratio between 9:16 and 3:4"
-                hint: qsTrId("hint-aspect-ratio")
+                hint: landscapeLayout ?
+                    //: Hint label
+                    //% "Switch the aspect ratio between 16:9 and 4:3"
+                    qsTrId("hint-aspect-ratio_landscape") :
+                    //: Hint label
+                    //% "Switch the aspect ratio between 9:16 and 3:4"
+                    qsTrId("hint-aspect-ratio")
                 onShowHint: scanPage.showHint(hint)
                 onHideHint: scanPage.hideHint()
             }
