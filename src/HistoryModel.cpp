@@ -45,22 +45,21 @@ THE SOFTWARE.
 // Removes image files not associated with any rows in the database
 // ==========================================================================
 
-class HistoryModel::CleanupTask : public HarbourTask {
-    Q_OBJECT
+class HistoryModel::CleanupTask : public QRunnable {
 public:
-    CleanupTask(QThreadPool* aPool, QStringList aList);
-    void performTask() Q_DECL_OVERRIDE;
+    CleanupTask(QStringList aList);
+    void run() Q_DECL_OVERRIDE;
 
 public:
     QStringList iList;
 };
 
-HistoryModel::CleanupTask::CleanupTask(QThreadPool* aPool, QStringList aList) :
-    HarbourTask(aPool), iList(aList)
+HistoryModel::CleanupTask::CleanupTask(QStringList aList) :
+    iList(aList)
 {
 }
 
-void HistoryModel::CleanupTask::performTask()
+void HistoryModel::CleanupTask::run()
 {
     QDirIterator it(Database::imageDir().path(), QDir::Files);
     while (it.hasNext()) {
@@ -336,9 +335,7 @@ void HistoryModel::Private::cleanupFiles()
         }
         // Submit the cleanup task
         HDEBUG("ids:" << ids);
-        HarbourTask* task = new CleanupTask(iThreadPool, ids);
-        task->submit();
-        task->release();
+        iThreadPool->start(new CleanupTask(ids));
     } else {
         HWARN(query.lastError());
     }
@@ -498,7 +495,7 @@ QString HistoryModel::insert(QImage aImage, QString aText, QString aFormat)
 
 void HistoryModel::remove(int aRow)
 {
-    HDEBUG(aRow);
+    HDEBUG(aRow << iPrivate->valueAt(aRow, Private::FIELD_ID).toString());
     removeRows(aRow, 1);
     invalidateFilter();
 }
