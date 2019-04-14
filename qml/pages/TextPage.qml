@@ -2,7 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
-Copyright (c) 2018 Slava Monich
+Copyright (c) 2018-2019 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,8 @@ import "../js/Utils.js" as Utils
 
 Page {
     id: textPage
+
+    allowedOrientations: window.allowedOrientations
 
     property string text
     property string recordId
@@ -83,6 +85,7 @@ Page {
 
         Column {
             id: column
+
             x: Theme.horizontalPageMargin
             width: parent.width - 2 * x
             height: childrenRect.height
@@ -178,9 +181,15 @@ ContactCard { id: card; PullDownMenu { MenuItem { id: saveMenu; onClicked: page.
 
             Image {
                 id: image
+
+                readonly property bool isPortrait: sourceSize.height > sourceSize.width
+                readonly property bool rotate: image.isPortrait != textPage.isPortrait
+
                 anchors.horizontalCenter: parent.horizontalCenter
-                source: (hasImage && recordId.length && AppSettings.saveImages) ? "image://scanner/saved/" + recordId : ""
+                source: (hasImage && recordId.length && AppSettings.saveImages) ?
+                    ("image://scanner/saved/" + (textPage.isPortrait ? "portrait/" : "landscape/") + recordId) : ""
                 visible: status === Image.Ready
+                asynchronous: true
                 cache: false
             }
 

@@ -2,7 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
-Copyright (c) 2018 Slava Monich
+Copyright (c) 2018-2019 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,15 +23,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-import QtQuick 2.1
+import QtQuick 2.0
 import Sailfish.Silica 1.0
+
 import "../components"
 
 Page {
     id: aboutPage
 
+    allowedOrientations: window.allowedOrientations
+
     SilicaFlickable {
         id: aboutPageFlickable
+
         anchors.fill: parent
         contentHeight: aboutColumn.height
 

@@ -2,7 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
-Copyright (c) 2018 Slava Monich
+Copyright (c) 2018-2019 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,9 @@ import "../js/Utils.js" as Utils
 
 Page {
     id: historyPage
+
+    allowedOrientations: window.allowedOrientations
+
     property int myStackDepth
 
     readonly property bool empty: historyList.model.count === 0

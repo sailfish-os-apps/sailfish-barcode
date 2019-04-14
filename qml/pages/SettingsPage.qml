@@ -2,7 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
-Copyright (c) 2018 Slava Monich
+Copyright (c) 2018-2019 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,13 +23,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-import QtQuick 2.1
+import QtQuick 2.0
 import Sailfish.Silica 1.0
 
 Page {
     id: settingsPage
 
-    property var colors: [
+    allowedOrientations: window.allowedOrientations
+
+    readonly property var colors: [
         "#FF0080", "#FF0000", "#FF8000", "#FFFF00",
         "#00FF00", "#8000FF", "#00FFFF", "#0000FF"
     ]
@@ -218,7 +220,7 @@ Page {
                     leftMargin: Theme.horizontalPageMargin
                     rightMargin: Theme.horizontalPageMargin
                 }
-                columns: 4
+                columns: settingsPage.isPortrait ? 4 : 8
 
                 Repeater {
                     model: colors

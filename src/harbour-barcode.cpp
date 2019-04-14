@@ -32,7 +32,7 @@ THE SOFTWARE.
 
 #include <MGConfItem>
 
-#include "scanner/AutoBarcodeScanner.h"
+#include "scanner/BarcodeScanner.h"
 
 #include "HarbourDebug.h"
 #include "HarbourDisplayBlanking.h"
@@ -59,7 +59,7 @@ static void register_types(QQmlEngine* engine, const char* uri, int v1, int v2)
     qmlRegisterType<HarbourSingleImageProvider>(uri, v1, v2, "SingleImageProvider");
     qmlRegisterType<HarbourDisplayBlanking>(uri, v1, v2, "DisplayBlanking");
     qmlRegisterType<HarbourTemporaryFile>(uri, v1, v2, "TemporaryFile");
-    qmlRegisterType<AutoBarcodeScanner>(uri, v1, v2, "AutoBarcodeScanner");
+    qmlRegisterType<BarcodeScanner>(uri, v1, v2, "BarcodeScanner");
     qmlRegisterType<HistoryModel>(uri, v1, v2, "HistoryModel");
 }
 

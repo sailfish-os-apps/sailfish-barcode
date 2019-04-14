@@ -44,7 +44,7 @@ SOURCES += \
     src/HistoryImageProvider.cpp \
     src/HistoryModel.cpp \
     src/Settings.cpp \
-    src/scanner/AutoBarcodeScanner.cpp \
+    src/scanner/BarcodeScanner.cpp \
     src/scanner/Decoder.cpp \
     src/scanner/ImageSource.cpp
 
@@ -54,7 +54,7 @@ HEADERS += \
     src/HistoryImageProvider.h \
     src/HistoryModel.h \
     src/Settings.h \
-    src/scanner/AutoBarcodeScanner.h \
+    src/scanner/BarcodeScanner.h \
     src/scanner/Decoder.h \
     src/scanner/ImageSource.h
 

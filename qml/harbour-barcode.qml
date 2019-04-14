@@ -32,6 +32,10 @@ import "pages"
 ApplicationWindow {
     id: window
 
+    allowedOrientations: Orientation.All
+    initialPage: mainPage
+    cover: Qt.resolvedUrl("cover/CoverPage.qml")
+
     function startScan() {
         while (pageStack.pop(null, PageStackAction.Immediate));
         while (pageStack.depth > 1 && pageStack.popAttached(null, PageStackAction.Immediate));
@@ -45,14 +49,11 @@ ApplicationWindow {
         saveImages: AppSettings.saveImages
     }
 
-    initialPage: mainPage
-    cover: Qt.resolvedUrl("cover/CoverPage.qml")
-
     Component.onCompleted: pageStack.pushAttached(historyPage)
 
     Component {
         id: mainPage
-        AutoScanPage {
+        ScanPage {
             autoScan: AppSettings.scanOnStart
         }
     }

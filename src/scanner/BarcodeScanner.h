@@ -23,8 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#ifndef AUTOBARCODESCANNER_H
-#define AUTOBARCODESCANNER_H
+#ifndef BARCODESCANNER_H
+#define BARCODESCANNER_H
 
 #include <QObject>
 #include <QColor>
@@ -32,11 +32,12 @@ THE SOFTWARE.
 #include <QRect>
 #include <QVariantMap>
 
-class AutoBarcodeScanner : public QObject {
+class BarcodeScanner : public QObject {
     Q_OBJECT
     Q_PROPERTY(QObject* viewFinderItem READ viewFinderItem WRITE setViewFinderItem NOTIFY viewFinderItemChanged)
     Q_PROPERTY(QRect viewFinderRect READ viewFinderRect WRITE setViewFinderRect NOTIFY viewFinderRectChanged)
     Q_PROPERTY(QString markerColor READ markerColor WRITE setMarkerColor NOTIFY markerColorChanged)
+    Q_PROPERTY(int rotation READ rotation WRITE setRotation NOTIFY rotationChanged)
     Q_PROPERTY(ScanState scanState READ scanState NOTIFY scanStateChanged)
     Q_PROPERTY(bool grabbing READ grabbing NOTIFY grabbingChanged)
     Q_ENUMS(ScanState)
@@ -51,8 +52,8 @@ public:
         TimedOut
     };
 
-    AutoBarcodeScanner(QObject* aParent = Q_NULLPTR);
-    virtual ~AutoBarcodeScanner();
+    BarcodeScanner(QObject* aParent = Q_NULLPTR);
+    virtual ~BarcodeScanner();
 
     Q_INVOKABLE void startScanning(int aTimeout);
     Q_INVOKABLE void stopScanning();
@@ -66,6 +67,9 @@ public:
     QString markerColor() const;
     void setMarkerColor(QString aValue);
 
+    int rotation() const;
+    void setRotation(int aDegrees);
+
     ScanState scanState() const;
 
     bool grabbing() const;
@@ -75,6 +79,7 @@ Q_SIGNALS:
     void viewFinderItemChanged();
     void viewFinderRectChanged();
     void markerColorChanged();
+    void rotationChanged();
     void scanStateChanged();
     void grabbingChanged();
 
@@ -82,4 +87,4 @@ private:
     Private* iPrivate;
 };
 
-#endif // AUTOBARCODESCANNER_H
+#endif // BARCODESCANNER_H

@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include "HarbourDebug.h"
 
 #include <QHash>
+#include <QMutex>
 
 // ==========================================================================
 // HistoryImageProvider::Private
@@ -39,14 +40,19 @@ public:
     ~Private() {}
 
     static const QString SAVED;
+    static const QString PORTRAIT;
+    static const QString LANDSCAPE;
 
     static HistoryImageProvider* gInstance;
 
 public:
+    QMutex iMutex;
     QHash<QString,QImage> iCache;
 };
 
 const QString HistoryImageProvider::Private::SAVED("saved/");
+const QString HistoryImageProvider::Private::PORTRAIT("portrait/");
+const QString HistoryImageProvider::Private::LANDSCAPE("landscape/");
 
 HistoryImageProvider* HistoryImageProvider::Private::gInstance = NULL;
 
@@ -81,26 +87,54 @@ HistoryImageProvider* HistoryImageProvider::instance()
 QImage HistoryImageProvider::requestImage(const QString& aId, QSize* aSize, const QSize&)
 {
     QImage img;
+    // We are expecting either "saved/portrait/id" or "saved/landscape/id"
     if (aId.startsWith(Private::SAVED)) {
-        // Extract database id
-        const QString recId(aId.mid(Private::SAVED.length()));
-        QImage cached(iPrivate->iCache.value(recId));
-        if (cached.isNull()) {
-            const QString path(Database::imageDir().path() + QDir::separator() +
-                recId + IMAGE_EXT);
-            if (QFile::exists(path)) {
-                if (img.load(path)) {
-                    HDEBUG(qPrintable(path));
-                    HDEBUG(img);
+        // "saved/" prefix is there
+        QString recId;
+        bool portrait;
+        const QString imageId(aId.mid(Private::SAVED.length()));
+        if (imageId.startsWith(Private::PORTRAIT)) {
+            // "saved/portrait/" prefix
+            recId = imageId.mid(Private::PORTRAIT.length());
+            portrait = true;
+        } else if (imageId.startsWith(Private::LANDSCAPE)) {
+            // "saved/landscape/id" prefix
+            recId = imageId.mid(Private::LANDSCAPE.length());
+            portrait = false;
+        }
+        if (!recId.isEmpty()) {
+            iPrivate->iMutex.lock();
+            img = iPrivate->iCache.value(imageId);
+            iPrivate->iMutex.unlock();
+            if (img.isNull()) {
+                const QString path(Database::imageDir().path() +
+                    QDir::separator() + recId + IMAGE_EXT);
+                if (QFile::exists(path)) {
+                    if (img.load(path)) {
+                        HDEBUG(aId << "=>" << qPrintable(path) << img.size());
+                    } else {
+                        HWARN("Failed to load " << qPrintable(path));
+                    }
                 } else {
-                    HWARN("Failed to load " << qPrintable(path));
+                    HDEBUG(qPrintable(path) << "not found");
                 }
             } else {
-                HDEBUG(qPrintable(path) << "not found");
+                HDEBUG(recId << "cached");
+            }
+            // Rotate the image is necessary
+            if (!img.isNull()) {
+                if ((img.height() > img.width()) != portrait) {
+                    img = img.transformed(QTransform().
+                        translate(img.width()/2.0, img.height()/2.0).
+                        rotate(-90));
+                }
+                HDEBUG(img);
             }
         } else {
-            HDEBUG(recId << "cached");
+            HWARN("Invalid history image id" << recId);
         }
+    } else {
+        HWARN("Invalid history image URL" << aId);
     }
 
     if (!img.isNull() && aSize) {
@@ -113,8 +147,10 @@ QImage HistoryImageProvider::requestImage(const QString& aId, QSize* aSize, cons
 bool HistoryImageProvider::cacheImage(QString aImageId, QImage aImage)
 {
     if (!aImageId.isEmpty() && !aImage.isNull()) {
+        iPrivate->iMutex.lock();
         iPrivate->iCache.insert(aImageId, aImage);
         HDEBUG(aImageId);
+        iPrivate->iMutex.unlock();
         return true;
     } else {
         return false;
@@ -123,12 +159,16 @@ bool HistoryImageProvider::cacheImage(QString aImageId, QImage aImage)
 
 void HistoryImageProvider::dropFromCache(QString aImageId)
 {
+    iPrivate->iMutex.lock();
     if (iPrivate->iCache.remove(aImageId)) {
         HDEBUG(aImageId);
     }
+    iPrivate->iMutex.unlock();
 }
 
 void HistoryImageProvider::clearCache()
 {
+    iPrivate->iMutex.lock();
     iPrivate->iCache.clear();
+    iPrivate->iMutex.unlock();
 }
