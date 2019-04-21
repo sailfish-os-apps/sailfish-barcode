@@ -46,7 +46,7 @@ Page {
     readonly property bool cameraActive: viewFinder && viewFinder.cameraActive
     readonly property string imageProvider: HarbourTheme.darkOnLight ? HarbourImageProviderDarkOnLight : HarbourImageProviderDefault
     readonly property string iconSourcePrefix: "image://" + imageProvider + "/"
-    readonly property bool landscapeLayout: isLandscape && Screen.sizeCategory < Screen.Large
+    readonly property bool landscapeLayout: isLandscape && Screen.sizeCategory < Screen.ExtraLarge
 
     function createScanner() {
         if (viewFinder) {
