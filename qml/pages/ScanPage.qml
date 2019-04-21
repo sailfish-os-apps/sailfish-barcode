@@ -603,10 +603,11 @@ Page {
 
             BackgroundItem {
                 id: resultItem
+
                 x: zoomSlider.x
                 height: Math.max(resultColumn.height, implicitHeight)
                 width: parent.width - x
-                enabled: parent.enabled
+                enabled: scanner.idle && clickableResult.text
                 anchors.verticalCenter: parent.verticalCenter
 
                 function deleteItem() {
