@@ -44,6 +44,7 @@ class Settings : public QObject {
     Q_OBJECT
     Q_PROPERTY(bool sound READ sound WRITE setSound NOTIFY soundChanged)
     Q_PROPERTY(int digitalZoom READ digitalZoom WRITE setDigitalZoom NOTIFY digitalZoomChanged)
+    Q_PROPERTY(int maxDigitalZoom READ maxDigitalZoom WRITE setMaxDigitalZoom NOTIFY maxDigitalZoomChanged)
     Q_PROPERTY(int scanDuration READ scanDuration WRITE setScanDuration NOTIFY scanDurationChanged)
     Q_PROPERTY(int resultViewDuration READ resultViewDuration WRITE setResultViewDuration NOTIFY resultViewDurationChanged)
     Q_PROPERTY(QString markerColor READ markerColor WRITE setMarkerColor NOTIFY markerColorChanged)
@@ -73,6 +74,9 @@ public:
     int digitalZoom() const;
     void setDigitalZoom(int aValue);
 
+    int maxDigitalZoom() const;
+    void setMaxDigitalZoom(int aValue);
+
     int scanDuration() const;
     void setScanDuration(int aValue);
 
@@ -100,6 +104,7 @@ public:
 Q_SIGNALS:
     void soundChanged();
     void digitalZoomChanged();
+    void maxDigitalZoomChanged();
     void scanDurationChanged();
     void resultViewDurationChanged();
     void markerColorChanged();

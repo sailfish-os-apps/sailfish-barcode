@@ -257,6 +257,7 @@ Page {
 
         ViewFinder {
             beepSource: "sound/beep.wav"
+            onMaximumDigitalZoom: AppSettings.maxDigitalZoom = value
         }
     }
 
@@ -398,9 +399,9 @@ Page {
                 leftMargin: 0
                 rightMargin: 0
                 minimumValue: 1.0
-                maximumValue: 70.0
+                maximumValue: AppSettings.maxDigitalZoom
                 value: 1
-                stepSize: 5
+                stepSize: 1
                 onValueChanged: {
                     AppSettings.digitalZoom = zoomSlider.value
                     if (viewFinder) {

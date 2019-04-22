@@ -32,9 +32,11 @@ THE SOFTWARE.
 #define KEY_SAVE_IMAGES                "save_images"
 #define KEY_WIDE_MODE                  "wide_mode"
 #define KEY_ORIENTATION                "orientation"
+#define KEY_MAX_DIGITAL_ZOOM           "max_digital_zoom"
 
 #define DEFAULT_SOUND                   false
 #define DEFAULT_DIGITAL_ZOOM            3
+#define DEFAULT_MAX_DIGITAL_ZOOM        10
 #define DEFAULT_SCAN_DURATION           20
 #define DEFAULT_RESULT_VIEW_DURATION    2
 #define DEFAULT_MARKER_COLOR            "#00FF00"
@@ -55,6 +57,7 @@ public:
 public:
     MGConfItem* iSound;
     MGConfItem* iDigitalZoom;
+    MGConfItem* iMaxDigitalZoom;
     MGConfItem* iScanDuration;
     MGConfItem* iResultViewDuration;
     MGConfItem* iMarkerColor;
@@ -68,6 +71,7 @@ public:
 Settings::Private::Private(Settings* aSettings) :
     iSound(new MGConfItem(DCONF_PATH KEY_SOUND, aSettings)),
     iDigitalZoom(new MGConfItem(DCONF_PATH KEY_DIGITAL_ZOOM, aSettings)),
+    iMaxDigitalZoom(new MGConfItem(DCONF_PATH KEY_MAX_DIGITAL_ZOOM, aSettings)),
     iScanDuration(new MGConfItem(DCONF_PATH KEY_SCAN_DURATION, aSettings)),
     iResultViewDuration(new MGConfItem(DCONF_PATH KEY_RESULT_VIEW_DURATION, aSettings)),
     iMarkerColor(new MGConfItem(DCONF_PATH KEY_MARKER_COLOR, aSettings)),
@@ -79,6 +83,7 @@ Settings::Private::Private(Settings* aSettings) :
 {
     connect(iSound, SIGNAL(valueChanged()), aSettings, SIGNAL(soundChanged()));
     connect(iDigitalZoom, SIGNAL(valueChanged()), aSettings, SIGNAL(digitalZoomChanged()));
+    connect(iMaxDigitalZoom, SIGNAL(valueChanged()), aSettings, SIGNAL(maxDigitalZoomChanged()));
     connect(iScanDuration, SIGNAL(valueChanged()), aSettings, SIGNAL(scanDurationChanged()));
     connect(iResultViewDuration, SIGNAL(valueChanged()), aSettings, SIGNAL(resultViewDurationChanged()));
     connect(iMarkerColor, SIGNAL(valueChanged()), aSettings, SIGNAL(markerColorChanged()));
@@ -122,6 +127,16 @@ int Settings::digitalZoom() const
 void Settings::setDigitalZoom(int aValue)
 {
     iPrivate->iDigitalZoom->set(aValue);
+}
+
+int Settings::maxDigitalZoom() const
+{
+    return iPrivate->iMaxDigitalZoom->value(DEFAULT_MAX_DIGITAL_ZOOM).toInt();
+}
+
+void Settings::setMaxDigitalZoom(int aValue)
+{
+    iPrivate->iMaxDigitalZoom->set(aValue);
 }
 
 int Settings::scanDuration() const
