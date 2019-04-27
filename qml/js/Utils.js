@@ -2,7 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 Steffen Förster
-Copyright (c) 2018 Slava Monich
+Copyright (c) 2018-2019 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -51,7 +51,7 @@ function removeLineBreak(text) {
 }
 
 function convertLineBreaks(text) {
-    return text.replace(/\r\n/g, '\n')
+    return text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
 }
 
 function getValueText(value) {
