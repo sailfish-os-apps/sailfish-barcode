@@ -75,26 +75,41 @@ OTHER_FILES += \
 
 # harbour-lib
 
+HARBOUR_LIB_DIR = harbour-lib
+HARBOUR_LIB_INCLUDE = $${HARBOUR_LIB_DIR}/include
+HARBOUR_LIB_SRC = $${HARBOUR_LIB_DIR}/src
+HARBOUR_LIB_QML = $${HARBOUR_LIB_DIR}/qml
+
 SOURCES += \
-    harbour-lib/src/HarbourDisplayBlanking.cpp \
-    harbour-lib/src/HarbourImageProvider.cpp \
-    harbour-lib/src/HarbourMce.cpp \
-    harbour-lib/src/HarbourPluginLoader.cpp \
-    harbour-lib/src/HarbourSingleImageProvider.cpp \
-    harbour-lib/src/HarbourTask.cpp \
-    harbour-lib/src/HarbourTemporaryFile.cpp \
-    harbour-lib/src/HarbourTheme.cpp
+    $${HARBOUR_LIB_SRC}/HarbourDisplayBlanking.cpp \
+    $${HARBOUR_LIB_SRC}/HarbourImageProvider.cpp \
+    $${HARBOUR_LIB_SRC}/HarbourMce.cpp \
+    $${HARBOUR_LIB_SRC}/HarbourPluginLoader.cpp \
+    $${HARBOUR_LIB_SRC}/HarbourSingleImageProvider.cpp \
+    $${HARBOUR_LIB_SRC}/HarbourTask.cpp \
+    $${HARBOUR_LIB_SRC}/HarbourTemporaryFile.cpp \
+    $${HARBOUR_LIB_SRC}/HarbourTheme.cpp
 
 HEADERS += \
-    harbour-lib/include/HarbourDebug.h \
-    harbour-lib/include/HarbourDisplayBlanking.h \
-    harbour-lib/include/HarbourImageProvider.h \
-    harbour-lib/include/HarbourPluginLoader.h \
-    harbour-lib/include/HarbourSingleImageProvider.h \
-    harbour-lib/include/HarbourTask.h \
-    harbour-lib/include/HarbourTemporaryFile.h \
-    harbour-lib/include/HarbourTheme.h \
-    harbour-lib/src/HarbourMce.h
+    $${HARBOUR_LIB_INCLUDE}/HarbourDebug.h \
+    $${HARBOUR_LIB_INCLUDE}/HarbourDisplayBlanking.h \
+    $${HARBOUR_LIB_INCLUDE}/HarbourImageProvider.h \
+    $${HARBOUR_LIB_INCLUDE}/HarbourPluginLoader.h \
+    $${HARBOUR_LIB_INCLUDE}/HarbourSingleImageProvider.h \
+    $${HARBOUR_LIB_INCLUDE}/HarbourTask.h \
+    $${HARBOUR_LIB_INCLUDE}/HarbourTemporaryFile.h \
+    $${HARBOUR_LIB_INCLUDE}/HarbourTheme.h \
+    $${HARBOUR_LIB_SRC}/HarbourMce.h
+
+HARBOUR_QML_COMPONENTS = \
+    $${HARBOUR_LIB_QML}/HarbourBadge.qml \
+    $${HARBOUR_LIB_QML}/HarbourFitLabel.qml
+
+OTHER_FILES += $${HARBOUR_QML_COMPONENTS}
+
+qml_components.files = $${HARBOUR_QML_COMPONENTS}
+qml_components.path = /usr/share/$${TARGET}/qml/harbour
+INSTALLS += qml_components
 
 # zxing
 

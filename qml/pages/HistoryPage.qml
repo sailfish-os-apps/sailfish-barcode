@@ -28,6 +28,7 @@ import Sailfish.Silica 1.0
 import harbour.barcode 1.0
 
 import "../js/Utils.js" as Utils
+import "../harbour"
 
 Page {
     id: historyPage
@@ -58,10 +59,22 @@ Page {
         spacing: 0
 
         header: PageHeader {
+            id: header
+
             //: History page title
             //% "History"
             title: qsTrId("history-title")
-            height: Theme.itemSizeLarge
+
+            HarbourBadge {
+                id: badge
+                anchors {
+                    right: header.extraContent.right
+                    rightMargin: Theme.paddingLarge
+                    verticalCenter: header.extraContent.verticalCenter
+                }
+                maxWidth: header.extraContent.width - anchors.rightMargin
+                text: historyModel.count ? historyModel.count : ""
+            }
         }
 
         model: historyModel
