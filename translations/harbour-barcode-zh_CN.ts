@@ -81,7 +81,7 @@
     <message id="settings-scan-section">
         <source>Scan</source>
         <extracomment>Section header</extracomment>
-        <translation type="unfinished">扫描</translation>
+        <translation>扫描</translation>
     </message>
     <message id="settings-sound-label">
         <source>Detection sound</source>
@@ -96,17 +96,17 @@
     <message id="settings-save_images-label">
         <source>Save barcode images</source>
         <extracomment>Switch button text</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>保存条形码图片</translation>
     </message>
     <message id="settings-save_images-description">
         <source>This will delete all previously saved barcode images.</source>
         <extracomment>Switch button description (explanation)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>此操作将会删除先前保存的图片。</translation>
     </message>
     <message id="settings-save_images-confirm_delete">
         <source>Confirm delete</source>
         <extracomment>Button label (confirm deletion of image files)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>确定删除</translation>
     </message>
     <message id="settings-history-section">
         <source>History</source>
@@ -225,17 +225,17 @@
     <message id="hint-toggle-flash">
         <source>Toggle flashlight</source>
         <extracomment>Hint label</extracomment>
-        <translation type="unfinished">闪光灯</translation>
+        <translation>闪光灯</translation>
     </message>
     <message id="hint-aspect-ratio">
         <source>Switch the aspect ratio between 9:16 and 3:4</source>
         <extracomment>Hint label</extracomment>
-        <translation type="unfinished">纵横比</translation>
+        <translation>在9：16及3：4之间切换纵横比</translation>
     </message>
     <message id="hint-aspect-ratio_landscape">
         <source>Switch the aspect ratio between 16:9 and 4:3</source>
         <extracomment>Hint label</extracomment>
-        <translation type="unfinished">纵横比</translation>
+        <translation>在16：9及4：3之间切换纵横比</translation>
     </message>
     <message id="hint-copy-clipboard">
         <source>Copy to clipboard</source>
@@ -245,53 +245,53 @@
     <message id="hint-open_contact_card">
         <source>Open contact card</source>
         <extracomment>Hint label</extracomment>
-        <translation type="unfinished">联系人卡片</translation>
+        <translation>联系人卡片</translation>
     </message>
     <message id="hint-open_link">
         <source>Open link in browser</source>
         <oldsource>Open link</oldsource>
         <extracomment>Hint label</extracomment>
-        <translation type="unfinished">在浏览器中打开</translation>
+        <translation>在浏览器中打开</translation>
     </message>
     <message id="settings-display-section">
         <source>Display</source>
         <extracomment>Section header</extracomment>
-        <translation type="unfinished">显示</translation>
+        <translation>显示</translation>
     </message>
     <message id="settings-display-orientation-label">
         <source>Orientation</source>
         <extracomment>Combo box label</extracomment>
-        <translation type="unfinished">屏幕显示方向</translation>
+        <translation>屏幕显示方向</translation>
     </message>
     <message id="settings-display-orientation-primary">
         <source>Primary</source>
         <extracomment>Combo box value for primary orientation</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>初始方向</translation>
     </message>
     <message id="settings-display-orientation-portrait">
         <source>Portrait</source>
         <extracomment>Combo box value for portrait orientation</extracomment>
-        <translation type="unfinished">竖屏</translation>
+        <translation>竖屏</translation>
     </message>
     <message id="settings-display-orientation-landscape">
         <source>Landscape</source>
         <extracomment>Combo box value for landscape orientation</extracomment>
-        <translation type="unfinished">横屏</translation>
+        <translation>横屏</translation>
     </message>
     <message id="settings-display-orientation-dynamic">
         <source>Dynamic</source>
         <extracomment>Combo box value for dynamic orientation</extracomment>
-        <translation type="unfinished">自动旋转</translation>
+        <translation>自动旋转</translation>
     </message>
     <message id="settings-display-orientation-allow_inverted">
         <source>Allow inverted orientation</source>
         <extracomment>Text switch label</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>允许调整方向</translation>
     </message>
     <message id="settings-display-orientation-allow_inverted-description">
         <source>If enabled, allows both primary and inverted landscape or portrait oprientations.</source>
         <extracomment>Text switch description</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>如果启用，则允许在竖屏及横屏之间自由切换。</translation>
     </message>
 </context>
 </TS>
