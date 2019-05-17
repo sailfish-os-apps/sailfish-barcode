@@ -6,12 +6,12 @@
     <message id="about-title">
         <source>About CodeReader</source>
         <extracomment>About page title, label and menu item</extracomment>
-        <translation>Acerca de CodeReader</translation>
+        <translation>Acerca de</translation>
     </message>
     <message id="about-description">
         <source>This app demonstrates a bar code reader for Sailfish OS. I hope it is useful for other projects. CodeReader is open source and licensed under the MIT License.</source>
         <extracomment>About page text</extracomment>
-        <translation>Esta aplicación muestra un lector de código de barras para el sistema operativo SailfishOS. Espero que sea útil para otros proyectos. CodeReader es de código abierto y está registrado bajo la licencia MIT.</translation>
+        <translation>Esta aplicación muestra un lector de código de barras para el sistema operativo Sailfish SO. Espero que sea útil para otros proyectos. CodeReader es de código abierto y está registrado bajo la licencia MIT.</translation>
     </message>
     <message id="about-version-label">
         <source>Version</source>
@@ -81,12 +81,12 @@
     <message id="settings-scan-section">
         <source>Scan</source>
         <extracomment>Section header</extracomment>
-        <translation type="unfinished">Escanear</translation>
+        <translation>Escanear</translation>
     </message>
     <message id="settings-sound-label">
         <source>Detection sound</source>
         <extracomment>Switch button text</extracomment>
-        <translation>Pitido al detectar código</translation>
+        <translation>Pitido al detectar</translation>
     </message>
     <message id="settings-autoscan-label">
         <source>Scan on start</source>
@@ -96,17 +96,17 @@
     <message id="settings-save_images-label">
         <source>Save barcode images</source>
         <extracomment>Switch button text</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Guardar imágenes de código de barras</translation>
     </message>
     <message id="settings-save_images-description">
         <source>This will delete all previously saved barcode images.</source>
         <extracomment>Switch button description (explanation)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Esto borrará todas las imágenes de código de barras guardadas previamente.</translation>
     </message>
     <message id="settings-save_images-confirm_delete">
         <source>Confirm delete</source>
         <extracomment>Button label (confirm deletion of image files)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Confirmar eliminación</translation>
     </message>
     <message id="settings-history-section">
         <source>History</source>
@@ -126,9 +126,9 @@
     <message id="settings-history-slider_value" numerus="yes">
         <source>%1 item(s)</source>
         <extracomment>History slider value</extracomment>
-        <translation type="unfinished">
+        <translation>
+            <numerusform>%1 elemento</numerusform>
             <numerusform>%1 elementos</numerusform>
-            <numerusform></numerusform>
         </translation>
     </message>
     <message id="settings-history-confirm_resize">
@@ -149,12 +149,12 @@
     <message id="settings-marker-slider_label">
         <source>Mark detected code</source>
         <extracomment>Slider label</extracomment>
-        <translation>Duración de la marca en código detectado</translation>
+        <translation>Marcar el código detectado</translation>
     </message>
     <message id="settings-marker-slider_value" numerus="yes">
         <source>%1 second(s)</source>
         <extracomment>Marker slider value</extracomment>
-        <translation type="unfinished">
+        <translation>
             <numerusform>%1 segundo</numerusform>
             <numerusform>%1 segundos</numerusform>
         </translation>
@@ -177,7 +177,7 @@
     <message id="history-menu-copy">
         <source>Copy to clipboard</source>
         <extracomment>Context menu item</extracomment>
-        <translation>Copiar en el portapapeles</translation>
+        <translation>Copiar a portapapeles</translation>
     </message>
     <message id="history-menu-delete_all_remorse">
         <source>Deleting all</source>
@@ -227,73 +227,73 @@
     <message id="hint-toggle-flash">
         <source>Toggle flashlight</source>
         <extracomment>Hint label</extracomment>
-        <translation type="unfinished">Linterna</translation>
+        <translation>Linterna</translation>
     </message>
     <message id="hint-aspect-ratio">
         <source>Switch the aspect ratio between 9:16 and 3:4</source>
         <extracomment>Hint label</extracomment>
-        <translation type="unfinished">Proporción de aspecto</translation>
+        <translation>Proporción de aspecto</translation>
     </message>
     <message id="hint-aspect-ratio_landscape">
         <source>Switch the aspect ratio between 16:9 and 4:3</source>
         <extracomment>Hint label</extracomment>
-        <translation type="unfinished">Proporción de aspecto</translation>
+        <translation>Proporción de aspecto</translation>
     </message>
     <message id="hint-copy-clipboard">
         <source>Copy to clipboard</source>
         <extracomment>Hint label</extracomment>
-        <translation>Copiar en el portapapeles</translation>
+        <translation>Copiar a portapapeles</translation>
     </message>
     <message id="hint-open_contact_card">
         <source>Open contact card</source>
         <extracomment>Hint label</extracomment>
-        <translation type="unfinished">Abrir tarjeta de contacto</translation>
+        <translation>Abrir tarjeta de contacto</translation>
     </message>
     <message id="hint-open_link">
         <source>Open link in browser</source>
         <oldsource>Open link</oldsource>
         <extracomment>Hint label</extracomment>
-        <translation type="unfinished">Abrir enlace en el navegador</translation>
+        <translation>Abrir enlace en navegador</translation>
     </message>
     <message id="settings-display-section">
         <source>Display</source>
         <extracomment>Section header</extracomment>
-        <translation type="unfinished">Pantalla</translation>
+        <translation>Pantalla</translation>
     </message>
     <message id="settings-display-orientation-label">
         <source>Orientation</source>
         <extracomment>Combo box label</extracomment>
-        <translation type="unfinished">Orientación</translation>
+        <translation>Orientación</translation>
     </message>
     <message id="settings-display-orientation-primary">
         <source>Primary</source>
         <extracomment>Combo box value for primary orientation</extracomment>
-        <translation type="unfinished">Primario</translation>
+        <translation>Primario</translation>
     </message>
     <message id="settings-display-orientation-portrait">
         <source>Portrait</source>
         <extracomment>Combo box value for portrait orientation</extracomment>
-        <translation type="unfinished">Vertical</translation>
+        <translation>Vertical</translation>
     </message>
     <message id="settings-display-orientation-landscape">
         <source>Landscape</source>
         <extracomment>Combo box value for landscape orientation</extracomment>
-        <translation type="unfinished">Horizontal</translation>
+        <translation>Horizontal</translation>
     </message>
     <message id="settings-display-orientation-dynamic">
         <source>Dynamic</source>
         <extracomment>Combo box value for dynamic orientation</extracomment>
-        <translation type="unfinished">Dinámica</translation>
+        <translation>Dinámica</translation>
     </message>
     <message id="settings-display-orientation-allow_inverted">
         <source>Allow inverted orientation</source>
         <extracomment>Text switch label</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Permitir orientación invertida</translation>
     </message>
     <message id="settings-display-orientation-allow_inverted-description">
         <source>If enabled, allows both primary and inverted landscape or portrait oprientations.</source>
         <extracomment>Text switch description</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Si está habilitado, permite oprientaciones primarias e invertidas de paisaje o retrato.</translation>
     </message>
 </context>
 </TS>
