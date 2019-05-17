@@ -86,7 +86,7 @@
     <message id="settings-sound-label">
         <source>Detection sound</source>
         <extracomment>Switch button text</extracomment>
-        <translation>Pitido al detectar</translation>
+        <translation>Pitido al detectar código</translation>
     </message>
     <message id="settings-autoscan-label">
         <source>Scan on start</source>
