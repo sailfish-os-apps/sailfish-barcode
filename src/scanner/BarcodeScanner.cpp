@@ -403,6 +403,10 @@ void BarcodeScanner::Private::onDecodingDone(QImage aImage, Decoder::Result aRes
             painter.end();
             saveDebugImage(aImage, "debug_marks.bmp");
         }
+
+        // Scanning could succeed even AFTER it has timed out.
+        // We still count that as a success.
+        iTimedOut = false;
     }
 
     iCaptureImage = QImage();
