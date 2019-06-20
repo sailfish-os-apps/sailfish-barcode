@@ -1,7 +1,7 @@
 /*
 The MIT License (MIT)
 
-Copyright (c) 2018 Slava Monich
+Copyright (c) 2018-2019 Slava Monich
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -83,7 +83,7 @@ const zxing::byte* ImageSource::getGrayRow(int aY) const
             // This is significantly faster than gGray() but is
             // just as good for our purposes
             row[x] = (zxing::byte)((((rgb & 0x00ff0000) >> 16) +
-                ((rgb && 0x0000ff00) >> 8) +
+                ((rgb & 0x0000ff00) >> 8) +
                 (rgb & 0xff))/3);
         }
         iGrayRows[aY] = row;
