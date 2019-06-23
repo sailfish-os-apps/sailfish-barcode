@@ -238,8 +238,7 @@ void BarcodeScanner::Private::decodingThread()
     bool rotated = false;
     int scaledWidth = 0;
 
-    const int maxWidth = 600;
-    const int maxHeight = 800;
+    const int maxSize = 800;
 
     iDecodingMutex.lock();
     while (!iAbortScan && !result.isValid()) {
@@ -310,15 +309,15 @@ void BarcodeScanner::Private::decodingThread()
             saveDebugImage(image, "debug_cropped.bmp");
 
             QImage scaledImage;
-            if (image.width() > maxWidth || image.height() > maxHeight) {
+            if (image.width() > maxSize || image.height() > maxSize) {
                 Qt::TransformationMode mode = Qt::SmoothTransformation;
-                if (maxWidth * image.height() > maxHeight * image.width()) {
-                    scaledImage = image.scaledToHeight(maxHeight, mode);
-                    scale = image.height()/(qreal)maxHeight;
+                if (image.height() > image.width()) {
+                    scaledImage = image.scaledToHeight(maxSize, mode);
+                    scale = image.height()/(qreal)maxSize;
                     HDEBUG("scaled to height" << scale << scaledImage);
                 } else {
-                    scaledImage = image.scaledToWidth(maxWidth, mode);
-                    scale = image.width()/(qreal)maxWidth;
+                    scaledImage = image.scaledToWidth(maxSize, mode);
+                    scale = image.width()/(qreal)maxSize;
                     HDEBUG("scaled to width" << scale << scaledImage);
                 }
                 saveDebugImage(scaledImage, "debug_scaled.bmp");
