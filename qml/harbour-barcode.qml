@@ -53,10 +53,16 @@ ApplicationWindow {
         pageStack.currentPage.requestScan()
     }
 
-    HistoryModel {
-        id: historyModel
-        maxCount: AppSettings.historySize
-        saveImages: AppSettings.saveImages
+    Binding {
+        target: HistoryModel
+        property: "maxCount"
+        value: AppSettings.historySize
+    }
+
+    Binding {
+        target: HistoryModel
+        property: "saveImages"
+        value: AppSettings.saveImages
     }
 
     Component.onCompleted: pageStack.pushAttached(historyPage)

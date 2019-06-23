@@ -60,8 +60,8 @@ static void register_types(QQmlEngine* engine, const char* uri, int v1, int v2)
     qmlRegisterType<HarbourDisplayBlanking>(uri, v1, v2, "DisplayBlanking");
     qmlRegisterType<HarbourTemporaryFile>(uri, v1, v2, "TemporaryFile");
     qmlRegisterType<BarcodeScanner>(uri, v1, v2, "BarcodeScanner");
-    qmlRegisterType<HistoryModel>(uri, v1, v2, "HistoryModel");
     qmlRegisterType<Settings>(uri, v1, v2, "Settings");
+    qmlRegisterSingletonType<HistoryModel>(uri, v1, v2, "HistoryModel", HistoryModel::createSingleton);
 }
 
 static QSize toSize(QVariant var)

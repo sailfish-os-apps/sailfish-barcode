@@ -60,6 +60,9 @@ public:
     // Utilities
     Q_INVOKABLE static QString formatTimestamp(QString timestamp);
 
+    // Callback for qmlRegisterSingletonType<HistoryModel>
+    static QObject* createSingleton(QQmlEngine* aEngine, QJSEngine* aScript);
+
 protected:
     bool filterAcceptsRow(int aRow, const QModelIndex& aParent) const;
 

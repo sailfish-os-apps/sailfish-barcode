@@ -73,11 +73,11 @@ Page {
                     verticalCenter: header.extraContent.verticalCenter
                 }
                 maxWidth: header.extraContent.width - anchors.rightMargin
-                text: historyModel.count ? historyModel.count : ""
+                text: HistoryModel.count ? HistoryModel.count : ""
             }
         }
 
-        model: historyModel
+        model: HistoryModel
 
         delegate: ListItem {
             id: delegate

@@ -373,6 +373,12 @@ HistoryModel::HistoryModel(QObject* aParent) :
     connect(this, SIGNAL(modelReset()), SLOT(checkCount()));
 }
 
+// Callback for qmlRegisterSingletonType<HistoryModel>
+QObject* HistoryModel::createSingleton(QQmlEngine* aEngine, QJSEngine*)
+{
+    return new HistoryModel(aEngine);
+}
+
 bool HistoryModel::filterAcceptsRow(int aRow, const QModelIndex& aParent) const
 {
     return !iPrivate->isDirty(iPrivate->index(aRow, 0, aParent));

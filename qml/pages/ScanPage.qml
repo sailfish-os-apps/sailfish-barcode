@@ -83,7 +83,7 @@ Page {
         markerImageProvider.image = image
         if (text.length > 0) {
             Clipboard.text = text
-            var recId = historyModel.insert(image, text, result.format)
+            var recId = HistoryModel.insert(image, text, result.format)
             clickableResult.setValue(recId, text, result.format)
         }
     }
@@ -521,7 +521,7 @@ Page {
 
                 // Clear results when the first history item gets deleted
                 Connections {
-                    target: historyModel
+                    target: HistoryModel
                     onRowsRemoved: if (first == 0) clickableResult.clear()
                 }
 
@@ -617,9 +617,9 @@ Page {
                     //% "Deleting"
                     remorse.execute(resultItem, qsTrId("history-menu-delete_remorse"),
                         function() {
-                            historyModel.remove(0)
+                            HistoryModel.remove(0)
                             if (scanPage.status === PageStatus.Active) {
-                                historyModel.commitChanges()
+                                HistoryModel.commitChanges()
                             }
                             remorse.destroy()
                         })
