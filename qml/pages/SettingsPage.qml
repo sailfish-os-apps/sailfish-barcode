@@ -268,7 +268,7 @@ Page {
 
                 width: parent.width
                 minimumValue: 0
-                maximumValue: 100
+                maximumValue: 200
                 value: AppSettings.historySize
                 stepSize: 10
                 //: Slider label
