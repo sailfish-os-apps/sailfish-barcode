@@ -45,21 +45,23 @@ THE SOFTWARE.
 // Removes image files not associated with any rows in the database
 // ==========================================================================
 
-class HistoryModel::CleanupTask : public QRunnable {
+class HistoryModel::CleanupTask : public HarbourTask {
+    Q_OBJECT
 public:
-    CleanupTask(QStringList aList);
-    void run() Q_DECL_OVERRIDE;
+    CleanupTask(QThreadPool* aPool, QStringList aList);
+    void performTask() Q_DECL_OVERRIDE;
 
 public:
     QStringList iList;
+    bool iHaveImages;
 };
 
-HistoryModel::CleanupTask::CleanupTask(QStringList aList) :
-    iList(aList)
+HistoryModel::CleanupTask::CleanupTask(QThreadPool* aPool, QStringList aList) :
+    HarbourTask(aPool), iList(aList), iHaveImages(false)
 {
 }
 
-void HistoryModel::CleanupTask::run()
+void HistoryModel::CleanupTask::performTask()
 {
     QDirIterator it(Database::imageDir().path(), QDir::Files);
     while (it.hasNext()) {
@@ -71,6 +73,7 @@ void HistoryModel::CleanupTask::run()
             const int pos = iList.indexOf(base);
             if (pos >= 0) {
                 iList.removeAt(pos);
+                iHaveImages = true;
             } else {
                 const QString path(it.filePath());
                 HDEBUG("deleting" << base << qPrintable(path));
@@ -123,14 +126,12 @@ void HistoryModel::SaveTask::performTask()
 // HistoryModel::PurgeTask
 // ==========================================================================
 
-class HistoryModel::PurgeTask : public HarbourTask {
-    Q_OBJECT
+class HistoryModel::PurgeTask : public QRunnable {
 public:
-    PurgeTask(QThreadPool* aPool) : HarbourTask(aPool) {}
-    void performTask() Q_DECL_OVERRIDE;
+    void run() Q_DECL_OVERRIDE;
 };
 
-void HistoryModel::PurgeTask::performTask()
+void HistoryModel::PurgeTask::run()
 {
     QDirIterator it(Database::imageDir().path(), QDir::Files);
     while (it.hasNext()) {
@@ -176,6 +177,8 @@ public:
 #define DB_FIELD_TIMESTAMP DB_FIELD[HistoryModel::Private::FIELD_TIMESTAMP]
 #define DB_FIELD_FORMAT DB_FIELD[HistoryModel::Private::FIELD_FORMAT]
 
+    enum TriState { No, Maybe, Yes };
+
     Private(HistoryModel* aModel);
     ~Private();
 
@@ -190,9 +193,11 @@ public:
 
 private Q_SLOTS:
     void onSaveDone();
+    void onCleanupDone();
 
 public:
     QThreadPool* iThreadPool;
+    TriState iHaveImages;
     bool iSaveImages;
     int iMaxCount;
     int iLastKnownCount;
@@ -210,6 +215,7 @@ const QString HistoryModel::Private::DB_FIELD[] = {
 HistoryModel::Private::Private(HistoryModel* aPublicModel) :
     QSqlTableModel(aPublicModel, Database::database()),
     iThreadPool(new QThreadPool(this)),
+    iHaveImages(Maybe),
     iSaveImages(true),
     iMaxCount(DEFAULT_MAX_COUNT),
     iLastKnownCount(0)
@@ -335,7 +341,8 @@ void HistoryModel::Private::cleanupFiles()
         }
         // Submit the cleanup task
         HDEBUG("ids:" << ids);
-        iThreadPool->start(new CleanupTask(ids));
+        (new CleanupTask(iThreadPool, ids))->
+            submit(this, SLOT(onCleanupDone()));
     } else {
         HWARN(query.lastError());
     }
@@ -348,6 +355,24 @@ void HistoryModel::Private::onSaveDone()
     if (task) {
         if (HistoryImageProvider::instance()) {
             HistoryImageProvider::instance()->dropFromCache(task->iId);
+        }
+        task->release();
+    }
+}
+
+void HistoryModel::Private::onCleanupDone()
+{
+    CleanupTask* task = qobject_cast<CleanupTask*>(sender());
+    HASSERT(task);
+    if (task) {
+        if (iHaveImages == Maybe) {
+            if (task->iHaveImages) {
+                HDEBUG("we do have some images");
+                iHaveImages = Yes;
+            } else {
+                HDEBUG("there are no saved images");
+                iHaveImages = No;
+            }
         }
         task->release();
     }
@@ -413,6 +438,11 @@ void HistoryModel::setMaxCount(int aValue)
     }
 }
 
+bool HistoryModel::hasImages() const
+{
+    return iPrivate->iHaveImages != Private::No;
+}
+
 bool HistoryModel::saveImages() const
 {
     return iPrivate->iSaveImages;
@@ -428,9 +458,12 @@ void HistoryModel::setSaveImages(bool aValue)
                 HistoryImageProvider::instance()->clearCache();
             }
             // Delete all files on a separate thread
-            HarbourTask* task = new PurgeTask(iPrivate->iThreadPool);
-            task->submit();
-            task->release();
+            iPrivate->iThreadPool->start(new PurgeTask);
+            // And assume that we don't have images anymore
+            if (iPrivate->iHaveImages != Private::No) {
+                iPrivate->iHaveImages = Private::No;
+                Q_EMIT hasImagesChanged();
+            }
         }
         Q_EMIT saveImagesChanged();
     }
@@ -493,6 +526,12 @@ QString HistoryModel::insert(QImage aImage, QString aText, QString aFormat)
             if (ip && ip->cacheImage(id, aImage)) {
                 (new SaveTask(iPrivate->iThreadPool, aImage, id))->
                     submit(iPrivate, SLOT(onSaveDone()));
+            }
+            // Assume that we do have images now
+            const bool hadImages = hasImages();
+            iPrivate->iHaveImages = Private::Yes;
+            if (!hadImages) {
+                Q_EMIT hasImagesChanged();
             }
         }
     }

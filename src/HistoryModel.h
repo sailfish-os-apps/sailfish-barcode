@@ -40,6 +40,7 @@ class HistoryModel: public QSortFilterProxyModel {
     Q_PROPERTY(int count READ rowCount NOTIFY countChanged)
     Q_PROPERTY(int maxCount READ maxCount WRITE setMaxCount NOTIFY maxCountChanged)
     Q_PROPERTY(bool saveImages READ saveImages WRITE setSaveImages NOTIFY saveImagesChanged)
+    Q_PROPERTY(bool hasImages READ hasImages NOTIFY hasImagesChanged)
 
 public:
     HistoryModel(QObject* aParent = NULL);
@@ -47,6 +48,7 @@ public:
     int maxCount() const;
     void setMaxCount(int aValue);
 
+    bool hasImages() const;
     bool saveImages() const;
     void setSaveImages(bool aValue);
 
@@ -72,6 +74,7 @@ private Q_SLOTS:
 Q_SIGNALS:
     void countChanged();
     void maxCountChanged();
+    void hasImagesChanged();
     void saveImagesChanged();
 
 private:

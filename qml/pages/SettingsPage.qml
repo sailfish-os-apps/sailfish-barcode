@@ -199,19 +199,29 @@ Page {
                 text: qsTrId("settings-save_images-label")
                 icon.source: "image://theme/icon-m-camera"
                 automaticCheck: false
+                busy: picturesConfirmButtons.visible
                 onClicked: {
                     if (checked) {
-                        //: Switch button description (explanation)
-                        //% "This will delete all previously saved barcode images."
-                        description = qsTrId("settings-save_images-description")
-                        picturesConfirmButtons.visible = true
+                        if (picturesConfirmButtons.visible) {
+                            // Cancel the previous click
+                            picturesConfirmButtons.visible = false
+                            description = ""
+                        } else if (HistoryModel.hasImages) {
+                            //: Switch button description (explanation)
+                            //% "This will delete all previously saved barcode images."
+                            description = qsTrId("settings-save_images-description")
+                            picturesConfirmButtons.visible = true
+                        } else {
+                            // No need to confirm
+                            AppSettings.saveImages = false
+                        }
                     } else {
                         AppSettings.saveImages = true
                     }
                 }
                 onCheckedChanged: {
-                    description = ""
                     picturesConfirmButtons.visible = false
+                    description = ""
                 }
             }
 
